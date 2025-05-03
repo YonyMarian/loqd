@@ -1,7 +1,10 @@
 // FROM 
 
 // import ical
-const ical = require('node-ical');
+// is esModuleInterop = false
+// const ical = require('node-ical');
+// bc esModuleInterop = true
+import ical from 'node-ical'
 
 // do stuff in an async function
 ;(async () => {
