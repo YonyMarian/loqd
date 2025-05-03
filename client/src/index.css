@@ -70,3 +70,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+div {
+  border-color: "#646cff";
+  border-radius: 1px;
+}
