@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Landing: React.FC = () => {
     return (
@@ -30,12 +31,12 @@ const Landing: React.FC = () => {
                             >
                                 Get Started
                             </a>
-                            <a
-                                href="/signin"
+                            <Link
+                                to="/account"
                                 className="bg-white text-red-600 px-6 py-3 rounded-lg border border-blue-600 hover:bg-blue-50"
                             >
                                 Sign In
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </section>
