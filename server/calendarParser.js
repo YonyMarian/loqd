@@ -4,63 +4,37 @@
 // is esModuleInterop = false
 // const ical = require('node-ical');
 // bc esModuleInterop = true
-import ical from 'node-ical'
+import ical from 'node-ical';
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
-// do stuff in an async function
-;(async () => {
-    // load and parse this file without blocking the event loop
-    const events = await ical.async.parseFile('example-calendar.ics');
+const app=express();
+const upload=multer({ dest: 'uploads/' });
 
-    // you can also use the async lib to download and parse iCal from the web
-    const webEvents = await ical.async.fromURL('http://lanyrd.com/topics/nodejs/nodejs.ics');
-    // also you can pass options to axios.get() (optional though!)
-    const headerWebEvents = await ical.async.fromURL(
-        'http://lanyrd.com/topics/nodejs/nodejs.ics',
-        { headers: { 'User-Agent': 'API-Example / 1.0' } }
-    );
+app.post('/upload', upload.single('calendarFile'), async (req, res) => {
+    try {
+        if (!requestAnimationFrame.file) {
+            return res.status(400).send("No file uploaded.");
+        }
+        //else.. parse file :D
 
-    // parse iCal data without blocking the main loop for extra-large events
-    const directEvents = await ical.async.parseICS(`
-BEGIN:VCALENDAR
-VERSION:2.0
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-SUMMARY:Hey look! An example event!
-DTSTART;TZID=America/New_York:20130802T103400
-DTEND;TZID=America/New_York:20130802T110400
-DESCRIPTION: Do something in NY.
-UID:7014-1567468800-1567555199@peterbraden@peterbraden.co.uk
-END:VEVENT
-END:VCALENDAR
-    `);
-})()
-    .catch(console.error.bind());
+        const filePath = path.resolve(req.file.path);
+        const events = await ical.async.parseFile(filePath);
+        fs.unlinkSync(filePath);
 
-// old fashioned callbacks cause why not
-
-// parse a file with a callback
-ical.async.parseFile('example-calendar.ics', function(err, data) {
-    if (err) {
-        console.error(err);
-        process.exit(1);
+        res.json(events);
+        }
+    catch (error) {
+        res.status(500).send("Error processing the file.");
+        console.error(error);
+        console.log("error parsing file");
     }
-    console.log(data);
 });
 
-// or a URL
-ical.async.fromURL('http://lanyrd.com/topics/nodejs/nodejs.ics', function(err, data) { console.log(data); });
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
 
-// or directly
-ical.async.parseICS(`
-BEGIN:VCALENDAR
-VERSION:2.0
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-SUMMARY:Hey look! An example event!
-DTSTART;TZID=America/New_York:20130802T103400
-DTEND;TZID=America/New_York:20130802T110400
-DESCRIPTION: Do something in NY.
-UID:7014-1567468800-1567555199@peterbraden@peterbraden.co.uk
-END:VEVENT
-END:VCALENDAR
-`, function(err, data) { console.log(data); });

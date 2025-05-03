@@ -12,9 +12,11 @@
   "dependencies": {
     "@types/node": "^22.14.1",
     "bcrypt": "^5.1.1",
+    "express": "^5.1.0",
     "ical": "^0.8.0",
     "ical.js": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.2",
     "node-ical": "^0.20.1",
     "typescript": "^5.8.3"
   },
