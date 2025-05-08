@@ -1,9 +1,14 @@
+version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        - cd client
+        - npm ci
     build:
       commands:
         - npm run build
-    artifacts:
-      baseDirectory: /client
-      files:
-          - '**/*'
+  artifacts:
+    baseDirectory: client/dist
+    files:
+      - '**/*'
