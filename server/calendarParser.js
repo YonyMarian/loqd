@@ -22,9 +22,11 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
         // deletes temp file after parsing
         fs.unlinkSync(filePath);
 
-        
+        // extract only classes and discussions!!
+        const processedEvents = Object.values(events).filter(event => event.categories.includes("Study List") === true);
+        //console.log(processedEvents);   
 
-        res.json(events); // Send parsed calendar data back to the client
+        res.json(proccessedEvents); // Send parsed calendar data back to the client
     } catch (error) {
         console.error(error);
         res.status(500).send('Error processing the file.');
