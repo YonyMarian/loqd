@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Landing: React.FC = () => {
     return (
@@ -6,11 +7,11 @@ const Landing: React.FC = () => {
             <header>
                 <nav className="bg-yellow-500 shadow-md py-4 px-6">
                     <div className="max-w-6xl mx-auto flex justify-between items-center">
-                        <div className="text-2xl font-bold text-blue-600">LOQD</div>
+                        <div className="text-2xl font-bold text-blue-600">Loqd</div>
                         <div className="space-x-4">
-                            <a href="/features" className="text-gray-700 hover:text-blue-600">Features</a>
-                            <a href="/pricing" className="text-gray-700 hover:text-blue-600">Pricing</a>
-                            <a href="/about" className="text-gray-700 hover:text-blue-600">About Us</a>
+                            <a href="/features" className="text-gray-700 hover:text-blue-600">About Loqd</a>
+                            <a href="/pricing" className="text-gray-700 hover:text-blue-600">How it Works</a>
+                            <a href="/contact" className="text-gray-700 hover:text-blue-600">Contact</a>
                         </div>
                     </div>
                 </nav>
@@ -19,9 +20,9 @@ const Landing: React.FC = () => {
                 {/* Hero Section */}
                 <section className="py-20 px-4">
                     <div className="max-w-6xl mx-auto text-center">
-                        <h1 className="text-5xl font-bold mb-6">Welcome to LOQD</h1>
+                        <h1 className="text-9xl font-bold mb-6">Loqd</h1>
                         <p className="text-xl text-gray-600 mb-8">
-                            Your secure and efficient solution for managing digital assets
+                            Loq tf in
                         </p>
                         <div className="space-x-4">
                             <a
@@ -30,12 +31,12 @@ const Landing: React.FC = () => {
                             >
                                 Get Started
                             </a>
-                            <a
-                                href="/signin"
+                            <Link
+                                to="/account"
                                 className="bg-white text-red-600 px-6 py-3 rounded-lg border border-blue-600 hover:bg-blue-50"
                             >
                                 Sign In
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </section>
