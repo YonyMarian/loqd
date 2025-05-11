@@ -9,11 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "@types/node": "^22.15.3",
     "aws-amplify": "^6.14.4",
     "bcrypt": "^5.1.1",
+    "express": "^5.1.0",
     "ical.js": "^2.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.16.1",
