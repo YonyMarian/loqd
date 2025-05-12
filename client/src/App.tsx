@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-import Landing from './pages/Landing'
-import UploadCal from './components/upload_cal';
-
-import './App.css'
-
-function App() {
-  return (
-    <>
-      <UploadCal />
-      <Landing />
-    </>
-  )
-=======
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Account from './pages/Account';
@@ -30,7 +16,6 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
->>>>>>> master
 }
 
 export default App;

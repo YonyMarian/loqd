@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { signup } from '../lib/session'
 import '../styles/SignUp.css';
 
 type FormState = {
@@ -31,6 +32,7 @@ const SignUp: React.FC = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     alert('✅ Account created (mock)');
+    signup(form.email, form.password, form.username);
     console.log(form);
   };
 
