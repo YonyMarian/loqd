@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signup } from '../lib/session'
 import '../styles/SignUp.css';
+import UploadCal from '../components/UploadCal';
 
 type FormState = {
   username: string;
@@ -72,7 +73,7 @@ const SignUp: React.FC = () => {
 
             <label>
               Upload .ics Schedule
-              <input type="file" name="scheduleFile" accept=".ics" onChange={handleChange} required />
+              <UploadCal />
             </label>
 
             <button type="submit" className="signup-button">Sign Up</button>
