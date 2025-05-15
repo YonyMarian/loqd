@@ -26,7 +26,19 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
         // res.json(events);
         const processedEvents = Object.values(events).filter(
             event => event.hasOwnProperty("categories") && event.categories.includes("Study List")
-        );
+        ).map(event => {
+        // 2) if there’s an RRule on it, serialize &/or expand it
+            if (event.rrule) {
+                // turn the rule into the canonical iCal string
+                event.rruleString = event.rrule.toString();
+                // pull out the BYDAY array (e.g. ['MO','WE','FR'])
+                if (event.rrule.origOptions.byweekday) {
+                    event.byday = event.rrule.origOptions.byweekday
+                                    .map(d => d.toString());
+                }
+            }
+        return event;
+        })
         console.log(processedEvents);   
 
         res.json(processedEvents); // Send parsed calendar data back to the client
