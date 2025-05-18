@@ -70,14 +70,13 @@ const SignUp: React.FC = () => {
               Password
               <input type="password" name="password" value={form.password} onChange={handleChange} required />
             </label>
-
-            <label>
-              Upload .ics Schedule
-              <UploadCal />
-            </label>
+          </form>
+          <label>
+            Upload .ics Schedule
+            <UploadCal />
+          </label>
 
             <button type="submit" className="signup-button">Sign Up</button>
-          </form>
         </div>
       </div>
     </div>

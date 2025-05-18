@@ -43,36 +43,47 @@ type Schedule = {
     }
 }
 
-export default function getScheduleObject(cal: Array<WellFormedEvent>): Object {
+function getScheduleObject(cal: Array<WellFormedEvent>): Object {
     const schedule: Schedule = {};
+    const finalExams: Array<{ finalDescription: string, finalDate: string }> = []
     for (const event of cal) {
         // first get class full name
-        const fullNameStart = event["description"].indexOf("\\n") + 2;
-        const fullNameEnd = event["description"].indexOf("\\n", fullNameStart);
+        const fullNameStart = event["description"].indexOf("\n") + 1;
+        const fullNameEnd = event["description"].indexOf("\n", fullNameStart);
         const fullName = event["description"].substring(
             fullNameStart,
             fullNameEnd === -1 ? event["description"].length : fullNameEnd
         ); // class full name
 
-        // simplifies dealing with key errors later
-        if (!schedule[fullName]) {
-            schedule[fullName] = {}
-        }
-
         const summary = parseSummary(event["summary"]);
         if (summary) {
-            // this branch handles a different-looking VEVENT, where the event is a final exam
+            // final exams are uniquely annoying in that their VEVENT objects only have the
+            // course number, not the full name--but store the course number along WITH
+            // the classInstance type. For now, we unfortunately store finals for later
+            // and deal with them later
             if (summary["courseNum"].toLowerCase().includes("final exam")) {
                 // get date of final exam
-                const [year, month, day] = event["start"].split('-');
-                schedule[fullName]["Final Exam"] = `${day}/${month}/${year}`;
-                continue;
+                const finalDate = new Date(event["start"]);
+                const year = finalDate.getFullYear();
+                const month = (finalDate.getMonth() + 1).toString().padStart(2, "0");
+                const day = finalDate.getDate().toString().padStart(2, "0");
+                finalExams.push(
+                    {
+                        finalDescription: summary["courseNum"].substring(12).toUpperCase(),
+                        finalDate: `${month}/${day}/${year}`
+                    }
+                )
+                console.log(`Added ${finalExams[finalExams.length - 1].finalDescription} to finals array`)
             }
             // this branch handles "regular" class instances like lectures or discussions
             else {
+                // simplifies dealing with key errors later
+                if (!schedule[fullName]) {
+                    schedule[fullName] = {}
+                }
                 const classInstance = summary["classInstance"];
                 const courseNum = summary["courseNum"];
-                const instructor = event["description"].substring(fullNameEnd + 2); // class instance instructor
+                const instructor = event["description"].substring(fullNameEnd + 1); // class instance instructor
                 const location = event["location"]; // class instance location
                 const startTime = formatTime(event["start"])["time"]; // start time (Pacific)
                 const endTime = formatTime(event["end"])["time"]; // end time (Pacific)
@@ -88,6 +99,14 @@ export default function getScheduleObject(cal: Array<WellFormedEvent>): Object {
                     "Start Time": startTime,
                     "End Time": endTime,
                 }
+            }
+        }
+    }
+    // we can now check to see if we have already found the final exam for this class
+    for (const course of Object.keys(schedule)) {
+        for (const exam of finalExams) {
+            if (exam.finalDescription.includes(schedule[course]["Course Number"] as string)) {
+                schedule[course]["Final Exam"] = exam.finalDate;
             }
         }
     }
@@ -151,3 +170,8 @@ const formatTime = (timeStr: string): { day: string, time: string } => {
           })
   };
 }
+
+
+module.exports = {
+    getScheduleObject
+};
