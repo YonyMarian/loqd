@@ -1,3 +1,5 @@
+const schedule = require('./schedule.ts');
+
 const express = require('express');
 const multer = require('multer');
 const ical = require('node-ical');
@@ -39,9 +41,10 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
             }
         return event;
         })
-        console.log(processedEvents);   
+        const realSchedule = schedule.getScheduleObject(processedEvents)
+        console.log(realSchedule);   
 
-        res.json(processedEvents); // Send parsed calendar data back to the client
+        res.json(realSchedule); // Send parsed calendar data back to the client
     } catch (error) {
         console.error(error);
         res.status(500).send('Error processing the file.');
