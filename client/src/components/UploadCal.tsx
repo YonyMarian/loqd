@@ -1,7 +1,12 @@
 import React from 'react';
 import { useState } from 'react';
 
-const UploadCal: React.FC = () => {
+type UploadCalProps = {
+    userId: string;
+}
+// PASS USER ID AS PROP INTO COMPONENT!!!
+
+const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
 
     const [file, setFile] = useState<File|null>(null);
     
@@ -15,6 +20,8 @@ const UploadCal: React.FC = () => {
         // FormData = built in js class
         const formData = new FormData();
         formData.append("calendarFile", file);
+        formData.append("user_id", userId);
+        // need userId to update profiles table in backend
 
         try {
             let res = await fetch("http://localhost:5000/calendar/upload_cal", {

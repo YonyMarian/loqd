@@ -1,3 +1,5 @@
+const supabase = require('./supabase');
+
 const express = require('express');
 const multer = require('multer');
 const ical = require('node-ical');
@@ -23,8 +25,26 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
         fs.unlinkSync(filePath);
 
         // extract only classes and discussions!!
-        const processedEvents = Object.values(events).filter(event => event.categories.includes("Study List") === true);
+        // (need to check that event does have a categories value)
+        const processedEvents = Object.values(events).filter(
+            event => event.categories &&
+            event.categories.includes("Study List") === true );
         //console.log(processedEvents);   
+
+        // need user_id to update profiles table
+        const {user_id} = req.body; // need to send in request
+        if (!user_id) {
+            return res.status(400).send("Need user_id");
+        }
+
+        const {error} = await supabase
+            .from('profiles')
+            .update({calendar_data: processedEvents})
+            .eq('id', user_id);
+        if (error) {
+            console.error(error);
+            return res.status(500).send("Supabase update error");
+        }
 
         res.json(proccessedEvents); // Send parsed calendar data back to the client
     } catch (error) {
