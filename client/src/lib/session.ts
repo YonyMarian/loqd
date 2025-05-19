@@ -6,7 +6,7 @@ export async function signup(email: string, password: string, displayName: strin
         email,
         password,
         options: {
-            data: { display_name: displayName}
+            data: { display_name: displayName }
         }
     });
     if (error) {
