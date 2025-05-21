@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Register routes
-const calendarParser = require('./calendarParser'); // Import calendar routes
+const calendarParser = require('./uploads/calendarParser.js'); // Import calendar routes
 app.use('/calendar', calendarParser); // Delegate calendar-related routes to calendarParser.js
 // /upload_cal accessible through /calendar
 // more specifically, /upload_cal available at localhost:5000/calendar/upload_cal

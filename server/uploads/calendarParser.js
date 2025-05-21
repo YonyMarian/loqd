@@ -1,3 +1,5 @@
+const schedule = require('./schedule.ts');
+
 const express = require('express');
 const multer = require('multer');
 const ical = require('node-ical');
@@ -23,10 +25,26 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
         fs.unlinkSync(filePath);
 
         // extract only classes and discussions!!
-        const processedEvents = Object.values(events).filter(event => event.categories.includes("Study List") === true);
-        //console.log(processedEvents);   
+        // res.json(events);
+        const processedEvents = Object.values(events).filter(
+            event => event.hasOwnProperty("categories") && event.categories.includes("Study List")
+        ).map(event => {
+        // 2) if there’s an RRule on it, serialize &/or expand it
+            if (event.rrule) {
+                // turn the rule into the canonical iCal string
+                event.rruleString = event.rrule.toString();
+                // pull out the BYDAY array (e.g. ['MO','WE','FR'])
+                if (event.rrule.origOptions.byweekday) {
+                    event.byday = event.rrule.origOptions.byweekday
+                                    .map(d => d.toString());
+                }
+            }
+        return event;
+        })
+        const realSchedule = schedule.getScheduleObject(processedEvents)
+        console.log(realSchedule);   
 
-        res.json(proccessedEvents); // Send parsed calendar data back to the client
+        res.json(realSchedule); // Send parsed calendar data back to the client
     } catch (error) {
         console.error(error);
         res.status(500).send('Error processing the file.');
