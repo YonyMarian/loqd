@@ -29,10 +29,15 @@ const SignUp: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    alert('✅ Account created (mock)');
-    signup(form.email, form.password, form.username);
+    const result = await signup(form.email, form.password, form.username);
+    if (result) {
+      alert('✅ Account created (mock)');
+    }
+    else {
+      alert('Something went wrong with account creation (mock)');
+    }
     console.log(form);
   };
 
