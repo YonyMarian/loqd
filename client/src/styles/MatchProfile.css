@@ -1,0 +1,38 @@
+.match-profile-box {
+  width: 100%;
+  /*max-width: 300px;*/
+  height: 300px;
+  padding: 2rem;
+  background-color: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  text-align: center;
+  font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #2774AE;
+  overflow: auto;
+}
+
+.match-profile-box h3 {
+    color: black;
+    margin-bottom: 20px;
+}
+
+.match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 900px;
+    /*margin-top: 50px;*/
+
+  }
+
+.scroll-hidden {
+    overflow-y: scroll;      /* allow scrolling */
+    scrollbar-width: none;   /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scroll-hidden::-webkit-scrollbar {
+    display: none;           /* Chrome, Safari, and Opera */
+}
