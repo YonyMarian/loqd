@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { signup } from '../lib/session'
+import { signUp } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
 
@@ -32,7 +32,7 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const result = await signup(form.email, form.password, form.username);
+    const result = await signUp(form.email, form.password, form.username);
     if (result) {
       alert('✅ Account created (mock)');
     }
