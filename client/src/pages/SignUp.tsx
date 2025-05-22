@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signUp } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
+import { useNavigate } from 'react-router-dom';
 
 type FormState = {
   username: string;
@@ -31,10 +32,14 @@ const SignUp: React.FC = () => {
   };
 
   const handleSubmit = async (e: FormEvent) => {
+    const navigate = useNavigate();
     e.preventDefault();
     const result = await signUp(form.email, form.password, form.username);
     if (result) {
-      alert('✅ Account created (mock)');
+      alert('✅ Your account has been created!'
+        + ' Check your inbox for an email from "Supabase" (our database service)'
+        + ' to verify your email.');
+      navigate("/dashboard")
     }
     else {
       alert('Something went wrong with account creation (mock)');
