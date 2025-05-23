@@ -1,4 +1,4 @@
-const supabase = require('./supabase');
+const schedule = require('./schedule.ts');
 
 const express = require('express');
 const multer = require('multer');
@@ -25,28 +25,26 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
         fs.unlinkSync(filePath);
 
         // extract only classes and discussions!!
-        // (need to check that event does have a categories value)
+        // res.json(events);
         const processedEvents = Object.values(events).filter(
-            event => event.categories &&
-            event.categories.includes("Study List") === true );
-        //console.log(processedEvents);   
+            event => event.hasOwnProperty("categories") && event.categories.includes("Study List")
+        ).map(event => {
+        // 2) if there’s an RRule on it, serialize &/or expand it
+            if (event.rrule) {
+                // turn the rule into the canonical iCal string
+                event.rruleString = event.rrule.toString();
+                // pull out the BYDAY array (e.g. ['MO','WE','FR'])
+                if (event.rrule.origOptions.byweekday) {
+                    event.byday = event.rrule.origOptions.byweekday
+                                    .map(d => d.toString());
+                }
+            }
+        return event;
+        })
+        const realSchedule = schedule.getScheduleObject(processedEvents)
+        console.log(realSchedule);   
 
-        // need user_id to update profiles table
-        const {user_id} = req.body; // need to send in request
-        if (!user_id) {
-            return res.status(400).send("Need user_id");
-        }
-
-        const {error} = await supabase
-            .from('profiles')
-            .update({calendar_data: processedEvents})
-            .eq('id', user_id);
-        if (error) {
-            console.error(error);
-            return res.status(500).send("Supabase update error");
-        }
-
-        res.json(proccessedEvents); // Send parsed calendar data back to the client
+        res.json(realSchedule); // Send parsed calendar data back to the client
     } catch (error) {
         console.error(error);
         res.status(500).send('Error processing the file.');
