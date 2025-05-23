@@ -2,13 +2,11 @@ const express = require('express');
 const multer = require('multer');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' }); // Temporary upload directory
-
-// Middleware (if needed)
 const cors = require('cors');
 app.use(cors());
-
 app.use(express.json());
+
+const upload = multer({ dest: 'uploads/' }); // Temporary upload directory
 
 // Register routes
 const calendarParser = require('./uploads/calendarParser.js'); // Import calendar routes

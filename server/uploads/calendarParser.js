@@ -1,4 +1,5 @@
 const schedule = require('./schedule.ts');
+const supabase = require('../../supabase.js');
 
 const express = require('express');
 const multer = require('multer');
@@ -50,5 +51,23 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req, res) => {
         res.status(500).send('Error processing the file.');
     }
 });
+
+router.post('/update_calendar', async (req, res) => {
+    const {user_id, calendar_data} = req.body;
+    if (!user_id || !calendar_data) 
+        return res.status(400).send("Missing data!");
+
+    const {error} = await supabase
+        .from('profiles')
+        .update({calendar_data})
+        .eq('id', user_id);
+    if (error) {
+        console.error(error);
+        return res.status(500).send("Error sending calendar data");
+    }
+
+    res.send("Calendar data added to profiles table!");
+
+})
 
 module.exports = router;

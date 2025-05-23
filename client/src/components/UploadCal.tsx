@@ -2,13 +2,14 @@ import React from 'react';
 import { useState } from 'react';
 
 type UploadCalProps = {
-    userId: string;
+    userId: string | null;
 }
 // PASS USER ID AS PROP INTO COMPONENT!!!
 
 const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
-
     const [file, setFile] = useState<File|null>(null);
+    const [calendarData, setCalendarData] = useState<object | null>(null);
+
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         // default behavior: 
@@ -17,11 +18,19 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             alert("Please select a file before uploading.");
             return;
         }
+        if (!userId) {
+            alert("No userId")
+            return;
+            // this should not be happening? see SignUp component
+            // uploadCal is conditionally shown only if userId exists
+        }
         // FormData = built in js class
         const formData = new FormData();
         formData.append("calendarFile", file);
         formData.append("user_id", userId);
         // need userId to update profiles table in backend
+        // ^ see after this fetch
+
 
         try {
             let res = await fetch("http://localhost:5000/calendar/upload_cal", {
@@ -33,9 +42,18 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             if (!res.ok) {
                 throw new Error("failed to upload file");
             }
+            let schedule = await res.json();
+            console.log("parsed cal data:", schedule);
+            setCalendarData(schedule);
 
-            let calendarData = await res.json();
-            console.log("parsed cal data:", calendarData);
+            await fetch('http://localhost:5000/calendar/update_calendar', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: userId,
+                    calendar_data: calendarData
+                })
+            });
         }
         catch (error: unknown) {
             console.error("Error uploading file:" , error);
