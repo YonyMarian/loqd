@@ -1,3 +1,5 @@
+// CONVERT TO TYPESCRIPT
+
 const schedule = require('./schedule.ts');
 const supabase = require('../../supabase.js');
 
