@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signup } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
+import {supabase} from '../lib/supabase';
 
 type FormState = {
   username: string;
@@ -35,12 +36,18 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     const result = await signup(form.email, form.password, form.username);
     if (result) {
-      alert('✅ Account created (mock), now update calendar data');
       if (result.user) {
         setUserId(result.user.id);
+        await supabase
+          .from('profiles')
+          .update({ email: form.email, full_name: form.username })
+          .eq('id', result.user.id);
       }
+      alert('✅ Account created (mock), now update calendar data');
+
     }
     else {
+      console.log(result);
       alert('Something went wrong with account creation (mock)');
     }
     console.log(form);
