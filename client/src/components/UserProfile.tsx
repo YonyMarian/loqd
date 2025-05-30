@@ -1,11 +1,36 @@
 import React from 'react';
 import '../styles/UserProfile.css';
 
-const UserProfile: React.FC = () => {
+interface UserProfileProps {
+  name: string;
+  image: string;
+  match_percentage: number;
+  major: string;
+  year: string;
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage, major, year }) => {
   return (
     <div className="user-profile-box">
-        <h1>User Profile</h1>
-        <p>This is your main profile box. Add fields or components as needed.</p>
+      <div className="header-bg">
+        <div className="top-banner">
+          <img src="banner.svg" className="cover-bg" />
+        </div> 
+        <div className="profile-img-wrapper">
+          <img
+            src={image}
+            alt={name}
+            className="profile-img"
+          />
+          {/* <div className="match-percentage">{match_percentage}%</div> */}
+        </div>
+      </div>
+      <div className="info-section">
+        <h2 className="name">{name}</h2>
+        <p className="major">{year}</p>
+        <p className="major">{major}</p>
+      </div>
+      <div className="placeholder"></div>
     </div>
   );
 };

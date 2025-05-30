@@ -61,3 +61,18 @@ html, body {
   color: #888;
 }
 
+/* Remove blue outline from input fields */
+input:focus {
+  outline: none;
+}
+
+/* For browsers that use -webkit */
+input:focus-visible {
+  outline: none;
+}
+
+/* For Firefox */
+input:-moz-focusring {
+  outline: none;
+}
+

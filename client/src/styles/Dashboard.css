@@ -25,6 +25,8 @@
 /* Specific positioning */
 .left-profile {
   left: 0;
+  gap: 100px;
+  flex-direction: column;
 }
 
 .right-profile {

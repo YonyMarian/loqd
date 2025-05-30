@@ -1,0 +1,79 @@
+.nav-bar {
+  width: 100%;
+  height: 80px;
+  background: #FFF;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.nav-bar-left {
+  display: flex;
+  align-items: center;
+  width: 200px; /* Fixed width for logo section */
+}
+
+.nav-bar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Take up remaining space */
+}
+
+.nav-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 200px; /* Fixed width for icons section */
+  justify-content: flex-end;
+}
+
+.search-bar {
+  width: 300px;
+  height: fit-content;
+  flex-shrink: 0;
+  display: flex;
+  border-radius: 46px;
+  background: #EFF0F6;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+}
+
+.search-bar input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+}
+
+.search-bar input::placeholder {
+  color: #9CA3AF;
+}
+
+.icon-background {
+  background: #EFF0F7;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-background:hover {
+  transform: scale(1.05);
+}
+
+.icon-background img {
+  position: relative;
+}

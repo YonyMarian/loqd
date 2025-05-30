@@ -1,21 +1,39 @@
-import React from 'react';
-import UserProfile from "../components/UserProfile";
-import NavBar from "../components/NavBar";
-import MatchGrid from "../components/MatchGrid";
-import SideProfile from "../components/SideProfile";
-import "../styles/Dashboard.css";
+import React, { useState } from 'react';
+import NavBar from '../components/NavBar';
+import MatchGrid from '../components/MatchGrid';
+import UserProfile from '../components/UserProfile';
+import SideProfile from '../components/SideProfile';
+import Classes from '../components/Classes';
+import CalendarComponent from '../components/Calendar';
+import '../styles/Dashboard.css';
 
 const Dashboard: React.FC = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleSearch = (term: string) => {
+        setSearchTerm(term);
+    };
+
+    const userProfileData = {
+        name: "John Doe",
+        image: "/profile.png",
+        match_percentage: 95,
+        major: "Computer Science",
+        year: "Senior"
+    };
+
     return (
         <div className="dashboard-wrapper">
-            <NavBar />
+            <NavBar onSearch={handleSearch} />
 
-            <div className="profile-box left-profile">
-                <UserProfile />
+            <div className="left-profile">
+                <UserProfile {...userProfileData} />
+                <Classes />
             </div>
 
             <div className="match-grid-container">
-                <MatchGrid />
+                <MatchGrid searchTerm={searchTerm} />
+                <CalendarComponent />
             </div>
 
             <div className="profile-box right-profile">

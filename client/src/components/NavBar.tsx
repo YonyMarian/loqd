@@ -1,35 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
+import '../styles/NavBar.css';
 
-const NavBar: React.FC = () => {
+interface NavBarProps {
+  onSearch: (searchTerm: string) => void;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    onSearch(value);
+  };
+
   return (
-    <div
-      className="nav-bar"
-      style={{
-        display: 'flex',
-        padding: '10px 20px',
-        position: 'fixed',
-        top: '0%',
-        left: '0',
-        width: '100%',
-        backgroundColor: '#2774AE', // UCLA Navy Blue
-        justifyContent: 'flex-end',
-        zIndex: 1000,
-        height: "auto"
-      }}
-    >
-      <button
-        style={{
-          backgroundColor: 'white',
-          color: '#2774AE',
-          padding: '8px 16px',
-          border: 'none',
-          borderRadius: '5px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-        }}
-      >
-        Settings
-      </button>
+    <div className="nav-bar">
+      <div className="nav-bar-left">
+        <img src="/logo.png" alt="Logo" className="logo" />
+      </div>
+      <div className="nav-bar-center">
+        <div className="search-bar">
+          <img src="/search.svg" alt="Search" className="search" width={20} height={20}/>
+          <input 
+            type="text" 
+            placeholder="Search profiles..." 
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+      </div>
+      <div className="nav-bar-right">
+        <div className="icon-background">
+        </div>
+        <div className="icon-background">
+        </div>
+        <div className="icon-background">
+          <img src="/settings.svg" alt="Settings" className="settings" width={25} height={25}/>
+        </div>
+        <div className="icon-background">
+          <img src="/help.svg" alt="Info" className="info" width={25} height={25}/>
+        </div>
+      </div>
     </div>
   );
 };
