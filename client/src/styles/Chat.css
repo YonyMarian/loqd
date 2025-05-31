@@ -10,6 +10,7 @@
     color: #2774AE;
     overflow-y: auto;
     flex-shrink: 0;
+    margin-top: 0px;
 }
 
 .chat-box h1 {

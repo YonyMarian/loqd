@@ -14,8 +14,8 @@
     align-items: center;
     position: relative;
     transition: all 0.3s ease;
-    margin-top: 110px;
     overflow: hidden;
+    margin-top: 90px;
 }
 
 .header-bg {

@@ -58,6 +58,20 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
       match_percentage: 82,
       major: "Chemistry"
     },
+    { 
+      id: 7, 
+      name: "Vishnu Lopez", 
+      image: "/profile.png",
+      match_percentage: 55,
+      major: "Public Affairs"
+    },
+    { 
+      id: 8, 
+      name: "Dylan Hernandez", 
+      image: "/profile.png",
+      match_percentage: 69,
+      major: "MCDB"
+    },
   ]);
   const [filteredProfiles, setFilteredProfiles] = useState<MatchProfile[]>(profiles);
 
