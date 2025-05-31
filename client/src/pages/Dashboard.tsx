@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
-import SideProfile from '../components/SideProfile';
+import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import CalendarComponent from '../components/Calendar';
 import '../styles/Dashboard.css';
@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="profile-box right-profile">
-                <SideProfile />
+                <Chat />
             </div>
         </div>
     );
