@@ -16,6 +16,7 @@ type FormState = {
 };
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     username: '',
     password: '',
@@ -35,23 +36,29 @@ const SignUp: React.FC = () => {
 
   const [userId, setUserId] = useState<string | null>(null);
   const handleSubmit = async (e: FormEvent) => {
-    const navigate = useNavigate();
     e.preventDefault();
-    const result = await signUp(form.email, form.password, form.username);
-    if (result) {
-      if (result.user) {
-        setUserId(result.user.id);
-        await supabase
-          .from('profiles')
-          .update({ email: form.email, full_name: form.username })
-          .eq('id', result.user.id);
-        navigate("/dashboard")
+
+    try {
+      const result = await signUp(form.email, form.password, form.username);
+
+      if (result) {
+        if (result.user) {
+          setUserId(result.user.id);
+          await supabase
+            .from('profiles')
+            .update({ email: form.email, full_name: form.username })
+            .eq('id', result.user.id);
+          navigate("/dashboard")
+        }
+        alert('✅ Account created (mock), now update calendar data');
       }
-      alert('✅ Account created (mock), now update calendar data');
-    }
-    else {
-      console.log(result);
-      alert('Something went wrong with account creation (mock)');
+      else {
+        console.log(result);
+        alert('Something went wrong with account creation (mock)');
+      }
+    } catch (error) {
+      console.error('Error during sign up:', error);
+      alert('❌ Error during sign up, please try again');
     }
     console.log(form);
   };
