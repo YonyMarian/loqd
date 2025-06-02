@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import ChatDetail from './pages/ChatDetail';
-import './styles/App.css';
+import './App.css';
 
 function App() {
   return (

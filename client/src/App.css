@@ -30,13 +30,12 @@ html, body {
   font-family: var(--primary-font);
   background-color: var(--bg-color);
   color: var(--text-color);
-  height: 100%;
   width: 100%;
 }
 
 #root {
   width: 100%;
-  min-block-size: 100dvb; /* 6. More robust viewport height unit */
+  min-block-size: 100vh; /* 6. More robust viewport height unit */
   margin: 0 auto;
   text-align: center;
   background-color: var(--bg-color);
@@ -91,6 +90,15 @@ html, body {
 
 .read-the-docs {
   color: #888;
+}
+
+input[type="text"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
 }
 
 /* 3. Improve focus styling for accessibility */
