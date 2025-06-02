@@ -11,9 +11,8 @@ const Landing: React.FC = () => {
                             <img src={logo} alt="Loqd Logo" className="h-16 w-auto mr-2" />
                         </div>
                         <div className="space-x-4">
-                            <a href="/features" className="text-gray-700 hover:text-blue-600">About Loqd</a>
-                            <a href="/pricing" className="text-gray-700 hover:text-blue-600">How it Works</a>
-                            <a href="/contact" className="text-gray-700 hover:text-blue-600">Contact</a>
+                            <a href="/about" className="text-gray-700 hover:text-blue-600">About Loqd</a>
+                            <a href="/suggestion-box" className="text-gray-700 hover:text-blue-600">Report a Bug</a>
                         </div>
                     </div>
                 </nav>
