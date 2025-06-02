@@ -1,6 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signUp } from '../lib/session'
-import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
@@ -16,7 +15,6 @@ type FormState = {
 };
 
 const SignUp: React.FC = () => {
-  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     username: '',
     password: '',
@@ -48,7 +46,6 @@ const SignUp: React.FC = () => {
             .from('profiles')
             .update({ email: form.email, full_name: form.username })
             .eq('id', result.user.id);
-          navigate("/dashboard")
         }
         alert('✅ Account created (mock), now update calendar data');
       }
