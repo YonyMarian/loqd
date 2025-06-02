@@ -1,9 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
 
-const UploadCal: React.FC = () => {
+type UploadCalProps = {
+    userId: string | null;
+}
+// PASS USER ID AS PROP INTO COMPONENT!!!
 
+const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
     const [file, setFile] = useState<File|null>(null);
+    const [calendarData, setCalendarData] = useState<object | null>(null);
+
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         // default behavior: 
@@ -12,26 +18,50 @@ const UploadCal: React.FC = () => {
             alert("Please select a file before uploading.");
             return;
         }
+        if (!userId) {
+            alert("No userId")
+            return;
+            // this should not be happening? see SignUp component
+            // uploadCal is conditionally shown only if userId exists
+        }
         // FormData = built in js class
         const formData = new FormData();
         formData.append("calendarFile", file);
+        formData.append("user_id", userId);
+        // need userId to update profiles table in backend
+        // ^ see after this fetch
+
 
         try {
-            let res = await fetch("http://localhost:5000/calendar/upload_cal", {
+            let upload_res = await fetch("http://localhost:5000/calendar/upload_cal", {
                 // post = creating new entry at upload_cal
                 method: 'POST',
                 body: formData
                 // bc FormData obj, auto setes Content-Type = multipart/form-data
             });
-            if (!res.ok) {
+            if (!upload_res.ok) {
                 throw new Error("failed to upload file");
             }
+            let schedule = await upload_res.json();
+            console.log("parsed cal data:", schedule);
+            setCalendarData(schedule);
 
-            let calendarData = await res.json();
-            console.log("parsed cal data:", calendarData);
+            let update_res = await fetch('http://localhost:5000/calendar/update_calendar', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: userId,
+                    calendar_data: schedule
+                })
+            });
+            if (!update_res.ok) {
+                throw new Error("failed to update profile with schedule");
+            }
+
         }
         catch (error: unknown) {
             console.error("Error uploading file:" , error);
+
             if (error instanceof Error)
                 alert(`Error uploading file: ${error.message}`);
             else 

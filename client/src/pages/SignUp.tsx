@@ -1,15 +1,17 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { signup } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
+import {supabase} from '../lib/supabase';
 
 type FormState = {
   username: string;
   password: string;
   email: string;
-  preferences: string[];
+  //preferences: string[];
   profilePic: File | null;
-  scheduleFile: File | null;
+  //scheduleFile: File | null;
 };
 
 const SignUp: React.FC = () => {
@@ -17,9 +19,9 @@ const SignUp: React.FC = () => {
     username: '',
     password: '',
     email: '',
-    preferences: [],
+    //preferences: [],
     profilePic: null,
-    scheduleFile: null,
+    //scheduleFile: null,
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,17 +32,28 @@ const SignUp: React.FC = () => {
     }));
   };
 
+  const [userId, setUserId] = useState<string | null>(null);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const result = await signup(form.email, form.password, form.username);
     if (result) {
-      alert('✅ Account created (mock)');
+      if (result.user) {
+        setUserId(result.user.id);
+        await supabase
+          .from('profiles')
+          .update({ email: form.email, full_name: form.username })
+          .eq('id', result.user.id);
+      }
+      alert('✅ Account created (mock), now update calendar data');
+
     }
     else {
+      console.log(result);
       alert('Something went wrong with account creation (mock)');
     }
     console.log(form);
   };
+
 
   return (
     <div className="signup-page">
@@ -75,13 +88,23 @@ const SignUp: React.FC = () => {
               Password
               <input type="password" name="password" value={form.password} onChange={handleChange} required />
             </label>
+            <button type="submit" className="signup-button">Sign Up</button>
           </form>
+
+          {/* PROBLEM WE HAD: we only want to upload calendar data 
+              AFTER a successful signup.
+            So, only allow users to upload calendar AFTER their signup 
+              is successful (ie now exists a userId)
+          */} 
+          {userId && (
           <label>
             Upload .ics Schedule
-            <UploadCal />
-          </label>
+            <UploadCal userId={userId} />
+          </label> )}
 
-            <button type="submit" className="signup-button">Sign Up</button>
+          <button>
+            <Link to="/dashboard">GO ONTO NEXT PAGE -- DIFFERENT FROM FORM SUBMIT</Link>
+          </button>
         </div>
       </div>
     </div>
