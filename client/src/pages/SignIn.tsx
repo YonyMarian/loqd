@@ -10,6 +10,7 @@ type FormState = {
 };
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     password: '',
     email: '',
@@ -25,7 +26,6 @@ const SignUp: React.FC = () => {
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    const navigate = useNavigate();
     e.preventDefault();
     const result = await signIn(form.email, form.password);
     if (result) {
@@ -58,8 +58,8 @@ const SignUp: React.FC = () => {
               Password
               <input type="password" name="password" value={form.password} onChange={handleChange} required />
             </label>
-          </form>
             <button type="submit" className="signup-button">Sign In</button>
+          </form>
         </div>
       </div>
     </div>
