@@ -108,9 +108,6 @@ const SignUp: React.FC = () => {
             <UploadCal userId={userId} />
           </label> )}
 
-          <button>
-            <Link to="/dashboard">GO ONTO NEXT PAGE -- DIFFERENT FROM FORM SUBMIT</Link>
-          </button>
         </div>
       </div>
     </div>
