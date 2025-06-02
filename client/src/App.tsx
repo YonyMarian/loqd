@@ -4,7 +4,8 @@ import Account from './pages/Account';
 import Dashboard from './pages/Dashboard';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
-import './App.css';
+import ChatDetail from './pages/ChatDetail';
+import './styles/App.css';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/chat/:chatId" element={<ChatDetail />} />
       </Routes>
     </BrowserRouter>
   );

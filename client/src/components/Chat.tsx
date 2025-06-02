@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Chat.css';
 
 interface ChatPreview {
@@ -12,6 +13,8 @@ interface ChatPreview {
 }
 
 const Chat: React.FC = () => {
+  const navigate = useNavigate();
+
   const conversations: ChatPreview[] = [
     {
       id: 1,
@@ -67,16 +70,24 @@ const Chat: React.FC = () => {
     }
   };
 
+  const handleConversationClick = (chatId: number) => {
+    navigate(`/chat/${chatId}`);
+  };
+
   return (
     <div className="chat-box">
       <div className="chat-header">
-        <h2>Chat</h2>
+        <h2>Messages</h2>
         <img src="/chat.svg" alt="New Chat" className="new-chat-button" />
       </div>
       
       <div className="conversations-list">
         {conversations.map((chat) => (
-          <div key={chat.id} className="conversation-preview">
+          <div 
+            key={chat.id} 
+            className="conversation-preview"
+            onClick={() => handleConversationClick(chat.id)}
+          >
             <div className="avatar-container">
               <img src={chat.avatar} alt={chat.name} className="avatar" />
               {chat.online && <span className="online-indicator"></span>}

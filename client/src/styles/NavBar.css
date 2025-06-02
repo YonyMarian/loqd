@@ -20,6 +20,12 @@
   width: 200px; /* Fixed width for logo section */
 }
 
+.nav-bar-left .logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
 .nav-bar-center {
   display: flex;
   align-items: center;
