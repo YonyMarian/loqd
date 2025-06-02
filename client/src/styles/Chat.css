@@ -1,4 +1,4 @@
-.side-profile-box {
+.chat-box {
     width: 100%;
     height: 100%;
     padding: 2rem;
@@ -10,9 +10,10 @@
     color: #2774AE;
     overflow-y: auto;
     flex-shrink: 0;
+    margin-top: 0px;
 }
 
-.side-profile-box h1 {
+.chat-box h1 {
     color: black;
     margin-bottom: 20px;
 }

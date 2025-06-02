@@ -1,24 +1,51 @@
+/* 4. Apply border-box model globally */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 5. Base variables — Light mode (default) */
+:root {
+  --bg-color: #f5f5f5;
+  --primary-font: 'Inter', sans-serif;
+  --text-color: #333;
+  --card-color: #ffffff;
+  --accent-blue: #646cffaa;
+  --react-blue: #61dafbaa;
+}
+
+/* 5. Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1e1e1e;
+    --text-color: #000000;
+    --card-color: #2c2c2c;
+    --accent-blue: #8ab4f8;
+    --react-blue: #61dafb;
+  }
+}
+
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: #f5f5f5;
+  font-family: var(--primary-font);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   height: 100%;
   width: 100%;
 }
 
 #root {
-  /*max-width: 1280px;*/
   width: 100%;
-  min-height: 100vh;
+  min-block-size: 100dvb; /* 6. More robust viewport height unit */
   margin: 0 auto;
-  /*padding: 2rem;*/
   text-align: center;
-  background-color: #f5f5f5;
+  background-color: var(--bg-color);
 }
 
-#__next, .app-container, .dashboard-root {
-  background-color: #f5f5f5;
+#__next,
+.app-container,
+.dashboard-root {
+  background-color: var(--bg-color);
   min-width: 100vw;
   min-height: 100vh;
   overflow-x: auto;
@@ -31,11 +58,13 @@ html, body {
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em var(--accent-blue));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em var(--react-blue));
 }
 
 @keyframes logo-spin {
@@ -55,9 +84,22 @@ html, body {
 
 .card {
   padding: 2em;
+  background-color: var(--card-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .read-the-docs {
   color: #888;
 }
 
+/* 3. Improve focus styling for accessibility */
+input:focus {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+/* Optional fallback if needed for older browsers */
+input:focus:not(:focus-visible) {
+  outline: none;
+}
