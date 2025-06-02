@@ -1,0 +1,23 @@
+/* Global styles */
+*:focus {
+  outline: none !important;
+}
+
+input[type="text"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Remove focus ring for webkit browsers */
+*:focus-visible {
+  outline: none !important;
+}
+
+/* Remove focus ring for Firefox */
+*::-moz-focus-inner {
+  border: 0 !important;
+}

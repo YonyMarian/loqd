@@ -4,7 +4,7 @@ import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
 import Chat from '../components/Chat';
 import Classes from '../components/Classes';
-import CalendarComponent from '../components/Calendar';
+import WeekScheduleComponent from '../components/Calendar';
 import '../styles/Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
 
             <div className="match-grid-container">
                 <MatchGrid searchTerm={searchTerm} />
-                <CalendarComponent />
+                <WeekScheduleComponent />
             </div>
 
             <div className="profile-box right-profile">
