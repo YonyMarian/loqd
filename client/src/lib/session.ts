@@ -7,11 +7,14 @@ export async function signUp(email: string, password: string, displayName: strin
         email,
         password,
         options: {
-            data: { display_name: displayName}
+            data: { display_name: displayName }
         }
     });
     if (error) {
-        alert("Error signing up: " + error.message);
+        if (error.message.includes("already registered")) {
+            alert("Error: user already exists");
+        }
+        else alert("Error signing up: " + error.message);
         return null;
     }
     return data;

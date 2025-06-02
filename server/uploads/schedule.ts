@@ -27,7 +27,7 @@
  */
 
 // throws error if we get an event that doesn't have at least these specified fields
-type WellFormedEvent = {
+export type WellFormedEvent = {
     description: string,
     location: string,
     start: string,
@@ -43,7 +43,7 @@ type Schedule = {
     }
 }
 
-function getScheduleObject(cal: Array<WellFormedEvent>): Object {
+export default function getScheduleObject(cal: Array<WellFormedEvent>): Object {
     const schedule: Schedule = {};
     const finalExams: Array<{ finalDescription: string, finalDate: string }> = []
     for (const event of cal) {
@@ -171,7 +171,33 @@ const formatTime = (timeStr: string): { day: string, time: string } => {
   };
 }
 
+function toWellFormedEvent(event: any): WellFormedEvent | null {
+    // Check that all required fields exist
+    if (
+        typeof event.description === 'string' &&
+        typeof event.location === 'string' &&
+        event.start &&
+        event.end &&
+        typeof event.summary === 'string'
+    ) {
+        return {
+            description: event.description,
+            location: event.location,
+            start: event.start.toString(), // or format as needed
+            end: event.end.toString(),
+            summary: event.summary,
+            ...event // include any extra fields if needed
+        };
+    }
+    return null; // or throw an error if you want strictness
+}
 
-module.exports = {
-    getScheduleObject
-};
+
+
+// module.exports = {
+//     getScheduleObject,
+//     //WellFormedEvent,
+//     toWellFormedEvent
+// };
+
+export {getScheduleObject, toWellFormedEvent};
