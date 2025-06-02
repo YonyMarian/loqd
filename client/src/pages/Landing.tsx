@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.svg';
 
 const Landing: React.FC = () => {
     return (
@@ -7,7 +8,9 @@ const Landing: React.FC = () => {
             <header>
                 <nav className="bg-yellow-500 shadow-md py-4 px-6">
                     <div className="max-w-6xl mx-auto flex justify-between items-center">
-                        <div className="text-2xl font-bold text-blue-600">Loqd</div>
+                        <div className="flex items-center">
+                            <img src={logo} alt="Loqd Logo" className="h-16 w-auto mr-2" />
+                        </div>
                         <div className="space-x-4">
                             <a href="/features" className="text-gray-700 hover:text-blue-600">About Loqd</a>
                             <a href="/pricing" className="text-gray-700 hover:text-blue-600">How it Works</a>
@@ -20,7 +23,7 @@ const Landing: React.FC = () => {
                 {/* Hero Section */}
                 <section className="py-20 px-4">
                     <div className="max-w-6xl mx-auto text-center">
-                        <h1 className="text-9xl font-bold mb-6">Loqd</h1>
+                        <img src={logo} alt="Loqd Logo" className="h-48 w-auto mx-auto mb-8" />
                         <p className="text-xl text-gray-600 mb-8">
                             Loq tf in
                         </p>
