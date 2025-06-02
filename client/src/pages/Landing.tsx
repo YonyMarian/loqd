@@ -34,12 +34,12 @@ const Landing: React.FC = () => {
                             >
                                 Get Started
                             </a>
-                            <Link
-                                to="/account"
+                            <a
+                                href="/signin"
                                 className="bg-white text-red-600 px-6 py-3 rounded-lg border border-blue-600 hover:bg-blue-50"
                             >
                                 Sign In
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </section>

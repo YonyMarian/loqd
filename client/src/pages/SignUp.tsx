@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { signUp } from '../lib/session'
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { signup } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
 import {supabase} from '../lib/supabase';
@@ -34,8 +35,9 @@ const SignUp: React.FC = () => {
 
   const [userId, setUserId] = useState<string | null>(null);
   const handleSubmit = async (e: FormEvent) => {
+    const navigate = useNavigate();
     e.preventDefault();
-    const result = await signup(form.email, form.password, form.username);
+    const result = await signUp(form.email, form.password, form.username);
     if (result) {
       if (result.user) {
         setUserId(result.user.id);
@@ -43,9 +45,9 @@ const SignUp: React.FC = () => {
           .from('profiles')
           .update({ email: form.email, full_name: form.username })
           .eq('id', result.user.id);
+        navigate("/dashboard")
       }
       alert('✅ Account created (mock), now update calendar data');
-
     }
     else {
       console.log(result);
