@@ -33,30 +33,35 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
 
 
         try {
-            let res = await fetch("http://localhost:5000/calendar/upload_cal", {
+            let upload_res = await fetch("http://localhost:5000/calendar/upload_cal", {
                 // post = creating new entry at upload_cal
                 method: 'POST',
                 body: formData
                 // bc FormData obj, auto setes Content-Type = multipart/form-data
             });
-            if (!res.ok) {
+            if (!upload_res.ok) {
                 throw new Error("failed to upload file");
             }
-            let schedule = await res.json();
+            let schedule = await upload_res.json();
             console.log("parsed cal data:", schedule);
             setCalendarData(schedule);
 
-            await fetch('http://localhost:5000/calendar/update_calendar', {
+            let update_res = await fetch('http://localhost:5000/calendar/update_calendar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     user_id: userId,
-                    calendar_data: calendarData
+                    calendar_data: schedule
                 })
             });
+            if (!update_res.ok) {
+                throw new Error("failed to update profile with schedule");
+            }
+
         }
         catch (error: unknown) {
             console.error("Error uploading file:" , error);
+
             if (error instanceof Error)
                 alert(`Error uploading file: ${error.message}`);
             else 

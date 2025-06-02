@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { signup } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
@@ -102,7 +103,7 @@ const SignUp: React.FC = () => {
           </label> )}
 
           <button>
-            GO ONTO NEXT PAGE -- DIFFERENT FROM FORM SUBMIT BUTTON
+            <Link to="/dashboard">GO ONTO NEXT PAGE -- DIFFERENT FROM FORM SUBMIT</Link>
           </button>
         </div>
       </div>

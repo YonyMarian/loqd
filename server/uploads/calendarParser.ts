@@ -85,7 +85,7 @@ router.post('/update_calendar', async (req: Request, res: Response) => {
 
     const {error} = await supabase
         .from('profiles')
-        .update({calendar_data})
+        .update({calendar_data: calendar_data})
         .eq('id', user_id);
     if (error) {
         console.error(error);
