@@ -77,7 +77,8 @@ const Dashboard: React.FC = () => {
         image: userData?.avatar_url || '/default.png',
         match_percentage: 95,
         major: userData?.major || "Undeclared",
-        year: userData?.grad_year || 2025
+        year: userData?.grad_year || 2025,
+        id: userData?.id || ""
     };
 
     return (
@@ -91,6 +92,7 @@ const Dashboard: React.FC = () => {
                     match_percentage={userProfileData.match_percentage}
                     major={userProfileData.major}
                     year={userProfileData.year}
+                    id={userProfileData.id}
                 />
                 <Classes />
             </div>
