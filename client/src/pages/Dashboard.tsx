@@ -8,6 +8,7 @@ import WeekScheduleComponent from '../components/Calendar';
 import '../styles/Dashboard.css';
 // import { useNavigate } from 'react-router-dom';
 import {supabase} from '../lib/supabase';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 
 interface UserProfileInterface {
     id: string;
@@ -80,6 +81,9 @@ const Dashboard: React.FC = () => {
         year: userData?.grad_year || 2025
     };
 
+    const courseList = parseCourseSchedule(userData?.calendar_data || {});
+    console.log(courseList);
+
     return (
         <div className="dashboard-wrapper">
             <NavBar onSearch={handleSearch} />
@@ -97,7 +101,7 @@ const Dashboard: React.FC = () => {
 
             <div className="match-grid-container">
                 <MatchGrid searchTerm={searchTerm} />
-                <WeekScheduleComponent />
+                <WeekScheduleComponent classSchedule={courseList}/>
             </div>
 
             <div className="profile-box right-profile">
