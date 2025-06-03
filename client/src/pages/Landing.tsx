@@ -1,22 +1,12 @@
 import React from 'react';
-import logo from '../assets/logo.svg';
+import LandingNav from '../components/LandingNav';
+import { Link } from 'react-router-dom';
+import logo from '../assets/logo.svg'
 
 const Landing: React.FC = () => {
     return (
         <>
-            <header>
-                <nav className="bg-yellow-500 shadow-md py-4 px-6">
-                    <div className="max-w-6xl mx-auto flex justify-between items-center">
-                        <div className="flex items-center">
-                            <img src={logo} alt="Loqd Logo" className="h-16 w-auto mr-2" />
-                        </div>
-                        <div className="space-x-4">
-                            <a href="/about" className="text-gray-700 hover:text-blue-600">About Loqd</a>
-                            <a href="/suggestion-box" className="text-gray-700 hover:text-blue-600">Report a Bug</a>
-                        </div>
-                    </div>
-                </nav>
-            </header>
+            <LandingNav />
             <div className="min-h-screen bg-gray-50">
                 <section className="py-20 px-4">
                     <div className="max-w-6xl mx-auto text-center">

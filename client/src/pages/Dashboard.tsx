@@ -1,13 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
 import Chat from '../components/Chat';
 import Classes from '../components/Classes';
-import CalendarComponent from '../components/Calendar';
+import WeekScheduleComponent from '../components/Calendar';
 import '../styles/Dashboard.css';
+// import { useNavigate } from 'react-router-dom';
+import {supabase} from '../lib/supabase';
+
 
 const Dashboard: React.FC = () => {
+    const [user, setUser] = useState<any|null>(null);
+
+    useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        console.log('session onAuthStateChange: ', session);
+        // setSession(session);
+        setUser(session?.user || null);
+        // setLoading(false);
+      }
+    );
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
+    
+    useEffect(() => {
+        if (user) {
+            console.log("user ID: ", user.id);
+        }
+        else {
+            console.log("no user??");
+            console.log(user);
+        }
+    }, [user]);
+
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (term: string) => {
@@ -33,7 +62,7 @@ const Dashboard: React.FC = () => {
 
             <div className="match-grid-container">
                 <MatchGrid searchTerm={searchTerm} />
-                <CalendarComponent />
+                <WeekScheduleComponent />
             </div>
 
             <div className="profile-box right-profile">
