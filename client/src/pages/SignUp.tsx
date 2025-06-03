@@ -2,7 +2,8 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signUp } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
-import {supabase} from '../lib/supabase';
+import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 type FormState = {
   username: string;
@@ -17,6 +18,7 @@ type FormState = {
 };
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     username: '',
     password: '',
@@ -37,36 +39,122 @@ const SignUp: React.FC = () => {
   };
 
   const [userId, setUserId] = useState<string | null>(null);
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
+  
+  const uploadProfilePicture = async (file: File, userId: string) => {
     try {
-      const result = await signUp(form.email, form.password, form.username,
-                                  form.major, form.grad_year);
+      console.log('Starting profile picture upload for user:', userId);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+      console.log('Uploading to path:', filePath);
 
-      if (result) {
-        if (result.user) {
-          setUserId(result.user.id);
-          await supabase
-            .from('profiles')
-            .update({ email: form.email, full_name: form.username, major: form.major, grad_year:form. grad_year })
-            .eq('id', result.user.id);
-        }
-        alert('✅ Account created (mock), now update calendar data');
+      // Upload file to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from('profiles')
+        .upload(filePath, file, {
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
       }
-      else {
-        console.log(result);
-        alert('Something went wrong with account creation (mock)');
+      console.log('File uploaded successfully');
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profiles')
+        .getPublicUrl(filePath);
+      console.log('Generated public URL:', publicUrl);
+
+      // Update the user's profile with the avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          avatar_url: publicUrl,
+          email: form.email, 
+          full_name: form.username 
+        })
+        .eq('id', userId);
+
+      if (updateError) {
+        console.error('Profile update error:', updateError);
+        throw updateError;
       }
+      console.log('Profile updated successfully with avatar URL');
+
+      return publicUrl;
     } catch (error) {
-      console.error('Error during sign up:', error);
-      alert('❌ Error during sign up, please try again');
+      console.error('Error in uploadProfilePicture:', error);
+      throw error;
     }
-    console.log(form);
-
-    // const { data } = supabase.auth.onAuthStateChange((event, session) => 
-    //   {  console.log(event, session) })
   };
+
+ const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  console.log("Starting form submission…");
+
+  try {
+    // ---- sign up (now passes the extra fields) ----
+    const result = await signUp(
+      form.email,
+      form.password,
+      form.username,
+      form.major,
+      form.grad_year
+    );
+    console.log("Signup result:", result);
+
+    if (result?.user) {
+      const userId = result.user.id;
+      setUserId(userId);
+
+      /* ---------- store extra profile metadata ---------- */
+      try {
+        await supabase
+          .from("profiles")
+          .update({
+            email: form.email,
+            full_name: form.username,
+            major: form.major,
+            grad_year: form.grad_year,
+          })
+          .eq("id", userId);
+      } catch (dbErr) {
+        console.error("Profile metadata update failed:", dbErr);
+        // Non-fatal: user account still exists
+      }
+
+      /* ---------- optional profile-picture upload ---------- */
+      if (form.profilePic) {
+        try {
+          console.log("Uploading profile picture…");
+          await uploadProfilePicture(form.profilePic, userId);
+          console.log("Profile picture uploaded");
+        } catch (uploadErr) {
+          console.error("Profile-picture upload failed:", uploadErr);
+          // Let the user proceed even if this fails
+        }
+      }
+
+      /* ---------- done: show toast + navigate ---------- */
+      alert("✅ Account created successfully!");
+      // Tiny delay so state updates land before the redirect
+      setTimeout(() => navigate("/dashboard"), 100);
+    } else {
+      console.log("No user in signup result:", result);
+      alert("Something went wrong with account creation");
+    }
+  } catch (err) {
+    console.error("Error during sign-up:", err);
+    alert("❌ Error during sign-up, please try again");
+  }
+
+  // If you still want to watch auth events, re-enable this later:
+  // const { data } = supabase.auth.onAuthStateChange((event, session) => {
+  //   console.log(event, session);
+  // });
+};
 
 
   return (

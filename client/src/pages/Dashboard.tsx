@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
@@ -6,6 +7,7 @@ import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 import '../styles/Dashboard.css';
+
 // import { useNavigate } from 'react-router-dom';
 import {supabase} from '../lib/supabase';
 import { parseCourseSchedule } from '../utils/parseCourseSchedule';
@@ -23,6 +25,8 @@ interface UserProfileInterface {
 }
 
 const Dashboard: React.FC = () => {
+const navigate = useNavigate();
+
 
     const [user, setUser] = useState<any|null>(null);
     const [userData, setUserData] = useState<UserProfileInterface|null>(null);
@@ -66,12 +70,26 @@ const Dashboard: React.FC = () => {
         }
     }, [user]);
 
-    const [searchTerm, setSearchTerm] = useState('');
+                if (error) {
+                    console.error('Error fetching profile data:', error);
+                    return;
+                }
+
+                if (data) {
+                    console.log('Fetched profile data:', data);
+                    setProfileData(data);
+                }
+            } catch (error) {
+                console.error('Error in fetchProfileData:', error);
+            }
+        };
+
+        fetchProfileData();
+    }, [user, navigate, loading]);
 
     const handleSearch = (term: string) => {
         setSearchTerm(term);
     };
-
 
     const userProfileData = {
         name: (userData?.full_name || "No Name"),
