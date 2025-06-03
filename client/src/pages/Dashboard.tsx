@@ -7,96 +7,100 @@ import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 import '../styles/Dashboard.css';
+
 import { supabase } from '../lib/supabase';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 import { useAuth } from '../hooks/useAuth';
 
+interface UserProfileInterface {
+  id: string;
+  updated_at: string;
+  email: string;
+  full_name: string;
+  avatar_url: string;
+  calendar_data: any;
+  grad_year: number;
+  major: string;
+}
+
 const Dashboard: React.FC = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
-// Global auth context
-const { user, loading } = useAuth();
+  const [userData, setUserData] = useState<UserProfileInterface | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-// Local UI state
-const [profileData, setProfileData] = useState<any>(null);
-const [searchTerm, setSearchTerm] = useState('');
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) {
+        if (!loading) {
+          navigate('/');
+        }
+        return;
+      }
 
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            if (!user) {
-                console.log('No authenticated user');
-                if (!loading) {
-                    navigate('/');
-                }
-                return;
-            }
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+      if (error) {
+        console.error('Error fetching profile data:', error);
+        return;
+      }
 
-                if (error) {
-                    console.error('Error fetching profile data:', error);
-                    return;
-                }
-
-                if (data) {
-                    console.log('Fetched profile data:', data);
-                    setProfileData(data);
-                }
-            } catch (error) {
-                console.error('Error in fetchProfileData:', error);
-            }
-        };
-
-        fetchProfileData();
-    }, [user, navigate, loading]);
-
-    const handleSearch = (term: string) => {
-        setSearchTerm(term);
+      if (data) {
+        setUserData(data);
+        console.log('Fetched profile data:', data);
+      }
     };
 
-    if (loading) {
-        return <div className="loading">Loading...</div>;
-    }
+    fetchUserData();
+  }, [user, loading, navigate]);
 
-    if (!user) {
-        return null; // Will redirect in useEffect
-    }
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
 
-    if (!profileData) {
-        return <div className="loading">Loading profile data...</div>;
-    }
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
 
-    const userProfileData = {
-        name: profileData.full_name || "Unknown User",
-        image: profileData.avatar_url,
-        match_percentage: 95,
-        major: profileData.major || "Computer Science",
-        year: profileData.year || "Senior"
-    };
+  if (!user || !userData) {
+    return <div className="loading">Loading profile data...</div>;
+  }
 
-    return (
-        <div className="dashboard-wrapper">
-            <NavBar onSearch={handleSearch} />
+  const userProfileData = {
+    name: userData.full_name || "Unknown User",
+    image: userData.avatar_url || '/default.png',
+    match_percentage: 95,
+    major: userData.major || "Undeclared",
+    year: userData.grad_year || 2025
+  };
 
-            <div className="left-profile">
-                <UserProfile {...userProfileData} />
-                <Classes />
-            </div>
+  const courseList = parseCourseSchedule(userData.calendar_data || {});
+  console.log(courseList);
 
-            <div className="match-grid-container">
-                <MatchGrid searchTerm={searchTerm} />
-                <WeekScheduleComponent />
-            </div>
+  return (
+    <div className="dashboard-wrapper">
+      <NavBar onSearch={handleSearch} />
 
-            <div className="profile-box right-profile">
-                <Chat />
-            </div>
-        </div>
-    );
+      <div className="left-profile">
+        <UserProfile {...userProfileData} />
+        <Classes />
+      </div>
+
+      <div className="match-grid-container">
+        <MatchGrid searchTerm={searchTerm} />
+        <WeekScheduleComponent classSchedule={courseList} />
+      </div>
+
+      <div className="profile-box right-profile">
+        <Chat />
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

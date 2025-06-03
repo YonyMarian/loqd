@@ -46,7 +46,9 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
             src="/logout.svg" 
             alt="LogOut" 
             className="logout" 
-            onClick={() => signOut()}
+            onClick={() => {
+              signOut(); navigate('/');}
+            }
             style={{ cursor: 'pointer' }}
           />
         </div>
