@@ -7,6 +7,7 @@ import UserProfile from '../components/UserProfile';
 import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
+import { Course } from '../components/CourseInterface';
 
 import '../styles/Dashboard.css';
 
@@ -79,6 +80,48 @@ const Dashboard: React.FC = () => {
   };
 
   const courseList = parseCourseSchedule(userProfileData.calendar_data || {});
+  
+  // Function to generate a color based on course number
+  const getColorForCourse = (courseNumber: string): string => {
+    const colors = [
+      '#2774AE', // UCLA Blue
+      '#FFD100', // UCLA Gold
+      '#005587', // UCLA Dark Blue
+      '#FFB81C', // UCLA Yellow
+      '#7C878E', // UCLA Gray
+      '#00A3E0', // UCLA Bright Blue
+      '#4B9CD3', // UCLA Light Blue
+      '#6B66FF', // UCLA Purple
+      '#66FFB3'  // UCLA Mint
+    ];
+    
+    // Get the index of the course number in the unique list
+    const index = Array.from(new Set(courseList.map(course => course.num))).indexOf(courseNumber);
+    return colors[index % colors.length];
+  };
+  
+  // Extract unique class names from courseList
+  const uniqueClasses: Course[] = Array.from(new Set(courseList.map(course => course.num))).map(num => {
+    // Find the first course with this number to get its title
+    const course = courseList.find(c => c.num === num);
+    return {
+      id: num,
+      title: num,
+      description: course?.title || num,
+      color: getColorForCourse(num),
+      location: course?.location,
+      instructor: course?.instructor,
+      day: course?.day,
+      stime: course?.stime,
+      etime: course?.etime
+    };
+  });
+
+  // Add colors to courseList entries
+  const courseListWithColors = courseList.map(course => ({
+    ...course,
+    color: getColorForCourse(course.num)
+  }));
 
   /* ---------- render ---------- */
   return (
@@ -94,12 +137,12 @@ const Dashboard: React.FC = () => {
           year={userProfileData.year}
           id={userProfileData.id}            
         />
-        <Classes />
+        <Classes classes={uniqueClasses} />
       </div>
 
       <div className="match-grid-container">
         <MatchGrid searchTerm={searchTerm} />
-        <WeekScheduleComponent classSchedule={courseList} />
+        <WeekScheduleComponent classSchedule={courseListWithColors} />
       </div>
 
       <div className="profile-box right-profile">

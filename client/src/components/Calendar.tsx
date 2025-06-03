@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/Calendar.css'; // You can keep using this for shared styles
+import CourseInterface, { Course } from './CourseInterface';
 
 type ClassEntry = {
   day: string;
@@ -9,6 +10,7 @@ type ClassEntry = {
   title: string;
   location: string;
   instructor: string;
+  color?: string; // Add color to ClassEntry
 };
 
 function getUniqueStartTimes(entries: ClassEntry[]): string[] {
@@ -48,7 +50,20 @@ const days = ["MO", "TU", "WE", "TH", "FR"];
 
 const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ classSchedule }) => {
   const times = getUniqueStartTimes(classSchedule);
-  console.log(times);
+
+  // Convert ClassEntry to Course format
+  const convertToCourse = (entry: ClassEntry): Course => ({
+    id: entry.num,
+    title: entry.num,
+    description: entry.title,
+    color: entry.color || '#2774AE', // Use the color from ClassEntry if available
+    location: entry.location,
+    instructor: entry.instructor,
+    day: entry.day,
+    stime: entry.stime,
+    etime: entry.etime
+  });
+
   return (
     <div className="calendar-card">
       {/* <div className="calendar-header">
@@ -69,10 +84,10 @@ const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ classSchedule }) =
               return (
                 <div className="day-cell" key={day + stime}>
                   {course && (
-                    <div className="class-box">
-                      <div className="title">{course.title}</div>
-                      <div className="location">{course.location}</div>
-                    </div>
+                    <CourseInterface 
+                      course={convertToCourse(course)}
+                      variant="calendar"
+                    />
                   )}
                 </div>
               );
