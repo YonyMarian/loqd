@@ -12,6 +12,9 @@ type FormState = {
   //preferences: string[];
   profilePic: File | null;
   //scheduleFile: File | null;
+
+  major: string;
+  grad_year: number;
 };
 
 const SignUp: React.FC = () => {
@@ -23,6 +26,8 @@ const SignUp: React.FC = () => {
     //preferences: [],
     profilePic: null,
     //scheduleFile: null,
+    major:'',
+    grad_year: 2025
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -85,48 +90,72 @@ const SignUp: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    console.log("Starting form submission...");
+ const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  console.log("Starting form submission…");
 
-    try {
-      const result = await signUp(form.email, form.password, form.username);
-      console.log("Signup result:", result);
+  try {
+    // ---- sign up (now passes the extra fields) ----
+    const result = await signUp(
+      form.email,
+      form.password,
+      form.username,
+      form.major,
+      form.grad_year
+    );
+    console.log("Signup result:", result);
 
-      if (result?.user) {
-        console.log("User created, setting userId:", result.user.id);
-        setUserId(result.user.id);
-        
-        // Handle profile picture upload if one was selected
-        if (form.profilePic) {
-          console.log("Uploading profile picture...");
-          try {
-            await uploadProfilePicture(form.profilePic, result.user.id);
-            console.log("Profile picture uploaded successfully");
-          } catch (uploadError) {
-            console.error("Profile picture upload failed:", uploadError);
-            // Continue with navigation even if picture upload fails
-          }
-        }
+    if (result?.user) {
+      const userId = result.user.id;
+      setUserId(userId);
 
-        console.log("Navigating to dashboard...");
-        alert('✅ Account created successfully!');
-        // Add a small delay to ensure state updates are processed
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 100);
-      } else {
-        console.log("No user in result:", result);
-        alert('Something went wrong with account creation');
+      /* ---------- store extra profile metadata ---------- */
+      try {
+        await supabase
+          .from("profiles")
+          .update({
+            email: form.email,
+            full_name: form.username,
+            major: form.major,
+            grad_year: form.grad_year,
+          })
+          .eq("id", userId);
+      } catch (dbErr) {
+        console.error("Profile metadata update failed:", dbErr);
+        // Non-fatal: user account still exists
       }
-    } catch (error) {
-      console.error('Error during sign up:', error);
-      alert('❌ Error during sign up, please try again');
-    }
 
-    // const { data } = supabase.auth.onAuthStateChange((event, session) => 
-    //   {  console.log(event, session) })
-  };
+      /* ---------- optional profile-picture upload ---------- */
+      if (form.profilePic) {
+        try {
+          console.log("Uploading profile picture…");
+          await uploadProfilePicture(form.profilePic, userId);
+          console.log("Profile picture uploaded");
+        } catch (uploadErr) {
+          console.error("Profile-picture upload failed:", uploadErr);
+          // Let the user proceed even if this fails
+        }
+      }
+
+      /* ---------- done: show toast + navigate ---------- */
+      alert("✅ Account created successfully!");
+      // Tiny delay so state updates land before the redirect
+      setTimeout(() => navigate("/dashboard"), 100);
+    } else {
+      console.log("No user in signup result:", result);
+      alert("Something went wrong with account creation");
+    }
+  } catch (err) {
+    console.error("Error during sign-up:", err);
+    alert("❌ Error during sign-up, please try again");
+  }
+
+  // If you still want to watch auth events, re-enable this later:
+  // const { data } = supabase.auth.onAuthStateChange((event, session) => {
+  //   console.log(event, session);
+  // });
+};
+
 
 
   return (
@@ -162,6 +191,17 @@ const SignUp: React.FC = () => {
               Password
               <input type="password" name="password" value={form.password} onChange={handleChange} required />
             </label>
+
+            <label>
+              Major
+              <input type="text" name="major" value={form.major} onChange={handleChange} required />
+            </label>
+
+            <label>
+              Graduation Year
+              <input type="number" name="grad_year" min="2000" max="3000" value={form.grad_year} onChange={handleChange} required />
+            </label>
+
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
 
@@ -171,11 +211,14 @@ const SignUp: React.FC = () => {
               is successful (ie now exists a userId)
           */} 
           {userId && (
-          <label>
-            Upload .ics Schedule
-            <UploadCal userId={userId} />
-          </label> )}
-
+          <div className="calendar-upload-section">
+            <label>
+              Upload .ics Schedule
+              <UploadCal userId={userId} />
+            </label> 
+          </div>
+          )}
+            
         </div>
       </div>
     </div>
