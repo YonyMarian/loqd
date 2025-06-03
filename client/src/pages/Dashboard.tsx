@@ -72,7 +72,7 @@ const Dashboard: React.FC = () => {
   /* ---------- derived data ---------- */
   const userProfileData = {
     name: profileData.full_name || 'Unknown User',
-    image: profileData.avatar_url || '/default.png',
+    image: profileData.avatar_url || '/default-avatar.svg',
     match_percentage: 95,          // TODO: real match calculation
     major: profileData.major || 'Undeclared',
     year: profileData.grad_year || 2025,

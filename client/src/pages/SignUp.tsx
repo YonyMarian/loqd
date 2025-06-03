@@ -44,28 +44,58 @@ const SignUp: React.FC = () => {
       const result = await signUp(form.email, form.password, form.username,
                                   form.major, form.grad_year);
 
-      if (result) {
-        if (result.user) {
-          setUserId(result.user.id);
-          await supabase
-            .from('profiles')
-            .update({ email: form.email, full_name: form.username, major: form.major, grad_year:form. grad_year })
-            .eq('id', result.user.id);
+      if (result && result.user) {
+        setUserId(result.user.id);
+        
+        let avatar_url = null;
+        
+        // Upload profile picture if one was selected
+        if (form.profilePic) {
+          const fileExt = form.profilePic.name.split('.').pop();
+          const fileName = `${result.user.id}-${Math.random()}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          const { error: uploadError, data } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, form.profilePic, {
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (uploadError) {
+            console.error('Error uploading avatar:', uploadError);
+          } else {
+            // Get the public URL using the newer method
+            const { data: urlData } = await supabase.storage
+              .from('avatars')
+              .createSignedUrl(filePath, 31536000); // URL valid for 1 year
+
+            avatar_url = urlData?.signedUrl;
+          }
         }
-        alert('✅ Account created (mock), now update calendar data');
-      }
-      else {
+
+        // Update profile with all information including avatar_url
+        await supabase
+          .from('profiles')
+          .upsert({ 
+            id: result.user.id,
+            email: form.email, 
+            full_name: form.username, 
+            major: form.major, 
+            grad_year: form.grad_year,
+            avatar_url: avatar_url
+          })
+          .select();
+
+        alert('✅ Account created successfully, now update calendar data');
+      } else {
         console.log(result);
-        alert('Something went wrong with account creation (mock)');
+        alert('Something went wrong with account creation');
       }
     } catch (error) {
       console.error('Error during sign up:', error);
       alert('❌ Error during sign up, please try again');
     }
-    console.log(form);
-
-    // const { data } = supabase.auth.onAuthStateChange((event, session) => 
-    //   {  console.log(event, session) })
   };
 
 

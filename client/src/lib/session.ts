@@ -26,30 +26,7 @@ export async function signUp(email: string, password: string, displayName: strin
         return null;
     }
 
-    console.log("Signup successful, creating profile...");
-    
-    // Create initial profile
-    if (data.user) {
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .insert([
-                {
-                    id: data.user.id,
-                    email: email,
-                    full_name: displayName,
-                }
-            ])
-            .select()
-            .single();
-
-        if (profileError) {
-            console.error("Profile creation error:", profileError);
-            // Don't return null here, we still want to return the user
-        } else {
-            console.log("Profile created successfully");
-        }
-    }
-
+    console.log("Signup successful");
     console.log("Returning signup data:", data);
     return data;
 }
