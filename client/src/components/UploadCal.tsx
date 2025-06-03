@@ -1,6 +1,7 @@
 import React from 'react';
+import {supabase} from '../lib/supabase';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 type UploadCalProps = {
@@ -61,6 +62,20 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             }
 
             navigate('/dashboard');
+            // const { data } = supabase.auth.onAuthStateChange((event, session) => 
+            // {  console.log(event, session);
+            //     //console.log(data);
+            //     if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+            //         navigate('/dashboard');
+            //         }
+            //     else {
+            //         console.log("event is NOT initial_session, so don't go dashboard");
+            //         navigate('/');
+
+            //     }
+            //  })
+
+            
         }
         catch (error: unknown) {
             console.error("Error uploading file:" , error);
