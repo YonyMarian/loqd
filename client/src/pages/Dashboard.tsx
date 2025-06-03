@@ -11,10 +11,14 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
 const Dashboard: React.FC = () => {
-    const navigate = useNavigate();
-    const { user, loading } = useAuth();
-    const [profileData, setProfileData] = useState<any>(null);
-    const [searchTerm, setSearchTerm] = useState('');
+const navigate = useNavigate();
+
+// Global auth context
+const { user, loading } = useAuth();
+
+// Local UI state
+const [profileData, setProfileData] = useState<any>(null);
+const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchProfileData = async () => {
