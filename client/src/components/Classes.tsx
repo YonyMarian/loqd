@@ -1,5 +1,7 @@
 import React from 'react';
 import '../styles/Classes.css';
+import UpdateClasses from './UpdateClasses';
+import '../styles/UpdateClasses.css';
 
 interface ClassCard {
   title: string;
@@ -14,7 +16,9 @@ interface ClassesProps {
 const Classes: React.FC<ClassesProps> = ({ classes }) => {
   return (
     <div className="classes-card">
-      <h3>Classes</h3>
+      <div className="classes-header">
+        <h3>Classes</h3>
+      </div>
       <div className="class-grid">
         {classes.map((cls, idx) => (
           <div
@@ -27,6 +31,7 @@ const Classes: React.FC<ClassesProps> = ({ classes }) => {
           </div>
         ))}
       </div>
+      <UpdateClasses />
     </div>
   );
 };

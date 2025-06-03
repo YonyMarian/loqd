@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
 import logo from '../assets/logo.svg'
+import { signOut } from '../lib/session.ts';
 
 interface NavBarProps {
   onSearch: (searchTerm: string) => void;
@@ -45,7 +46,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
             src="/logout.svg" 
             alt="LogOut" 
             className="logout" 
-            onClick={() => navigate('/')}
+            onClick={() => signOut()}
             style={{ cursor: 'pointer' }}
           />
         </div>

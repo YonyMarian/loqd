@@ -6,6 +6,7 @@ import SignIn from './pages/SignIn';
 import About from './pages/About';
 import SuggestionBox from './pages/SuggestionBox';
 import ChatDetail from './pages/ChatDetail';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -13,7 +14,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+              <Dashboard />
+          </ProtectedRoute>
+          } />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/about" element={<About />} />
