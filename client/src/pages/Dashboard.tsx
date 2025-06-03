@@ -14,9 +14,6 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 
-
-
-
 interface UserProfileInterface {
   id: string;
   updated_at: string;
@@ -41,6 +38,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) {
+        // When auth finishes and no user, redirect home
         if (!loading) navigate('/');
         return;
       }
@@ -56,6 +54,7 @@ const Dashboard: React.FC = () => {
           console.error('Error fetching profile data:', error);
           return;
         }
+
         setProfileData(data as UserProfileInterface);
       } catch (err) {
         console.error('Error in fetchProfileData:', err);
@@ -65,7 +64,7 @@ const Dashboard: React.FC = () => {
     fetchProfileData();
   }, [user, loading, navigate]);
 
-  /* ---------- early-return loading states ---------- */
+  /* ---------- loading gates ---------- */
   if (loading || !profileData) {
     return <div className="loading">Loading...</div>;
   }
@@ -74,7 +73,7 @@ const Dashboard: React.FC = () => {
   const userProfileData = {
     name: profileData.full_name || 'Unknown User',
     image: profileData.avatar_url || '/default.png',
-    match_percentage: 95,
+    match_percentage: 95,          // TODO: real match calculation
     major: profileData.major || 'Undeclared',
     year: profileData.grad_year || 2025,
   };
