@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import RealtimeChat from '../components/RealtimeChat';
+import RealtimeChat from './RealtimeChat';
 
-export default function Chat() {
+export default function ChatInstance() {
   const [username, setUsername] = useState('');
   const [joined, setJoined] = useState(false);
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
-import Chat from '../pages/Chat';
+import ChatWrapper from './ChatWrapper';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 
@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="profile-box right-profile">
-        <Chat />
+        <ChatWrapper />
       </div>
     </div>
   );
