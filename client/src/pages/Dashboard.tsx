@@ -29,16 +29,14 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
-  const [profileData, setProfileData] = useState<UserProfileInterface | null>(
-    null
-  );
+  const [profileData, setProfileData] = useState<UserProfileInterface | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   /* ---------- fetch profile on login ---------- */
   useEffect(() => {
     const fetchProfileData = async () => {
+      // If auth finished and no user → kick to landing
       if (!user) {
-        // When auth finishes and no user, redirect home
         if (!loading) navigate('/');
         return;
       }
@@ -73,12 +71,14 @@ const Dashboard: React.FC = () => {
   const userProfileData = {
     name: profileData.full_name || 'Unknown User',
     image: profileData.avatar_url || '/default-avatar.svg',
-    match_percentage: 95,          // TODO: real match calculation
+    match_percentage: 95, // TODO: hook up real match calc
     major: profileData.major || 'Undeclared',
     year: profileData.grad_year || 2025,
+    id: profileData.id,
+    calendar_data: profileData.calendar_data,
   };
 
-  const courseList = parseCourseSchedule(profileData.calendar_data || {});
+  const courseList = parseCourseSchedule(userProfileData.calendar_data || {});
 
   /* ---------- render ---------- */
   return (
@@ -92,6 +92,7 @@ const Dashboard: React.FC = () => {
           match_percentage={userProfileData.match_percentage}
           major={userProfileData.major}
           year={userProfileData.year}
+          id={userProfileData.id}            {/* <- new prop from incoming */}
         />
         <Classes />
       </div>

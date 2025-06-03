@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/UserProfile.css';
+import UserBio from './UserBio.tsx';
 
 interface UserProfileProps {
   name: string;
@@ -7,9 +8,10 @@ interface UserProfileProps {
   match_percentage: number;
   major: string;
   year: number;
+  id: string;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage, major, year }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage, major, year, id }) => {
   return (
     <div className="user-profile-box">
       <div className="header-bg">
@@ -34,7 +36,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage
         <p className="major">Class of {year}</p>
         <p className="major">{major}</p>
       </div>
-      <div className="placeholder">TODO: ADD BIO</div>
+      <div className="placeholder">
+        <UserBio userid={id}/>
+      </div>
     </div>
   );
 };
