@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
 import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
+
 import '../styles/Dashboard.css';
-// import { useNavigate } from 'react-router-dom';
-import {supabase} from '../lib/supabase';
+
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 
 interface UserProfileInterface {
-    id: string;
-    updated_at: string;
-    email: string;
-    full_name: string;
-    avatar_url: string;
-    calendar_data: any;
-    grad_year: number;
-    major: string;
-    // avatar_full?: string; // Optional if you're using this field
+  id: string;
+  updated_at: string;
+  email: string;
+  full_name: string;
+  avatar_url: string;
+  calendar_data: any;
+  grad_year: number;
+  major: string;
 }
 
 const Dashboard: React.FC = () => {
@@ -97,16 +101,16 @@ const Dashboard: React.FC = () => {
                 <Classes />
             </div>
 
-            <div className="match-grid-container">
-                <MatchGrid searchTerm={searchTerm} />
-                <WeekScheduleComponent />
-            </div>
+      <div className="match-grid-container">
+        <MatchGrid searchTerm={searchTerm} />
+        <WeekScheduleComponent classSchedule={courseList} />
+      </div>
 
-            <div className="profile-box right-profile">
-                <Chat />
-            </div>
-        </div>
-    );
+      <div className="profile-box right-profile">
+        <Chat />
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

@@ -4,7 +4,7 @@ import UserBio from './UserBio.tsx';
 
 interface UserProfileProps {
   name: string;
-  image: string;
+  image?: string;
   match_percentage: number;
   major: string;
   year: number;
@@ -16,15 +16,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage
     <div className="user-profile-box">
       <div className="header-bg">
         <div className="top-banner">
-          <img src="banner.svg" className="cover-bg" />
+          <img src="banner.svg" className="cover-bg" alt="Profile banner" />
         </div> 
         <div className="profile-img-wrapper">
           <img
-            src={image}
+            src={image || '/default-avatar.svg'}
             alt={name}
             className="profile-img"
           />
-          {/* <div className="match-percentage">{match_percentage}%</div> */}
         </div>
       </div>
       <div className="info-section">
