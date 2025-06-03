@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
 import LandingNav from '../components/LandingNav';
 import '../styles/SuggestionBox.css';
+import { supabase } from '../lib/supabase';
+
+
 
 const SuggestionBox: React.FC = () => {
     const [formData, setFormData] = useState({
         type: 'bug',
-        title: '',
-        description: ''
+        subject: '',
+        details: ''
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log('Submitted:', formData);
+        const sendSuggestion = async() => {
+            const {error} = await supabase
+                .from('suggestions')
+                .insert({type: formData.type, 
+                        subject: formData.subject,
+                        details: formData.details});
+            if (error) {
+                console.log("Error sending suggestion.", error);
+            }
+        }
+        sendSuggestion();
+        
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -34,7 +49,6 @@ const SuggestionBox: React.FC = () => {
                                 Type
                             </label>
                             <select
-                                id="type"
                                 name="type"
                                 value={formData.type}
                                 onChange={handleChange}
@@ -46,14 +60,13 @@ const SuggestionBox: React.FC = () => {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="title" className="form-label">
-                                Title
+                            <label htmlFor="subject" className="form-label">
+                                Subject
                             </label>
                             <input
                                 type="text"
-                                id="title"
-                                name="title"
-                                value={formData.title}
+                                name="subject"
+                                value={formData.subject}
                                 onChange={handleChange}
                                 required
                                 className="form-input"
@@ -61,13 +74,12 @@ const SuggestionBox: React.FC = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="description" className="form-label">
-                                Description
+                            <label htmlFor="details" className="form-label">
+                                Details
                             </label>
                             <textarea
-                                id="description"
-                                name="description"
-                                value={formData.description}
+                                name="details"
+                                value={formData.details}
                                 onChange={handleChange}
                                 required
                                 rows={4}
