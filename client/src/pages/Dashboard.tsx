@@ -82,8 +82,11 @@ const Dashboard: React.FC = () => {
         match_percentage: 95,
         major: userData?.major || "Undeclared",
         year: userData?.grad_year || 2025,
-        id: userData?.id || ""
+        id: userData?.id || "",
+        calendar_data: userData?.calendar_data
     };
+
+      const courseList = parseCourseSchedule(userProfileData.calendar_data || {});
 
     return (
         <div className="dashboard-wrapper">
