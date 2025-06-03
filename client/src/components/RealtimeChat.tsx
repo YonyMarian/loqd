@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react';
+import { FormEvent } from 'react';
 import ChatMessage from './ChatMessage.tsx';
 import useRealtimeChat, { ChatMessage as MessageType } from '../hooks/useRealtimeChat.ts';
 import useChatScroll from '../hooks/useChatScroll.ts';
@@ -7,11 +7,13 @@ import '../styles/chat.css';
 interface RealtimeChatProps {
   roomName: string;
   username: string;
+  ownUserId: string;
+  otherUserId: string;
   messages?: MessageType[];
   onMessage?: (messages: MessageType[]) => void;
 }
 
-export default function RealtimeChat({ roomName, username, messages = [], onMessage }: RealtimeChatProps) {
+export default function RealtimeChat({ roomName, username, ownUserId, otherUserId, messages = [], onMessage }: RealtimeChatProps) {
   const { chatMessages, sendMessage } = useRealtimeChat(roomName, username, messages, onMessage);
   const messagesEndRef = useChatScroll(chatMessages);
 

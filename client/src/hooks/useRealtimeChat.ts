@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { RealtimeChannel } from '@supabase/supabase-js';
+// import { RealtimeChannel } from '@supabase/supabase-js';
 
 
 // export interface ChatUser {
@@ -77,7 +77,7 @@ export default function useRealtimeChat(
   const sendMessage = async (content: string) => {
     const createdAt = new Date().toISOString();
 
-    const { data, error } = await supabase.from('messages_k').insert([
+    const { error } = await supabase.from('messages_k').insert([
       {
         room_name: roomName,
         content,

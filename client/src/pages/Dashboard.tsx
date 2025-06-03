@@ -54,7 +54,7 @@ const Dashboard: React.FC = () => {
                     .eq('id', user.id)
                     .single();
                 if (error) {
-                    console.log("Error grabbing user data.");
+                    console.log("Error grabbing user data.", error);
                 }
                 if (data) {
                     setUserData(data);
@@ -110,10 +110,11 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="profile-box right-profile">
-        <ChatWrapper />
+        <ChatWrapper ownUserId={userProfileData.id} otherUserId={""}/>
       </div>
     </div>
   );
 };
+// TODO: NEED TO GET OTHERUSERID FROM MATCH GRID SOMEHOW!!!
 
 export default Dashboard;

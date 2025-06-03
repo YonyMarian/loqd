@@ -1,8 +1,13 @@
 import ChatInstance from '../components/ChatInstance.tsx';
 
-const ChatWrapper:React.FC = () => {
+interface ChatWrapperProps {
+    ownUserId: string;
+    otherUserId: string;
+}
+
+const ChatWrapper:React.FC<ChatWrapperProps> = ({ownUserId, otherUserId}) => {
     return <div>
-        <ChatInstance />
+        <ChatInstance ownUserId={ownUserId} otherUserId={otherUserId}/>
     </div>
 }
 
