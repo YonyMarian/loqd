@@ -18,15 +18,24 @@ function getUniqueStartTimes(entries: ClassEntry[]): string[] {
     timeSet.add(entry.stime);
   }
 
-  // Return as a sorted array (optional)
   return Array.from(timeSet).sort((a, b) => {
     const toMinutes = (time: string) => {
-      const [hourStr, minuteStr] = time.split(/:| /);
-      const hour = parseInt(hourStr);
-      const minute = parseInt(minuteStr);
-      const isPM = time.toUpperCase().includes('PM');
-      return (isPM && hour !== 12 ? hour + 12 : hour % 12) * 60 + minute;
+      // Example input: "1:00 AM" or "12:30 PM"
+      const [timePart, meridiem] = time.split(' ');
+      const [hourStr, minuteStr] = timePart.split(':');
+      let hour = parseInt(hourStr, 10);
+      const minute = parseInt(minuteStr, 10);
+
+      // Convert 12 AM to 0, 12 PM stays 12, other PM hours add 12
+      if (meridiem.toUpperCase() === 'AM') {
+        if (hour === 12) hour = 0;
+      } else { // PM
+        if (hour !== 12) hour += 12;
+      }
+
+      return hour * 60 + minute;
     };
+
     return toMinutes(a) - toMinutes(b);
   });
 }
