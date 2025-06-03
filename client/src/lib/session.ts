@@ -1,13 +1,17 @@
 import { supabase } from './supabase';
 
 // signup (first time)
-export async function signUp(email: string, password: string, displayName: string) {
+export async function signUp(email: string, password: string, displayName: string, major: string, grad_year: number) {
     console.log("fn called");
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-            data: { display_name: displayName }
+            data: { 
+                display_name: displayName,
+                major: major,
+                grad_year: grad_year
+            }
         }
     });
     if (error) {

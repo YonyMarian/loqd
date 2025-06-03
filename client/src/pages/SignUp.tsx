@@ -11,6 +11,9 @@ type FormState = {
   //preferences: string[];
   profilePic: File | null;
   //scheduleFile: File | null;
+
+  major: string;
+  grad_year: number;
 };
 
 const SignUp: React.FC = () => {
@@ -21,6 +24,8 @@ const SignUp: React.FC = () => {
     //preferences: [],
     profilePic: null,
     //scheduleFile: null,
+    major:'',
+    grad_year: 2025
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,14 +41,15 @@ const SignUp: React.FC = () => {
     e.preventDefault();
 
     try {
-      const result = await signUp(form.email, form.password, form.username);
+      const result = await signUp(form.email, form.password, form.username,
+                                  form.major, form.grad_year);
 
       if (result) {
         if (result.user) {
           setUserId(result.user.id);
           await supabase
             .from('profiles')
-            .update({ email: form.email, full_name: form.username })
+            .update({ email: form.email, full_name: form.username, major: form.major, grad_year:form. grad_year })
             .eq('id', result.user.id);
         }
         alert('✅ Account created (mock), now update calendar data');
@@ -96,6 +102,17 @@ const SignUp: React.FC = () => {
               Password
               <input type="password" name="password" value={form.password} onChange={handleChange} required />
             </label>
+
+            <label>
+              Major
+              <input type="text" name="major" value={form.major} onChange={handleChange} required />
+            </label>
+
+            <label>
+              Graduation Year
+              <input type="number" name="grad_year" min="2000" max="3000" value={form.grad_year} onChange={handleChange} required />
+            </label>
+
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
 
@@ -105,11 +122,14 @@ const SignUp: React.FC = () => {
               is successful (ie now exists a userId)
           */} 
           {userId && (
-          <label>
-            Upload .ics Schedule
-            <UploadCal userId={userId} />
-          </label> )}
-
+          <div className="calendar-upload-section">
+            <label>
+              Upload .ics Schedule
+              <UploadCal userId={userId} />
+            </label> 
+          </div>
+          )}
+            
         </div>
       </div>
     </div>
