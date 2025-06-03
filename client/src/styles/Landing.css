@@ -1,0 +1,316 @@
+.landing-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.landing-left {
+    flex: 1;
+    background-color: #2774AE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.landing-branding {
+    color: white;
+    text-align: center;
+}
+
+.landing-branding h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.landing-branding p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.landing-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.landing-form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.landing-form-container h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.landing-subtitle {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.landing-features {
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.feature-item h3 {
+    color: #2774AE;
+    margin-bottom: 0.5rem;
+}
+
+.feature-item p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.landing-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.landing-button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.landing-button.primary {
+    background-color: #2774AE;
+    color: white;
+}
+
+.landing-button.primary:hover {
+    background-color: #1a5c8e;
+}
+
+.landing-button.secondary {
+    background-color: white;
+    color: #2774AE;
+    border: 1px solid #2774AE;
+}
+
+.landing-button.secondary:hover {
+    background-color: #f0f7ff;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    height: 80px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.nav-bar-left {
+    display: flex;
+    align-items: center;
+}
+
+.nav-bar-left .logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.nav-bar-center {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 2rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #2774AE;
+}
+
+.nav-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #2774AE;
+}
+
+.landing-content {
+    min-height: 100vh;
+    padding-top: 80px; /* Add padding to account for fixed navbar */
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-logo {
+    height: 120px;
+    width: auto;
+    margin-bottom: 2rem;
+}
+
+.hero-tagline {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.hero-button {
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.hero-button.primary {
+    background-color: #2774AE;
+    color: white;
+}
+
+.hero-button.primary:hover {
+    background-color: #1a5c8e;
+}
+
+.hero-button.secondary {
+    background-color: white;
+    color: #2774AE;
+    border: 1px solid #2774AE;
+}
+
+.hero-button.secondary:hover {
+    background-color: #f0f7ff;
+}
+
+/* Features Section */
+.features-section {
+    padding: 4rem 2rem;
+    background-color: white;
+}
+
+.features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 3rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.feature-card h3 {
+    color: #2774AE;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: #666;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 4rem 2rem;
+    background-color: #f0f7ff;
+    text-align: center;
+}
+
+.cta-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cta-container h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.cta-container p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: #2774AE;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.cta-button:hover {
+    background-color: #1a5c8e;
+} 

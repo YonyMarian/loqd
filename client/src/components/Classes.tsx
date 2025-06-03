@@ -7,19 +7,16 @@ interface ClassCard {
   color: string;
 }
 
-const classCards: ClassCard[] = [
-  { title: 'CS 111', description: 'Operating Systems', color: '#2774AE' }, // UCLA Blue
-  { title: 'CS 131', description: 'Compiler Construction', color: '#FFD100' }, // Gold
-  { title: 'CS 180', description: 'Algorithms', color: '#005587' }, // Dark Blue
-  { title: 'CS M151B', description: 'Computer Networks', color: '#87CEEB' }, // Sky Blue
-];
+interface ClassesProps {
+  classes: ClassCard[];
+}
 
-const Classes: React.FC = () => {
+const Classes: React.FC<ClassesProps> = ({ classes }) => {
   return (
     <div className="classes-card">
       <h3>Classes</h3>
       <div className="class-grid">
-        {classCards.map((cls, idx) => (
+        {classes.map((cls, idx) => (
           <div
             key={idx}
             className="class-tile"
