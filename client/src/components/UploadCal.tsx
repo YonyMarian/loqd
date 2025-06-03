@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 type UploadCalProps = {
@@ -28,27 +28,22 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
         }
         // FormData = built in js class
         const formData = new FormData();
-        formData.append("calendarFile", file);
-        formData.append("user_id", userId);
+        formData.append("calendarFile", file);        formData.append("user_id", userId);
         // need userId to update profiles table in backend
         // ^ see after this fetch
-
-
+        
         try {
-            let upload_res = await fetch("http://localhost:5000/calendar/upload_cal", {
-                // post = creating new entry at upload_cal
+            let upload_res = await fetch("http://localhost:5000/api/calendar/upload_cal", {
                 method: 'POST',
                 body: formData
-                // bc FormData obj, auto setes Content-Type = multipart/form-data
             });
             if (!upload_res.ok) {
                 throw new Error("failed to upload file");
-            }
-            let schedule = await upload_res.json();
+            }            let schedule = await upload_res.json();
             console.log("parsed cal data:", schedule);
             setCalendarData(schedule);
-
-            let update_res = await fetch('http://localhost:5000/calendar/update_calendar', {
+            
+            let update_res = await fetch('http://localhost:5000/api/calendar/update_calendar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
