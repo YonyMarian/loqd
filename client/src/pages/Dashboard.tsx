@@ -33,6 +33,14 @@ const Dashboard: React.FC = () => {
   const [profileData, setProfileData] = useState<UserProfileInterface | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourses, setSelectedCourses] = useState<Set<Course>>(new Set());
+  const [filterCourses, setFilterCourses] = useState<Array<{
+    title: string;
+    description: string;
+    day?: string;
+    stime?: string;
+    etime?: string;
+    location?: string;
+  }>>([]);
 
   /* ---------- fetch profile on login ---------- */
   useEffect(() => {
@@ -69,15 +77,12 @@ const Dashboard: React.FC = () => {
       const newSet = new Set(prev);
       
       if (course.variant === 'calendar') {
-        // For calendar items, we're selecting/deselecting a specific instance
         const existingCourse = Array.from(newSet).find(c => 
           c.variant === 'calendar' && c.description === course.description
         );
         
         if (existingCourse) {
-          // If this calendar instance is already selected, deselect it
           newSet.delete(existingCourse);
-          // Also deselect the class if it was selected
           const classCourse = Array.from(newSet).find(c => 
             c.variant === 'card' && c.title === course.title
           );
@@ -85,28 +90,22 @@ const Dashboard: React.FC = () => {
             newSet.delete(classCourse);
           }
         } else {
-          // If selecting a new calendar instance, add it
           newSet.add(course);
         }
       } else {
-        // For class items, we're selecting/deselecting all instances
         const existingCourse = Array.from(newSet).find(c => 
           c.variant === 'card' && c.title === course.title
         );
         
         if (existingCourse) {
-          // If the class is selected, deselect it and all its calendar instances
           newSet.delete(existingCourse);
-          // Remove all calendar instances of this class
           Array.from(newSet).forEach(c => {
             if (c.variant === 'calendar' && c.title === course.title) {
               newSet.delete(c);
             }
           });
         } else {
-          // If selecting the class, add it and all its calendar instances
           newSet.add(course);
-          // Add all calendar instances of this class
           courseListWithColors.forEach(c => {
             if (c.num === course.title) {
               newSet.add({
@@ -126,11 +125,20 @@ const Dashboard: React.FC = () => {
         }
       }
       
-      console.log('Selected Courses:', Array.from(newSet).map(c => ({
-        title: c.title,
-        description: c.description,
-        variant: c.variant
-      })));
+      // Update the filtered courses state
+      const calendarCourses = Array.from(newSet)
+        .filter(c => c.variant === 'calendar')
+        .map(c => ({
+          title: c.title,
+          description: c.description,
+          day: c.day,
+          stime: c.stime,
+          etime: c.etime,
+          location: c.location
+        }));
+      
+      setFilterCourses(calendarCourses);
+      console.log('Filter Courses:', calendarCourses);
       return newSet;
     });
   };
@@ -158,8 +166,8 @@ const Dashboard: React.FC = () => {
     const colors = [
       '#2774AE', // UCLA Blue
       '#FFD100', // UCLA Gold
-      '#005587', // UCLA Dark Blue
-      '#FFB81C', // UCLA Yellow
+      // '#005587', // UCLA Dark Blue
+      // '#FFB81C', // UCLA Yellow
       '#7C878E', // UCLA Gray
       '#00A3E0', // UCLA Bright Blue
       '#4B9CD3', // UCLA Light Blue
@@ -172,9 +180,7 @@ const Dashboard: React.FC = () => {
     return colors[index % colors.length];
   };
   
-  // Extract unique class names from courseList
   const uniqueClasses: Course[] = Array.from(new Set(courseList.map(course => course.num))).map(num => {
-    // Find the first course with this number to get its title
     const course = courseList.find(c => c.num === num);
     return {
       id: num,
@@ -189,7 +195,6 @@ const Dashboard: React.FC = () => {
     };
   });
 
-  // Add colors to courseList entries
   const courseListWithColors = courseList.map(course => ({
     ...course,
     color: getColorForCourse(course.num)
@@ -217,7 +222,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="match-grid-container">
-        <MatchGrid searchTerm={searchTerm} />
+        <MatchGrid 
+          searchTerm={searchTerm} 
+          filterCourses={filterCourses}
+        />
         <WeekScheduleComponent 
           classSchedule={courseListWithColors} 
           onCourseClick={handleCourseClick}
