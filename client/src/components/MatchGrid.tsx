@@ -10,69 +10,13 @@ interface MatchProfile {
   major: string;
 }
 
+
 interface MatchGridProps {
   searchTerm: string;
+  profiles: MatchProfile[];
 }
 
-const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
-  const [profiles, setProfiles] = useState<MatchProfile[]>([
-    { 
-      id: 1, 
-      name: "John Doe", 
-      image: "/profile.png",
-      match_percentage: 85,
-      major: "Computer Science"
-    },
-    { 
-      id: 2, 
-      name: "Jane Smith", 
-      image: "/profile.png",
-      match_percentage: 92,
-      major: "Data Science"
-    },
-    { 
-      id: 3, 
-      name: "Mike Johnson", 
-      image: "/profile.png",
-      match_percentage: 78,
-      major: "Engineering"
-    },
-    { 
-      id: 4, 
-      name: "Sarah Williams", 
-      image: "/profile.png",
-      match_percentage: 88,
-      major: "Mathematics"
-    },
-    { 
-      id: 5, 
-      name: "David Brown", 
-      image: "/profile.png",
-      match_percentage: 95,
-      major: "Physics"
-    },
-    { 
-      id: 6, 
-      name: "Emily Davis", 
-      image: "/profile.png",
-      match_percentage: 82,
-      major: "Chemistry"
-    },
-    { 
-      id: 7, 
-      name: "Vishnu Lopez", 
-      image: "/profile.png",
-      match_percentage: 55,
-      major: "Public Affairs"
-    },
-    { 
-      id: 8, 
-      name: "Dylan Hernandez", 
-      image: "/profile.png",
-      match_percentage: 69,
-      major: "MCDB"
-    },
-  ]);
+const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, profiles }) => {
   const [filteredProfiles, setFilteredProfiles] = useState<MatchProfile[]>(profiles);
 
   useEffect(() => {

@@ -9,6 +9,24 @@ import '../styles/Dashboard.css';
 // import { useNavigate } from 'react-router-dom';
 import {supabase} from '../lib/supabase';
 
+interface MatchProfile {
+  id: number;
+  name: string;
+  image: string;
+  match_percentage: number;
+  major: string;
+}
+
+interface MatchUser {
+    //id, updated_at, email, full_name, avatar_url, calendar_data, graduation_year, major
+    id: number;
+    updated_at: string;
+    email: string;
+    full_name: string;
+    avatar_url: string;
+    calendar_data: string;
+    graduation_year: string;
+}
 
 const Dashboard: React.FC = () => {
     const [user, setUser] = useState<any|null>(null);
@@ -51,6 +69,64 @@ const Dashboard: React.FC = () => {
         year: "Senior"
     };
 
+    const matchProfiles: MatchProfile[] = [
+        { 
+            id: 1, 
+            name: "John Doe", 
+            image: "/profile.png",
+            match_percentage: 85,
+            major: "Computer Science"
+        },
+        { 
+            id: 2, 
+            name: "Jane Smith", 
+            image: "/profile.png",
+            match_percentage: 92,
+            major: "Data Science"
+        },
+        { 
+            id: 3, 
+            name: "Mike Johnson", 
+            image: "/profile.png",
+            match_percentage: 78,
+            major: "Engineering"
+        },
+        { 
+            id: 4, 
+            name: "Sarah Williams", 
+            image: "/profile.png",
+            match_percentage: 88,
+            major: "Mathematics"
+        },
+        { 
+            id: 5, 
+            name: "David Brown", 
+            image: "/profile.png",
+            match_percentage: 95,
+            major: "Physics"
+        },
+        { 
+            id: 6, 
+            name: "Emily Davis", 
+            image: "/profile.png",
+            match_percentage: 82,
+            major: "Chemistry"
+        },
+        { 
+            id: 7, 
+            name: "Vishnu Lopez", 
+            image: "/profile.png",
+            match_percentage: 55,
+            major: "Public Affairs"
+        },
+        { 
+            id: 8, 
+            name: "Dylan Hernandez", 
+            image: "/profile.png",
+            match_percentage: 69,
+            major: "MCDB"
+        },
+    ];
 
     // day, start time, end time, location, instructor, class_name, course_code, class_title
     const classSchedule = [
@@ -172,7 +248,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="match-grid-container">
-                <MatchGrid searchTerm={searchTerm} />
+                <MatchGrid searchTerm={searchTerm} profiles={matchProfiles} />
                 <WeekScheduleComponent schedule={classSchedule} />
             </div>
 
