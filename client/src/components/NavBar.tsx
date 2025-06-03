@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
+import logo from '../assets/logo.svg'
 
 interface NavBarProps {
   onSearch: (searchTerm: string) => void;
@@ -20,7 +21,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
     <div className="nav-bar">
       <div className="nav-bar-left">
         <img 
-          src="/logo.png" 
+          src={logo} 
           alt="Logo" 
           className="logo" 
           onClick={() => navigate('/dashboard')}
@@ -40,6 +41,13 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
       </div>
       <div className="nav-bar-right">
         <div className="icon-background">
+          <img 
+            src="/logout.svg" 
+            alt="LogOut" 
+            className="logout" 
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
         <div className="icon-background">
         </div>
