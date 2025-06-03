@@ -92,7 +92,7 @@ const Dashboard: React.FC = () => {
           match_percentage={userProfileData.match_percentage}
           major={userProfileData.major}
           year={userProfileData.year}
-          id={userProfileData.id}            {/* <- new prop from incoming */}
+          id={userProfileData.id}            
         />
         <Classes />
       </div>
