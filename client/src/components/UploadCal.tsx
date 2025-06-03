@@ -1,5 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 type UploadCalProps = {
     userId: string | null;
@@ -9,7 +11,7 @@ type UploadCalProps = {
 const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
     const [file, setFile] = useState<File|null>(null);
     const [calendarData, setCalendarData] = useState<object | null>(null);
-
+    const navigate = useNavigate();
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         // default behavior: 
@@ -58,6 +60,7 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
                 throw new Error("failed to update profile with schedule");
             }
 
+            navigate('/dashboard');
         }
         catch (error: unknown) {
             console.error("Error uploading file:" , error);
