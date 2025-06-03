@@ -23,6 +23,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage
             src={image || '/default-avatar.svg'}
             alt={name}
             className="profile-img"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null; // Prevent infinite loop
+              target.src = '/default-avatar.svg';
+            }}
           />
         </div>
       </div>

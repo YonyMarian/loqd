@@ -18,6 +18,11 @@ const MatchProfile: React.FC<MatchProfileProps> = ({ name, image, match_percenta
           className="profile-image" 
           width={100} 
           height={100}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; // Prevent infinite loop
+            target.src = '/default-avatar.svg';
+          }}
         />
       </div>
       <h3>{name}</h3>
