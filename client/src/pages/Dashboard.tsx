@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        console.log('session onAuthStateChange: ', session);
+        // console.log('session onAuthStateChange: ', session);
         // setSession(session);
         setUser(session?.user || null);
         // setLoading(false);
@@ -58,7 +58,7 @@ const Dashboard: React.FC = () => {
                 }
                 if (data) {
                     setUserData(data);
-                    console.log("user data:\n", data);
+                    // console.log("user data:\n", data);
                 }
             }
         fetchUserData();
@@ -115,6 +115,6 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
-// TODO: NEED TO GET OTHERUSERID FROM MATCH GRID SOMEHOW!!!
+// TODO: NEED TO GET OTHERUSERID FROM MATCH GRID SOMEHOW!!!!!
 
 export default Dashboard;
