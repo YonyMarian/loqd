@@ -1,102 +1,111 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
 import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
+
 import '../styles/Dashboard.css';
+
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
+
+interface UserProfileInterface {
+  id: string;
+  updated_at: string;
+  email: string;
+  full_name: string;
+  avatar_url: string;
+  calendar_data: any;
+  grad_year: number;
+  major: string;
+}
 
 const Dashboard: React.FC = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
-// Global auth context
-const { user, loading } = useAuth();
+  const [profileData, setProfileData] = useState<UserProfileInterface | null>(
+    null
+  );
+  const [searchTerm, setSearchTerm] = useState('');
 
-// Local UI state
-const [profileData, setProfileData] = useState<any>(null);
-const [searchTerm, setSearchTerm] = useState('');
+  /* ---------- fetch profile on login ---------- */
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) {
+        // When auth finishes and no user, redirect home
+        if (!loading) navigate('/');
+        return;
+      }
 
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            if (!user) {
-                console.log('No authenticated user');
-                if (!loading) {
-                    navigate('/');
-                }
-                return;
-            }
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
 
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+        if (error) {
+          console.error('Error fetching profile data:', error);
+          return;
+        }
 
-                if (error) {
-                    console.error('Error fetching profile data:', error);
-                    return;
-                }
-
-                if (data) {
-                    console.log('Fetched profile data:', data);
-                    setProfileData(data);
-                }
-            } catch (error) {
-                console.error('Error in fetchProfileData:', error);
-            }
-        };
-
-        fetchProfileData();
-    }, [user, navigate, loading]);
-
-    const handleSearch = (term: string) => {
-        setSearchTerm(term);
+        setProfileData(data as UserProfileInterface);
+      } catch (err) {
+        console.error('Error in fetchProfileData:', err);
+      }
     };
 
-    if (loading) {
-        return <div className="loading">Loading...</div>;
-    }
+    fetchProfileData();
+  }, [user, loading, navigate]);
 
-    if (!user) {
-        return null; // Will redirect in useEffect
-    }
+  /* ---------- loading gates ---------- */
+  if (loading || !profileData) {
+    return <div className="loading">Loading...</div>;
+  }
 
-    if (!profileData) {
-        return <div className="loading">Loading profile data...</div>;
-    }
+  /* ---------- derived data ---------- */
+  const userProfileData = {
+    name: profileData.full_name || 'Unknown User',
+    image: profileData.avatar_url || '/default.png',
+    match_percentage: 95,          // TODO: real match calculation
+    major: profileData.major || 'Undeclared',
+    year: profileData.grad_year || 2025,
+  };
 
-    const userProfileData = {
-        name: profileData.full_name || "Unknown User",
-        image: profileData.avatar_url,
-        match_percentage: 95,
-        major: profileData.major || "Computer Science",
-        year: profileData.year || "Senior"
-    };
+  const courseList = parseCourseSchedule(profileData.calendar_data || {});
 
-    return (
-        <div className="dashboard-wrapper">
-            <NavBar onSearch={handleSearch} />
+  /* ---------- render ---------- */
+  return (
+    <div className="dashboard-wrapper">
+      <NavBar onSearch={setSearchTerm} />
 
-            <div className="left-profile">
-                <UserProfile {...userProfileData} />
-                <Classes />
-            </div>
+      <div className="left-profile">
+        <UserProfile
+          name={userProfileData.name}
+          image={userProfileData.image}
+          match_percentage={userProfileData.match_percentage}
+          major={userProfileData.major}
+          year={userProfileData.year}
+        />
+        <Classes />
+      </div>
 
-            <div className="match-grid-container">
-                <MatchGrid searchTerm={searchTerm} />
-                <WeekScheduleComponent />
-            </div>
+      <div className="match-grid-container">
+        <MatchGrid searchTerm={searchTerm} />
+        <WeekScheduleComponent classSchedule={courseList} />
+      </div>
 
-            <div className="profile-box right-profile">
-                <Chat />
-            </div>
-        </div>
-    );
+      <div className="profile-box right-profile">
+        <Chat />
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

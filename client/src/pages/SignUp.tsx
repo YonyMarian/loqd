@@ -1,227 +1,110 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { signUp } from '../lib/session'
-import '../styles/SignUp.css';
-import UploadCal from '../components/UploadCal';
-import { supabase } from '../lib/supabase';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type FormState = {
-  username: string;
-  password: string;
+import NavBar from '../components/NavBar';
+import MatchGrid from '../components/MatchGrid';
+import UserProfile from '../components/UserProfile';
+import Chat from '../components/Chat';
+import Classes from '../components/Classes';
+import WeekScheduleComponent from '../components/Calendar';
+
+import '../styles/Dashboard.css';
+
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
+
+interface UserProfileInterface {
+  id: string;
+  updated_at: string;
   email: string;
-  //preferences: string[];
-  profilePic: File | null;
-  //scheduleFile: File | null;
-
-  major: string;
+  full_name: string;
+  avatar_url: string;
+  calendar_data: any;
   grad_year: number;
-};
+  major: string;
+}
 
-const SignUp: React.FC = () => {
+const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState<FormState>({
-    username: '',
-    password: '',
-    email: '',
-    //preferences: [],
-    profilePic: null,
-    //scheduleFile: null,
-    major:'',
-    grad_year: 2025
-  });
+  const { user, loading } = useAuth();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, type, value, files } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'file' ? (files ? files[0] : null) : value,
-    }));
-  };
+  const [profileData, setProfileData] = useState<UserProfileInterface | null>(
+    null
+  );
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const [userId, setUserId] = useState<string | null>(null);
-  
-  const uploadProfilePicture = async (file: File, userId: string) => {
-    try {
-      console.log('Starting profile picture upload for user:', userId);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-      console.log('Uploading to path:', filePath);
-
-      // Upload file to Supabase storage
-      const { error: uploadError } = await supabase.storage
-        .from('profiles')
-        .upload(filePath, file, {
-          upsert: true
-        });
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
+  /* ---------- fetch profile on login ---------- */
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) {
+        // Not logged in: once we know loading is done, bounce home
+        if (!loading) navigate('/');
+        return;
       }
-      console.log('File uploaded successfully');
 
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('profiles')
-        .getPublicUrl(filePath);
-      console.log('Generated public URL:', publicUrl);
-
-      // Update the user's profile with the avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ 
-          avatar_url: publicUrl,
-          email: form.email, 
-          full_name: form.username 
-        })
-        .eq('id', userId);
-
-      if (updateError) {
-        console.error('Profile update error:', updateError);
-        throw updateError;
-      }
-      console.log('Profile updated successfully with avatar URL');
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Error in uploadProfilePicture:', error);
-      throw error;
-    }
-  };
-
- const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  console.log("Starting form submission…");
-
-  try {
-    // ---- sign up (now passes the extra fields) ----
-    const result = await signUp(
-      form.email,
-      form.password,
-      form.username,
-      form.major,
-      form.grad_year
-    );
-    console.log("Signup result:", result);
-
-    if (result?.user) {
-      const userId = result.user.id;
-      setUserId(userId);
-
-      /* ---------- store extra profile metadata ---------- */
       try {
-        await supabase
-          .from("profiles")
-          .update({
-            email: form.email,
-            full_name: form.username,
-            major: form.major,
-            grad_year: form.grad_year,
-          })
-          .eq("id", userId);
-      } catch (dbErr) {
-        console.error("Profile metadata update failed:", dbErr);
-        // Non-fatal: user account still exists
-      }
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
 
-      /* ---------- optional profile-picture upload ---------- */
-      if (form.profilePic) {
-        try {
-          console.log("Uploading profile picture…");
-          await uploadProfilePicture(form.profilePic, userId);
-          console.log("Profile picture uploaded");
-        } catch (uploadErr) {
-          console.error("Profile-picture upload failed:", uploadErr);
-          // Let the user proceed even if this fails
+        if (error) {
+          console.error('Error fetching profile data:', error);
+          return;
         }
+        setProfileData(data as UserProfileInterface);
+      } catch (err) {
+        console.error('Error in fetchProfileData:', err);
       }
+    };
 
-      /* ---------- done: show toast + navigate ---------- */
-      alert("✅ Account created successfully!");
-      // Tiny delay so state updates land before the redirect
-      setTimeout(() => navigate("/dashboard"), 100);
-    } else {
-      console.log("No user in signup result:", result);
-      alert("Something went wrong with account creation");
-    }
-  } catch (err) {
-    console.error("Error during sign-up:", err);
-    alert("❌ Error during sign-up, please try again");
+    fetchProfileData();
+  }, [user, loading, navigate]);
+
+  /* ---------- early-return loading states ---------- */
+  if (loading || !profileData) {
+    return <div className="loading">Loading...</div>;
   }
 
-  // If you still want to watch auth events, re-enable this later:
-  // const { data } = supabase.auth.onAuthStateChange((event, session) => {
-  //   console.log(event, session);
-  // });
-};
+  /* ---------- derived data ---------- */
+  const userProfileData = {
+    name: profileData.full_name || 'Unknown User',
+    image: profileData.avatar_url || '/default.png',
+    match_percentage: 95, // TODO: calculate real match %
+    major: profileData.major || 'Undeclared',
+    year: profileData.grad_year || 2025,
+  };
 
+  const courseList = parseCourseSchedule(profileData.calendar_data || {});
 
+  /* ---------- render ---------- */
   return (
-    <div className="signup-page">
-      <div className="signup-left">
-        <div className="signup-branding">
-          <h1>Loqd</h1>
-          <p>Connect. Collaborate. Study smarter at UCLA.</p>
-        </div>
+    <div className="dashboard-wrapper">
+      <NavBar onSearch={setSearchTerm} />
+
+      <div className="left-profile">
+        <UserProfile
+          name={userProfileData.name}
+          image={userProfileData.image}
+          match_percentage={userProfileData.match_percentage}
+          major={userProfileData.major}
+          year={userProfileData.year}
+        />
+        <Classes />
       </div>
-      <div className="signup-right">
-        <div className="signup-form-container">
-          <h2>Create Your Account</h2>
-          <p className="signup-subtitle">Sign up with your UCLA email and get started</p>
 
-          <form className="signup-form" onSubmit={handleSubmit}>
-            <label>
-              Profile Picture
-              <input type="file" name="profilePic" accept="image/*" onChange={handleChange} />
-            </label>
+      <div className="match-grid-container">
+        <MatchGrid searchTerm={searchTerm} />
+        <WeekScheduleComponent classSchedule={courseList} />
+      </div>
 
-            <label>
-              Username
-              <input type="text" name="username" value={form.username} onChange={handleChange} required />
-            </label>
-
-            <label>
-              UCLA Email
-              <input type="email" name="email" value={form.email} onChange={handleChange} required />
-            </label>
-
-            <label>
-              Password
-              <input type="password" name="password" value={form.password} onChange={handleChange} required />
-            </label>
-
-            <label>
-              Major
-              <input type="text" name="major" value={form.major} onChange={handleChange} required />
-            </label>
-
-            <label>
-              Graduation Year
-              <input type="number" name="grad_year" min="2000" max="3000" value={form.grad_year} onChange={handleChange} required />
-            </label>
-
-            <button type="submit" className="signup-button">Sign Up</button>
-          </form>
-
-          {/* PROBLEM WE HAD: we only want to upload calendar data 
-              AFTER a successful signup.
-            So, only allow users to upload calendar AFTER their signup 
-              is successful (ie now exists a userId)
-          */} 
-          {userId && (
-          <div className="calendar-upload-section">
-            <label>
-              Upload .ics Schedule
-              <UploadCal userId={userId} />
-            </label> 
-          </div>
-          )}
-            
-        </div>
+      <div className="profile-box right-profile">
+        <Chat />
       </div>
     </div>
   );
 };
 
-export default SignUp;
+export default Dashboard;
