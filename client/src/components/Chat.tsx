@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import '../styles/Chat.css';
 
 interface ChatPreview {
-  id: number;
+  id: string;
   name: string;
   lastMessage: string;
   timestamp: Date;
@@ -17,7 +17,7 @@ interface ChatApi {
   id: string;
   name: string;
   created_by: string;
-  status: string;
+  invite_status: string;
 }
 
 const Chat: React.FC = () => {
@@ -28,7 +28,7 @@ const Chat: React.FC = () => {
     const fetchChats = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const res = await fetch('/api/chats', {
+      const res = await fetch('http://localhost:5001/api/chats', {
         headers: { 'x-user-id': user.id }
       });
       const data: ChatApi[] = await res.json();
@@ -78,7 +78,7 @@ const Chat: React.FC = () => {
           <div 
             key={chat.id} 
             className="conversation-preview"
-            onClick={() => handleConversationClick(chat.id)}
+            onClick={() => handleConversationClick(Number(chat.id))}
           >
             <div className="avatar-container">
               <img src={chat.avatar} alt={chat.name} className="avatar" />

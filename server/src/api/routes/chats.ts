@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
             chat_id: chat.id,
             user_id: uid,
             joined_at: new Date().toISOString(),
-            status: uid === creatorId ? 'accepted' : 'invited',
+            invite_status: uid === creatorId ? 'accepted' : 'invited',
         }));
         const { error: membersError } = await supabase.from('chat_members').insert(members);
         if (membersError) throw membersError;
@@ -56,7 +56,7 @@ router.post('/:chatId/invite', async (req, res) => {
             chat_id: chatId,
             user_id: receiverId,
             joined_at: new Date().toISOString(),
-            status: 'invited',
+            invite_status: 'invited',
         });
         if (memberError) throw memberError;
 
@@ -126,13 +126,13 @@ router.post('/invitations/:token', async (req, res) => {
         if (action === 'accept') {
             await supabase
                 .from('chat_members')
-                .update({ status: 'accepted' })
+                .update({ invite_status: 'accepted' })
                 .eq('chat_id', invitation.chat_id)
                 .eq('user_id', userId);
         } else if (action === 'decline') {
             await supabase
                 .from('chat_members')
-                .update({ status: 'declined' })
+                .update({ invite_status: 'declined' })
                 .eq('chat_id', invitation.chat_id)
                 .eq('user_id', userId);
         }
@@ -164,7 +164,7 @@ router.get('/invitations/accept', async (req, res) => {
         // 3. Update chat_members status to accepted
         await supabase
             .from('chat_members')
-            .update({ status: 'accepted' })
+            .update({ invite_status: 'accepted' })
             .eq('chat_id', invitation.chat_id)
             .eq('user_id', invitation.receiver_id);
         // 4. Redirect to frontend (optional)
@@ -184,9 +184,9 @@ router.get('/', async (req, res) => {
         // 1. Get chat memberships for user
         const { data: memberships, error: memberError } = await supabase
             .from('chat_members')
-            .select('chat_id, status')
+            .select('chat_id, invite_status')
             .eq('user_id', userId)
-            .in('status', ['accepted', 'invited']);
+            .in('invite_status', ['accepted', 'invited']);
         if (memberError) throw memberError;
         const chatIds = memberships?.map((m: any) => m.chat_id) || [];
         if (chatIds.length === 0) return res.json([]);
@@ -199,7 +199,7 @@ router.get('/', async (req, res) => {
         // Optionally, include membership status in response
         const chatsWithStatus = chats.map((chat: any) => ({
             ...chat,
-            status: memberships.find((m: any) => m.chat_id === chat.id)?.status || 'unknown',
+            invite_status: memberships.find((m: any) => m.chat_id === chat.id)?.invite_status || 'unknown',
         }));
         res.json(chatsWithStatus);
     } catch (err: any) {
