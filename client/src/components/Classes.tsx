@@ -7,9 +7,16 @@ import '../styles/UpdateClasses.css';
 interface ClassesProps {
   classes: Course[];
   onUpdateClasses?: (updatedClasses: Course[]) => void;
+  onCourseClick?: (course: Course) => void;
+  selectedCourses?: Set<Course>;
 }
 
-const Classes: React.FC<ClassesProps> = ({ classes, onUpdateClasses }) => {
+const Classes: React.FC<ClassesProps> = ({ 
+  classes, 
+  onUpdateClasses,
+  onCourseClick,
+  selectedCourses = new Set()
+}) => {
   return (
     <div className="classes-card">
       <div className="classes-header">
@@ -21,6 +28,8 @@ const Classes: React.FC<ClassesProps> = ({ classes, onUpdateClasses }) => {
             key={course.id}
             course={course}
             variant="card"
+            onClick={onCourseClick}
+            selectedCourses={selectedCourses}
           />
         ))}
       </div>

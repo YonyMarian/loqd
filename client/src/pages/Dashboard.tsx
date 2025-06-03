@@ -32,6 +32,7 @@ const Dashboard: React.FC = () => {
 
   const [profileData, setProfileData] = useState<UserProfileInterface | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCourses, setSelectedCourses] = useState<Set<Course>>(new Set());
 
   /* ---------- fetch profile on login ---------- */
   useEffect(() => {
@@ -62,6 +63,77 @@ const Dashboard: React.FC = () => {
 
     fetchProfileData();
   }, [user, loading, navigate]);
+
+  const handleCourseClick = (course: Course) => {
+    setSelectedCourses(prev => {
+      const newSet = new Set(prev);
+      
+      if (course.variant === 'calendar') {
+        // For calendar items, we're selecting/deselecting a specific instance
+        const existingCourse = Array.from(newSet).find(c => 
+          c.variant === 'calendar' && c.description === course.description
+        );
+        
+        if (existingCourse) {
+          // If this calendar instance is already selected, deselect it
+          newSet.delete(existingCourse);
+          // Also deselect the class if it was selected
+          const classCourse = Array.from(newSet).find(c => 
+            c.variant === 'card' && c.title === course.title
+          );
+          if (classCourse) {
+            newSet.delete(classCourse);
+          }
+        } else {
+          // If selecting a new calendar instance, add it
+          newSet.add(course);
+        }
+      } else {
+        // For class items, we're selecting/deselecting all instances
+        const existingCourse = Array.from(newSet).find(c => 
+          c.variant === 'card' && c.title === course.title
+        );
+        
+        if (existingCourse) {
+          // If the class is selected, deselect it and all its calendar instances
+          newSet.delete(existingCourse);
+          // Remove all calendar instances of this class
+          Array.from(newSet).forEach(c => {
+            if (c.variant === 'calendar' && c.title === course.title) {
+              newSet.delete(c);
+            }
+          });
+        } else {
+          // If selecting the class, add it and all its calendar instances
+          newSet.add(course);
+          // Add all calendar instances of this class
+          courseListWithColors.forEach(c => {
+            if (c.num === course.title) {
+              newSet.add({
+                id: c.num,
+                title: c.num,
+                description: c.title,
+                color: c.color || '#2774AE',
+                location: c.location,
+                instructor: c.instructor,
+                day: c.day,
+                stime: c.stime,
+                etime: c.etime,
+                variant: 'calendar'
+              });
+            }
+          });
+        }
+      }
+      
+      console.log('Selected Courses:', Array.from(newSet).map(c => ({
+        title: c.title,
+        description: c.description,
+        variant: c.variant
+      })));
+      return newSet;
+    });
+  };
 
   /* ---------- loading gates ---------- */
   if (loading || !profileData) {
@@ -137,12 +209,20 @@ const Dashboard: React.FC = () => {
           year={userProfileData.year}
           id={userProfileData.id}            
         />
-        <Classes classes={uniqueClasses} />
+        <Classes 
+          classes={uniqueClasses} 
+          onCourseClick={handleCourseClick}
+          selectedCourses={selectedCourses}
+        />
       </div>
 
       <div className="match-grid-container">
         <MatchGrid searchTerm={searchTerm} />
-        <WeekScheduleComponent classSchedule={courseListWithColors} />
+        <WeekScheduleComponent 
+          classSchedule={courseListWithColors} 
+          onCourseClick={handleCourseClick}
+          selectedCourses={selectedCourses}
+        />
       </div>
 
       <div className="profile-box right-profile">

@@ -44,11 +44,17 @@ function getUniqueStartTimes(entries: ClassEntry[]): string[] {
 
 type WeekScheduleProps = {
   classSchedule: ClassEntry[];
+  onCourseClick?: (course: Course) => void;
+  selectedCourses?: Set<Course>;
 };
 
 const days = ["MO", "TU", "WE", "TH", "FR"];
 
-const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ classSchedule }) => {
+const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ 
+  classSchedule,
+  onCourseClick,
+  selectedCourses = new Set()
+}) => {
   const times = getUniqueStartTimes(classSchedule);
 
   // Convert ClassEntry to Course format
@@ -56,12 +62,13 @@ const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ classSchedule }) =
     id: entry.num,
     title: entry.num,
     description: entry.title,
-    color: entry.color || '#2774AE', // Use the color from ClassEntry if available
+    color: entry.color || '#2774AE',
     location: entry.location,
     instructor: entry.instructor,
     day: entry.day,
     stime: entry.stime,
-    etime: entry.etime
+    etime: entry.etime,
+    variant: 'calendar'
   });
 
   return (
@@ -87,6 +94,8 @@ const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ classSchedule }) =
                     <CourseInterface 
                       course={convertToCourse(course)}
                       variant="calendar"
+                      onClick={onCourseClick}
+                      selectedCourses={selectedCourses}
                     />
                   )}
                 </div>
