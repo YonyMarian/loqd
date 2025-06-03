@@ -22,3 +22,7 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+*.env*
+
+node_modules/
