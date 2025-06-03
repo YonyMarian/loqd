@@ -1,6 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signUp } from '../lib/session'
-import { Link } from 'react-router-dom';
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
 import {supabase} from '../lib/supabase';
@@ -58,6 +57,9 @@ const SignUp: React.FC = () => {
       alert('❌ Error during sign up, please try again');
     }
     console.log(form);
+
+    // const { data } = supabase.auth.onAuthStateChange((event, session) => 
+    //   {  console.log(event, session) })
   };
 
 
