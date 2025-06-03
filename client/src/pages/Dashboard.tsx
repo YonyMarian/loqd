@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
-import Chat from '../components/Chat';
+import Chat from '../pages/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 
 import '../styles/Dashboard.css';
 
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
+// import { useAuth } from '../hooks/useAuth';
 import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 
 interface UserProfileInterface {
