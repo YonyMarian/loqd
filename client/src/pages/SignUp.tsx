@@ -137,10 +137,10 @@ const SignUp: React.FC = () => {
         }
       }
 
-      /* ---------- done: show toast + navigate ---------- */
-      alert("✅ Account created successfully!");
-      // Tiny delay so state updates land before the redirect
-      setTimeout(() => navigate("/dashboard"), 100);
+      /* ---------- done: show success message ---------- */
+      alert("✅ Account created successfully! Please upload your class schedule before continuing.");
+      // Remove the immediate redirect - let user upload calendar first
+      // The UploadCal component will handle navigation to dashboard after upload
     } else {
       console.log("No user in signup result:", result);
       alert("Something went wrong with account creation");
