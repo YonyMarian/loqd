@@ -58,8 +58,8 @@ const SignUp: React.FC = () => {
     }
     console.log(form);
 
-    const { data } = supabase.auth.onAuthStateChange((event, session) => 
-      {  console.log(event, session) })
+    // const { data } = supabase.auth.onAuthStateChange((event, session) => 
+    //   {  console.log(event, session) })
   };
 
 
