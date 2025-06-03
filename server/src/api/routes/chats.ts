@@ -1,48 +1,88 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import supabase from '../../../supabase';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
+import { google } from 'googleapis';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const router = express.Router();
 
+const oauth2Client = new google.auth.OAuth2(
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_SECRET,
+    'https://developers.google.com/oauthplayground' // Must match redirect URI from refresh token generation
+  );
+  
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+  });
+  
+  async function getAccessToken(): Promise<string> {
+    try {
+      const accessTokenResponse = await oauth2Client.getAccessToken();
+      if (!accessTokenResponse.token) {
+        throw new Error('No access token returned');
+      }
+      return accessTokenResponse.token;
+    } catch (error) {
+      console.error('Error getting access token:', error);
+      throw error;
+    }
+  }
+  
 // Create a new chat
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
     const { name, userIds } = req.body; // userIds: array of user IDs to add (including creator)
     const creatorId = req.headers['x-user-id'] as string; // Assume user ID is passed in header
+    
+    console.log('Creating chat with:', { name, userIds, creatorId });
+    
     if (!creatorId || !userIds || !Array.isArray(userIds) || userIds.length === 0) {
+        console.error('Missing required fields:', { creatorId, userIds });
         return res.status(400).json({ error: 'Missing required fields' });
     }
     try {
         // 1. Create chat
+        console.log('Creating chat in database...');
         const { data: chat, error: chatError } = await supabase
             .from('chats')
             .insert([{ id: uuidv4(), name, created_by: creatorId }])
             .select()
             .single();
-        if (chatError) throw chatError;
+            
+        if (chatError) {
+            console.error('Error creating chat:', chatError);
+            throw chatError;
+        }
+        console.log('Chat created:', chat);
 
         // 2. Add members (status: 'accepted' for creator, 'invited' for others)
+        console.log('Adding members to chat...');
         const members = userIds.map((uid: string) => ({
             id: uuidv4(),
             chat_id: chat.id,
             user_id: uid,
-            joined_at: new Date().toISOString(),
             invite_status: uid === creatorId ? 'accepted' : 'invited',
         }));
+        
         const { error: membersError } = await supabase.from('chat_members').insert(members);
-        if (membersError) throw membersError;
+        if (membersError) {
+            console.error('Error adding members:', membersError);
+            throw membersError;
+        }
+        console.log('Members added successfully');
 
         res.status(201).json({ chat });
     } catch (err: any) {
+        console.error('Failed to create chat:', err);
         res.status(500).json({ error: err.message || 'Failed to create chat' });
     }
 });
 
 // Invite a user to a chat
-router.post('/:chatId/invite', async (req, res) => {
+router.post('/:chatId/invite', async (req: Request, res: Response) => {
     const { chatId } = req.params;
     const { receiverId, receiverEmail } = req.body;
     const senderId = req.headers['x-user-id'] as string;
@@ -55,7 +95,6 @@ router.post('/:chatId/invite', async (req, res) => {
             id: uuidv4(),
             chat_id: chatId,
             user_id: receiverId,
-            joined_at: new Date().toISOString(),
             invite_status: 'invited',
         });
         if (memberError) throw memberError;
@@ -74,14 +113,40 @@ router.post('/:chatId/invite', async (req, res) => {
         if (inviteError) throw inviteError;
 
         // 3. Send email to receiver with invite link (containing token)
-        // Configure nodemailer transporter (using Gmail SMTP)
+        console.log('Setting up email transporter...');
+        
+        const accessToken = await getAccessToken();
+        console.log('Access token obtained successfully');
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
+                type: 'OAuth2',
                 user: 'getloqd@gmail.com',
-                pass: process.env.GETLOQD_GMAIL_APP_PASSWORD, // Use an app password, not your real password
+                clientId: process.env.GMAIL_CLIENT_ID,
+                clientSecret: process.env.GMAIL_CLIENT_SECRET,
+                refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+                accessToken: accessToken,
             },
         });
+
+        // Verify the connection configuration
+        console.log('Verifying SMTP connection...');
+        try {
+            await transporter.verify();
+            console.log('✅ SMTP connection verified successfully');
+        } catch (verifyError: any) {
+            console.error('❌ SMTP connection verification failed:', {
+                code: verifyError.code,
+                command: verifyError.command,
+                response: verifyError.response,
+                responseCode: verifyError.responseCode,
+                stack: verifyError.stack
+            });
+            throw verifyError;
+        }
+
+        console.log('Email transporter set up, creating mail options...');
         const inviteLink = `https://loqd.app/invitations/accept?token=${token}`;
         const mailOptions = {
             from: 'getloqd@gmail.com',
@@ -89,7 +154,23 @@ router.post('/:chatId/invite', async (req, res) => {
             subject: 'You have been invited to join a chat on Loqd',
             html: `<p>You have been invited to join a chat. <a href="${inviteLink}">Click here to accept or decline the invitation</a>.</p>`,
         };
-        await transporter.sendMail(mailOptions);
+        console.log('📧 Attempting to send email to:', receiverEmail);
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            console.log('✅ Email sent successfully!');
+            console.log('📨 Message ID:', info.messageId);
+            console.log('📨 Preview URL:', nodemailer.getTestMessageUrl(info));
+        } catch (emailError: any) {
+            console.error('❌ Error sending email:', {
+                error: emailError.message,
+                code: emailError.code,
+                command: emailError.command,
+                response: emailError.response,
+                responseCode: emailError.responseCode,
+                stack: emailError.stack
+            });
+            throw emailError;
+        }
 
         res.status(201).json({ message: 'Invitation sent', token });
     } catch (err: any) {
@@ -98,7 +179,7 @@ router.post('/:chatId/invite', async (req, res) => {
 });
 
 // Accept or decline an invitation (from email link)
-router.post('/invitations/:token', async (req, res) => {
+router.post('/invitations/:token', async (req: Request, res: Response) => {
     const { token } = req.params;
     const { action } = req.body; // 'accept' or 'decline'
     const userId = req.headers['x-user-id'] as string;
@@ -175,7 +256,7 @@ router.get('/invitations/accept', async (req, res) => {
 });
 
 // List chats for the current user
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
     const userId = req.headers['x-user-id'] as string;
     if (!userId) {
         return res.status(400).json({ error: 'Missing user ID' });
@@ -208,13 +289,13 @@ router.get('/', async (req, res) => {
 });
 
 // List messages in a chat
-router.get('/:chatId/messages', async (req, res) => {
+router.get('/:chatId/messages', async (req: Request, res: Response) => {
     // TODO: Implement message listing
     res.status(501).json({ message: 'Not implemented' });
 });
 
 // Send a message in a chat
-router.post('/:chatId/messages', async (req, res) => {
+router.post('/:chatId/messages', async (req: Request, res: Response) => {
     // TODO: Implement sending a message
     res.status(501).json({ message: 'Not implemented' });
 });

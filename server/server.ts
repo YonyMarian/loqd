@@ -1,12 +1,27 @@
 import express from 'express';
 import cors from 'cors';
-import apiRoutes from './src/api/index';
+import dotenv from 'dotenv';
+import path from 'path';
+import apiRoutes from './src/api';
+
+// Load environment variables
+const result = dotenv.config();
+if (result.error) {
+    console.error('Error loading .env file:', result.error);
+} else {
+    console.log('Environment variables loaded successfully');
+    console.log('Current working directory:', process.cwd());
+    console.log('Environment variables:', {
+        hasPassword: !!process.env.GETLOQD_GMAIL_APP_PASSWORD,
+        passwordLength: process.env.GETLOQD_GMAIL_APP_PASSWORD?.length
+    });
+}
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Mount all API routes
+// Mount API routes
 app.use('/api', apiRoutes);
 
 // Basic health check route
