@@ -1,22 +1,76 @@
 import React from 'react';
 import '../styles/Calendar.css'; // You can keep using this for shared styles
+import CourseInterface, { Course } from './CourseInterface';
 
-const classSchedule = [
-  { day: "Monday", time: "8:00 AM", title: "EC ENGR 3 Lec 1", location: "Boelter Hall 3400" },
-  { day: "Monday", time: "10:00 AM", title: "PHYSICS 1C Dis 2B", location: "Physics and Astronomy" },
-  { day: "Monday", time: "2:00 PM", title: "PHYSICS 1C Lec 2", location: "Pavilion 1240B" },
-  { day: "Monday", time: "4:00 PM", title: "COM SCI 35L Lec 1", location: "Franz Hall 1178" },
-  { day: "Tuesday", time: "10:00 AM", title: "EC ENGR 3 Lab 1C", location: "Engr IV 18132J" },
-  { day: "Tuesday", time: "2:00 PM", title: "PHYSICS 1C Lec 2", location: "Pavilion 1240B" },
-  { day: "Thursday", time: "2:00 PM", title: "PHYSICS 1C Lec 2", location: "Pavilion 1240B" },
-  { day: "Thursday", time: "4:00 PM", title: "COM SCI 35L Lec 1", location: "Franz Hall 1178" },
-  { day: "Friday", time: "10:00 AM", title: "COM SCI 35L Dis 1A", location: "Royce Hall 154" },
-];
+type ClassEntry = {
+  day: string;
+  stime: string;
+  etime: string;
+  num: string;
+  title: string;
+  location: string;
+  instructor: string;
+  color?: string; // Add color to ClassEntry
+};
 
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const times = ["8:00 AM", "10:00 AM", "2:00 PM", "4:00 PM"];
+function getUniqueStartTimes(entries: ClassEntry[]): string[] {
+  const timeSet = new Set<string>();
 
-const WeekScheduleComponent: React.FC = () => {
+  for (const entry of entries) {
+    timeSet.add(entry.stime);
+  }
+
+  return Array.from(timeSet).sort((a, b) => {
+    const toMinutes = (time: string) => {
+      // Example input: "1:00 AM" or "12:30 PM"
+      const [timePart, meridiem] = time.split(' ');
+      const [hourStr, minuteStr] = timePart.split(':');
+      let hour = parseInt(hourStr, 10);
+      const minute = parseInt(minuteStr, 10);
+
+      // Convert 12 AM to 0, 12 PM stays 12, other PM hours add 12
+      if (meridiem.toUpperCase() === 'AM') {
+        if (hour === 12) hour = 0;
+      } else { // PM
+        if (hour !== 12) hour += 12;
+      }
+
+      return hour * 60 + minute;
+    };
+
+    return toMinutes(a) - toMinutes(b);
+  });
+}
+
+type WeekScheduleProps = {
+  classSchedule: ClassEntry[];
+  onCourseClick?: (course: Course) => void;
+  selectedCourses?: Set<Course>;
+};
+
+const days = ["MO", "TU", "WE", "TH", "FR"];
+
+const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ 
+  classSchedule,
+  onCourseClick,
+  selectedCourses = new Set()
+}) => {
+  const times = getUniqueStartTimes(classSchedule);
+
+  // Convert ClassEntry to Course format
+  const convertToCourse = (entry: ClassEntry): Course => ({
+    id: entry.num,
+    title: entry.num,
+    description: entry.title,
+    color: entry.color || '#2774AE',
+    location: entry.location,
+    instructor: entry.instructor,
+    day: entry.day,
+    stime: entry.stime,
+    etime: entry.etime,
+    variant: 'calendar'
+  });
+
   return (
     <div className="calendar-card">
       {/* <div className="calendar-header">
@@ -29,18 +83,20 @@ const WeekScheduleComponent: React.FC = () => {
             <div className="day-col" key={day}>{day}</div>
           ))}
         </div>
-        {times.map((time) => (
-          <div className="time-row" key={time}>
-            <div className="time-col">{time}</div>
+        {times.map((stime) => (
+          <div className="time-row" key={stime}>
+            <div className="time-col">{stime}</div>
             {days.map((day) => {
-              const course = classSchedule.find(c => c.day === day && c.time === time);
+              const course = classSchedule.find(c => c.day === day && c.stime === stime);
               return (
-                <div className="day-cell" key={day + time}>
+                <div className="day-cell" key={day + stime}>
                   {course && (
-                    <div className="class-box">
-                      <div className="title">{course.title}</div>
-                      <div className="location">{course.location}</div>
-                    </div>
+                    <CourseInterface 
+                      course={convertToCourse(course)}
+                      variant="calendar"
+                      onClick={onCourseClick}
+                      selectedCourses={selectedCourses}
+                    />
                   )}
                 </div>
               );

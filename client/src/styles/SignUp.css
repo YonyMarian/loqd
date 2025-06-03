@@ -37,20 +37,30 @@ body {
     line-height: 1.6;
   }
   
-  .signup-right {
+.signup-right {
     flex: 1;
     background-color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 2rem;
-  }
+    overflow-y: auto; /* Add scroll if content exceeds height */
+    max-height: 100vh; /* Limit height to viewport height */
+}
   
   .signup-form-container {
+    padding-top: 5rem;
     width: 100%;
     max-width: 440px;
+    padding-bottom: 2rem;
   }
   
+  .calendar-upload-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+
   .signup-form-container h2 {
     font-size: 2.2rem;
     font-weight: 600;
@@ -84,7 +94,8 @@ body {
   .signup-form input[type="text"],
   .signup-form input[type="email"],
   .signup-form input[type="password"],
-  .signup-form input[type="file"] {
+  .signup-form input[type="file"],
+  .signup-form input[type="number"] {
     margin-top: 0.5rem;
     padding: 0.75rem;
     font-size: 1rem;
@@ -97,6 +108,22 @@ body {
   .signup-form input:focus {
     border-color: #003b5c;
     outline: none;
+  }
+
+  /*
+  FOR GRADUATION_YEAR BOX
+  remove outside ticker/arrow thing
+  from https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp
+  */
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
   }
   
   .signup-button {

@@ -1,7 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { signUp } from '../lib/session'
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
 import {supabase} from '../lib/supabase';
@@ -13,10 +11,12 @@ type FormState = {
   //preferences: string[];
   profilePic: File | null;
   //scheduleFile: File | null;
+
+  major: string;
+  grad_year: number;
 };
 
 const SignUp: React.FC = () => {
-  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     username: '',
     password: '',
@@ -24,6 +24,8 @@ const SignUp: React.FC = () => {
     //preferences: [],
     profilePic: null,
     //scheduleFile: null,
+    major:'',
+    grad_year: 2025
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -39,28 +41,61 @@ const SignUp: React.FC = () => {
     e.preventDefault();
 
     try {
-      const result = await signUp(form.email, form.password, form.username);
+      const result = await signUp(form.email, form.password, form.username,
+                                  form.major, form.grad_year);
 
-      if (result) {
-        if (result.user) {
-          setUserId(result.user.id);
-          await supabase
-            .from('profiles')
-            .update({ email: form.email, full_name: form.username })
-            .eq('id', result.user.id);
-          navigate("/dashboard")
+      if (result && result.user) {
+        setUserId(result.user.id);
+        
+        let avatar_url = null;
+        
+        // Upload profile picture if one was selected
+        if (form.profilePic) {
+          const fileExt = form.profilePic.name.split('.').pop();
+          const fileName = `${result.user.id}-${Math.random()}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          const { error: uploadError, data } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, form.profilePic, {
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (uploadError) {
+            console.error('Error uploading avatar:', uploadError);
+          } else {
+            // Get the public URL using the newer method
+            const { data: urlData } = await supabase.storage
+              .from('avatars')
+              .createSignedUrl(filePath, 31536000); // URL valid for 1 year
+
+            avatar_url = urlData?.signedUrl;
+          }
         }
-        alert('✅ Account created (mock), now update calendar data');
-      }
-      else {
+
+        // Update profile with all information including avatar_url
+        await supabase
+          .from('profiles')
+          .upsert({ 
+            id: result.user.id,
+            email: form.email, 
+            full_name: form.username, 
+            major: form.major, 
+            grad_year: form.grad_year,
+            avatar_url: avatar_url
+          })
+          .select();
+
+        alert('✅ Account created successfully, now update calendar data');
+      } else {
         console.log(result);
-        alert('Something went wrong with account creation (mock)');
+        alert('Something went wrong with account creation');
       }
     } catch (error) {
       console.error('Error during sign up:', error);
       alert('❌ Error during sign up, please try again');
     }
-    console.log(form);
   };
 
 
@@ -97,6 +132,17 @@ const SignUp: React.FC = () => {
               Password
               <input type="password" name="password" value={form.password} onChange={handleChange} required />
             </label>
+
+            <label>
+              Major
+              <input type="text" name="major" value={form.major} onChange={handleChange} required />
+            </label>
+
+            <label>
+              Graduation Year
+              <input type="number" name="grad_year" min="2000" max="3000" value={form.grad_year} onChange={handleChange} required />
+            </label>
+
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
 
@@ -106,14 +152,14 @@ const SignUp: React.FC = () => {
               is successful (ie now exists a userId)
           */} 
           {userId && (
-          <label>
-            Upload .ics Schedule
-            <UploadCal userId={userId} />
-          </label> )}
-
-          <button>
-            <Link to="/dashboard">GO ONTO NEXT PAGE -- DIFFERENT FROM FORM SUBMIT</Link>
-          </button>
+          <div className="calendar-upload-section">
+            <label>
+              Upload .ics Schedule
+              <UploadCal userId={userId} />
+            </label> 
+          </div>
+          )}
+            
         </div>
       </div>
     </div>

@@ -1,52 +1,48 @@
 import React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type UploadCalProps = {
     userId: string | null;
 }
-// PASS USER ID AS PROP INTO COMPONENT!!!
 
 const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
     const [file, setFile] = useState<File|null>(null);
-    const [calendarData, setCalendarData] = useState<object | null>(null);
-
+    const [isUploading, setIsUploading] = useState(false);
+    const navigate = useNavigate();
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        // default behavior: 
         event.preventDefault();
         if (!file) {
             alert("Please select a file before uploading.");
             return;
         }
         if (!userId) {
-            alert("No userId")
+            alert("Please sign in to upload your schedule.");
             return;
-            // this should not be happening? see SignUp component
-            // uploadCal is conditionally shown only if userId exists
         }
-        // FormData = built in js class
+
+        setIsUploading(true);
         const formData = new FormData();
         formData.append("calendarFile", file);
         formData.append("user_id", userId);
-        // need userId to update profiles table in backend
-        // ^ see after this fetch
-
-
+        
         try {
-            let upload_res = await fetch("http://localhost:5000/calendar/upload_cal", {
-                // post = creating new entry at upload_cal
+            // Upload and parse calendar file
+            let upload_res = await fetch("http://localhost:5001/api/calendar/upload_cal", {
                 method: 'POST',
                 body: formData
-                // bc FormData obj, auto setes Content-Type = multipart/form-data
             });
+            
             if (!upload_res.ok) {
-                throw new Error("failed to upload file");
+                throw new Error(`Upload failed: ${upload_res.statusText}`);
             }
+            
             let schedule = await upload_res.json();
-            console.log("parsed cal data:", schedule);
-            setCalendarData(schedule);
-
-            let update_res = await fetch('http://localhost:5000/calendar/update_calendar', {
+            console.log("Parsed calendar data:", schedule);
+            
+            // Update user's profile with calendar data
+            let update_res = await fetch('http://localhost:5001/api/calendar/update_calendar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -54,35 +50,60 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
                     calendar_data: schedule
                 })
             });
+
             if (!update_res.ok) {
-                throw new Error("failed to update profile with schedule");
+                throw new Error(`Failed to update profile: ${update_res.statusText}`);
             }
 
-        }
-        catch (error: unknown) {
-            console.error("Error uploading file:" , error);
-
-            if (error instanceof Error)
+            alert('✅ Schedule uploaded successfully!');
+            navigate('/dashboard');
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            if (error instanceof Error) {
                 alert(`Error uploading file: ${error.message}`);
-            else 
-                alert("Error uploading file.");
+            } else {
+                alert('An unexpected error occurred. Please try again.');
+            }
+        } finally {
+            setIsUploading(false);
         }
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // .target = element that triggered event; in our case, <input>
-        // .files = specified by input type = "file"
-        // if above exists, will be a FileList object
-        if (event.target.files && event.target.files.length>0)
-            setFile(event.target.files[0]);
+        if (event.target.files && event.target.files.length > 0) {
+            const selectedFile = event.target.files[0];
+            if (selectedFile.name.endsWith('.ics')) {
+                setFile(selectedFile);
+            } else {
+                alert('Please select a valid .ics file');
+                event.target.value = '';
+            }
+        }
     };
 
     return (
-        <form id="uploadForm" encType="multipart/form-data">
-            <input type="file" name="calendarFile" onChange={handleChange}/>
-            <button onClick={handleClick} type="button">Upload</button>
-        </form>
-        // <script src="./upload.js"></script>
+        <div className="upload-calendar">
+            <form id="uploadForm" encType="multipart/form-data">
+                <div className="file-input-container">
+                    <input 
+                        type="file" 
+                        name="calendarFile" 
+                        onChange={handleChange} 
+                        accept=".ics"
+                        className="file-input"
+                        disabled={isUploading}
+                    />
+                </div>
+                <button 
+                    onClick={handleClick} 
+                    type="button"
+                    className="upload-button"
+                    disabled={!file || isUploading}
+                >
+                    {isUploading ? 'Uploading...' : 'Upload Schedule'}
+                </button>
+            </form>
+        </div>
     );
 };
 

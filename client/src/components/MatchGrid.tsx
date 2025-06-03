@@ -1,104 +1,147 @@
 import React, { useState, useEffect } from 'react';
 import MatchProfile from './MatchProfile';
 import '../styles/MatchProfile.css';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 
 interface MatchProfile {
-  id: number;
-  name: string;
-  image: string;
-  match_percentage: number;
+  id: string;
+  full_name: string;
+  avatar_url: string;
   major: string;
+  match_percentage?: number; // We'll calculate this later
+  calendar_data: any;
+  parsed_courses?: Array<{
+    num: string;
+    title: string;
+    day: string;
+    stime: string;
+    etime: string;
+    location: string;
+    instructor: string;
+  }>;
 }
 
 interface MatchGridProps {
   searchTerm: string;
+  filterCourses: Array<{
+    title: string;
+    description: string;
+    day?: string;
+    stime?: string;
+    etime?: string;
+    location?: string;
+  }>;
 }
 
-const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
-  const [profiles, setProfiles] = useState<MatchProfile[]>([
-    { 
-      id: 1, 
-      name: "John Doe", 
-      image: "/profile.png",
-      match_percentage: 85,
-      major: "Computer Science"
-    },
-    { 
-      id: 2, 
-      name: "Jane Smith", 
-      image: "/profile.png",
-      match_percentage: 92,
-      major: "Data Science"
-    },
-    { 
-      id: 3, 
-      name: "Mike Johnson", 
-      image: "/profile.png",
-      match_percentage: 78,
-      major: "Engineering"
-    },
-    { 
-      id: 4, 
-      name: "Sarah Williams", 
-      image: "/profile.png",
-      match_percentage: 88,
-      major: "Mathematics"
-    },
-    { 
-      id: 5, 
-      name: "David Brown", 
-      image: "/profile.png",
-      match_percentage: 95,
-      major: "Physics"
-    },
-    { 
-      id: 6, 
-      name: "Emily Davis", 
-      image: "/profile.png",
-      match_percentage: 82,
-      major: "Chemistry"
-    },
-    { 
-      id: 7, 
-      name: "Vishnu Lopez", 
-      image: "/profile.png",
-      match_percentage: 55,
-      major: "Public Affairs"
-    },
-    { 
-      id: 8, 
-      name: "Dylan Hernandez", 
-      image: "/profile.png",
-      match_percentage: 69,
-      major: "MCDB"
-    },
-  ]);
-  const [filteredProfiles, setFilteredProfiles] = useState<MatchProfile[]>(profiles);
+const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
+  const [profiles, setProfiles] = useState<MatchProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+  const { user } = useAuth();
+  const DEFAULT_LIMIT = 8;
 
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredProfiles(profiles);
-      return;
+    const fetchProfiles = async () => {
+      try {
+        // Reset showAll when search term changes
+        setShowAll(false);
+        
+        let query = supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url, major, calendar_data')
+          .neq('id', user?.id)
+          .order('full_name');
+
+        // Only apply limit if there's no search term
+        if (!searchTerm.trim() && !showAll) {
+          query = query.limit(DEFAULT_LIMIT);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Error fetching profiles:', error);
+          return;
+        }
+
+        // Parse calendar data for each profile and add match percentage
+        const profilesWithMatch = data.map(profile => ({
+          ...profile,
+          parsed_courses: parseCourseSchedule(profile.calendar_data || {}),
+          match_percentage: Math.floor(Math.random() * (95 - 60 + 1)) + 60
+        }));
+
+        setProfiles(profilesWithMatch);
+      } catch (error) {
+        console.error('Error in fetchProfiles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchProfiles();
+    }
+  }, [user, searchTerm, showAll]);
+
+  // Filter profiles based on search term and course matches
+  const filteredProfiles = profiles.filter(profile => {
+    // If no courses are selected, only filter by search term
+    if (filterCourses.length === 0) {
+      return !searchTerm.trim() ||
+        profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.major?.toLowerCase().includes(searchTerm.toLowerCase());
     }
 
-    const filtered = profiles.filter(profile =>
-      profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      profile.major.toLowerCase().includes(searchTerm.toLowerCase())
+    // If courses are selected, check both search term and course matches
+    const matchesSearch = !searchTerm.trim() ||
+      profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.major?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Check if profile has any of the selected courses
+    const hasMatchingCourse = profile.parsed_courses?.some(profileCourse => 
+      filterCourses.some(filterCourse => 
+        filterCourse.description === profileCourse.title
+      )
     );
-    setFilteredProfiles(filtered);
-  }, [searchTerm, profiles]);
+
+    return matchesSearch && hasMatchingCourse;
+  });
+
+  const handleShowMore = () => {
+    setShowAll(true);
+  };
+
+  if (loading) {
+    return <div className="loading">Loading profiles...</div>;
+  }
 
   return (
-    <div className="match-grid">
-      {filteredProfiles.map(profile => (
-        <MatchProfile 
-          key={profile.id} 
-          name={profile.name}
-          image={profile.image}
-          match_percentage={profile.match_percentage}
-          major={profile.major}
-        />
-      ))}
+    <div className="match-grid-container">
+      <div className="match-grid">
+        {filteredProfiles.map(profile => (
+          <MatchProfile 
+            key={profile.id}
+            name={profile.full_name}
+            image={profile.avatar_url || '/default-avatar.svg'}
+            match_percentage={profile.match_percentage || 0}
+            major={profile.major || 'Undeclared'}
+          />
+        ))}
+        {filteredProfiles.length === 0 && (
+          <div className="no-matches">
+            No matches found. Try adjusting your search criteria.
+          </div>
+        )}
+      </div>
+      
+      {!searchTerm && !showAll && profiles.length >= DEFAULT_LIMIT && (
+        <button className="show-more-button" onClick={handleShowMore}>
+          Show More Users
+        </button>
+      )}
     </div>
   );
 };
