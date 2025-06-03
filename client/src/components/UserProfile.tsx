@@ -6,7 +6,7 @@ interface UserProfileProps {
   image: string;
   match_percentage: number;
   major: string;
-  year: string;
+  year: number;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage, major, year }) => {
@@ -27,10 +27,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage
       </div>
       <div className="info-section">
         <h2 className="name">{name}</h2>
-        <p className="major">{year}</p>
+        <p className="major">Class of {year}</p>
         <p className="major">{major}</p>
       </div>
-      <div className="placeholder"></div>
+      <div className="placeholder">TODO: ADD BIO</div>
     </div>
   );
 };
