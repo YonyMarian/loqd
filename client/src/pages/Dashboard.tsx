@@ -11,6 +11,7 @@ import {supabase} from '../lib/supabase';
 
 
 const Dashboard: React.FC = () => {
+
     const [user, setUser] = useState<any|null>(null);
 
     useEffect(() => {
