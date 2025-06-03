@@ -1,0 +1,61 @@
+.bio-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.bio-form label {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.bio-form input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #D7D8E2;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.bio-form input[type="text"]:focus {
+    border-color: #2774AE;
+    outline: none;
+    background-color: #fff;
+}
+
+.bio-form button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 20px;
+    background-color: #2774AE;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.bio-form button:hover {
+    background-color: #1a5c8b;
+    transform: scale(1.02);
+}
+
+.bio-text {
+    color: #666;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0.5rem;
+    text-align: center;
+}
