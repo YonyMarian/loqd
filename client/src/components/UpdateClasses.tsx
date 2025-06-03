@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Course } from './CourseInterface';
 
-const UpdateClasses: React.FC = () => {
+interface UpdateClassesProps {
+  onUpdateClasses?: (updatedClasses: Course[]) => void;
+}
+
+const UpdateClasses: React.FC<UpdateClassesProps> = ({ onUpdateClasses }) => {
     const [file, setFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();

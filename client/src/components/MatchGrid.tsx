@@ -3,6 +3,7 @@ import MatchProfile from './MatchProfile';
 import '../styles/MatchProfile.css';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { parseCourseSchedule } from '../utils/parseCourseSchedule';
 
 interface MatchProfile {
   id: string;
@@ -10,13 +11,31 @@ interface MatchProfile {
   avatar_url: string;
   major: string;
   match_percentage?: number; // We'll calculate this later
+  calendar_data: any;
+  parsed_courses?: Array<{
+    num: string;
+    title: string;
+    day: string;
+    stime: string;
+    etime: string;
+    location: string;
+    instructor: string;
+  }>;
 }
 
 interface MatchGridProps {
   searchTerm: string;
+  filterCourses: Array<{
+    title: string;
+    description: string;
+    day?: string;
+    stime?: string;
+    etime?: string;
+    location?: string;
+  }>;
 }
 
-const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
+const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
   const [profiles, setProfiles] = useState<MatchProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
@@ -31,7 +50,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
         
         let query = supabase
           .from('profiles')
-          .select('id, full_name, avatar_url, major')
+          .select('id, full_name, avatar_url, major, calendar_data')
           .neq('id', user?.id)
           .order('full_name');
 
@@ -47,9 +66,10 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
           return;
         }
 
-        // Add a random match percentage for now
+        // Parse calendar data for each profile and add match percentage
         const profilesWithMatch = data.map(profile => ({
           ...profile,
+          parsed_courses: parseCourseSchedule(profile.calendar_data || {}),
           match_percentage: Math.floor(Math.random() * (95 - 60 + 1)) + 60
         }));
 
@@ -66,12 +86,29 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
     }
   }, [user, searchTerm, showAll]);
 
-  // Filter profiles based on search term
-  const filteredProfiles = profiles.filter(profile =>
-    !searchTerm.trim() ||
-    profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.major?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter profiles based on search term and course matches
+  const filteredProfiles = profiles.filter(profile => {
+    // If no courses are selected, only filter by search term
+    if (filterCourses.length === 0) {
+      return !searchTerm.trim() ||
+        profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.major?.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+
+    // If courses are selected, check both search term and course matches
+    const matchesSearch = !searchTerm.trim() ||
+      profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.major?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Check if profile has any of the selected courses
+    const hasMatchingCourse = profile.parsed_courses?.some(profileCourse => 
+      filterCourses.some(filterCourse => 
+        filterCourse.description === profileCourse.title
+      )
+    );
+
+    return matchesSearch && hasMatchingCourse;
+  });
 
   const handleShowMore = () => {
     setShowAll(true);
