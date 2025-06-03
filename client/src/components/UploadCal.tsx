@@ -35,7 +35,7 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
 
 
         try {
-            let upload_res = await fetch("http://localhost:5000/calendar/upload_cal", {
+            let upload_res = await fetch("http://localhost:5001/calendar/upload_cal", {
                 // post = creating new entry at upload_cal
                 method: 'POST',
                 body: formData
@@ -48,7 +48,7 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             console.log("parsed cal data:", schedule);
             setCalendarData(schedule);
 
-            let update_res = await fetch('http://localhost:5000/calendar/update_calendar', {
+            let update_res = await fetch('http://localhost:5001/calendar/update_calendar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
