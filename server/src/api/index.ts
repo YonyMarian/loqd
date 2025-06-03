@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import calendarRoutes from './routes/calendar';
+import profilesRoutes from './routes/profiles';
 
 const router = Router();
 
@@ -10,5 +11,7 @@ router.get('/', (req, res) => {
 
 // Mount calendar routes
 router.use('/calendar', calendarRoutes);
+// Mount profiles routes
+router.use('/profiles', profilesRoutes);
 
 export default router;
