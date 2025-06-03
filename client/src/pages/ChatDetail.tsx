@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
+import { supabase } from '../lib/supabase';
 import '../styles/ChatDetail.css';
 
 interface Message {
@@ -26,57 +27,55 @@ const ChatDetail: React.FC = () => {
   const navigate = useNavigate();
   const [newMessage, setNewMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [conversations, setConversations] = useState<ChatPreview[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const res = await fetch('/api/chats', {
+        headers: { 'x-user-id': user.id }
+      });
+      const data = await res.json();
+      setConversations(data.map((chat: any) => ({
+        id: chat.id,
+        name: chat.name || 'Untitled Chat',
+        lastMessage: '',
+        timestamp: new Date(),
+        unread: 0,
+        avatar: '/profile.png',
+        online: false
+      })));
+    };
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!chatId) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const res = await fetch(`/api/chats/${chatId}/messages`, {
+        headers: { 'x-user-id': user.id }
+      });
+      if (res.status === 200) {
+        const data = await res.json();
+        setMessages(data.map((msg: any) => ({
+          id: msg.id,
+          sender: msg.sender_id,
+          content: msg.content,
+          timestamp: new Date(msg.created_at),
+          isUser: msg.sender_id === user.id
+        })));
+      }
+    };
+    fetchMessages();
+  }, [chatId]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
-
-  // Sample data - replace with actual data fetching
-  const conversations: ChatPreview[] = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      lastMessage: "Same here! I'm free tomorrow after 2 PM if you want to meet at Powell Library.",
-      timestamp: new Date(Date.now() - 3400000),
-      unread: 2,
-      avatar: "/profile.png",
-      online: true
-    },
-    {
-      id: 2,
-      name: "Michael Park",
-      lastMessage: "Did you get the notes from today's lecture?",
-      timestamp: new Date(Date.now() - 7200000),
-      unread: 0,
-      avatar: "/profile.png",
-      online: false
-    },
-    // Add more conversations as needed
-  ];
-
-  const messages: Message[] = [
-    {
-      id: 1,
-      sender: "Sarah Chen",
-      content: "Hey! Are you free to study tomorrow?",
-      timestamp: new Date(Date.now() - 3600000),
-      isUser: false
-    },
-    {
-      id: 2,
-      sender: "You",
-      content: "Yes, I'm free! What time works for you?",
-      timestamp: new Date(Date.now() - 3500000),
-      isUser: true
-    },
-    {
-      id: 3,
-      sender: "Sarah Chen",
-      content: "Same here! I'm free tomorrow after 2 PM if you want to meet at Powell Library.",
-      timestamp: new Date(Date.now() - 3400000),
-      isUser: false
-    }
-  ];
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -177,4 +176,4 @@ const ChatDetail: React.FC = () => {
   );
 };
 
-export default ChatDetail; 
+export default ChatDetail;

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import '../styles/Chat.css';
 
 interface ChatPreview {
@@ -12,47 +13,38 @@ interface ChatPreview {
   online: boolean;
 }
 
+interface ChatApi {
+  id: string;
+  name: string;
+  created_by: string;
+  status: string;
+}
+
 const Chat: React.FC = () => {
   const navigate = useNavigate();
+  const [conversations, setConversations] = useState<ChatPreview[]>([]);
 
-  const conversations: ChatPreview[] = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      lastMessage: "Same here! I'm free tomorrow after 2 PM if you want to meet at Powell Library.",
-      timestamp: new Date(Date.now() - 3400000),
-      unread: 2,
-      avatar: "/profile.png",
-      online: true
-    },
-    {
-      id: 2,
-      name: "Michael Park",
-      lastMessage: "Did you get the notes from today's lecture?",
-      timestamp: new Date(Date.now() - 7200000),
-      unread: 0,
-      avatar: "/profile.png",
-      online: false
-    },
-    {
-      id: 3,
-      name: "David Kim",
-      lastMessage: "Thanks for helping with the project!",
-      timestamp: new Date(Date.now() - 172800000),
-      unread: 0,
-      avatar: "/profile.png",
-      online: false
-    },
-    {
-      id: 4,
-      name: "Sophia Patel",
-      lastMessage: "Are you going to the hackathon this weekend?",
-      timestamp: new Date(Date.now() - 259200000),
-      unread: 0,
-      avatar: "/profile.png",
-      online: true
-    }
-  ];
+  useEffect(() => {
+    const fetchChats = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const res = await fetch('/api/chats', {
+        headers: { 'x-user-id': user.id }
+      });
+      const data: ChatApi[] = await res.json();
+      // Map API data to ChatPreview
+      setConversations(data.map(chat => ({
+        id: chat.id,
+        name: chat.name || 'Untitled Chat',
+        lastMessage: '', // You can fetch last message in detail view
+        timestamp: new Date(), // Placeholder, update if you fetch last message
+        unread: 0, // Placeholder, update if you track unread
+        avatar: '/profile.png', // Placeholder, update if you have avatars
+        online: false // Placeholder, update if you track online
+      })));
+    };
+    fetchChats();
+  }, []);
 
   const formatTime = (date: Date) => {
     const now = new Date();
