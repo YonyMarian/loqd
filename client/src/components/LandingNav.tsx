@@ -1,22 +1,35 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
 const LandingNav: React.FC = () => {
     return (
-        <header>
-            <nav className="bg-yellow-500 shadow-md py-4 px-6">
-                <div className="max-w-8xl mx-auto flex justify-between items-center">
-                    <div className="flex items-right">
-                        <a href="/"><img src={logo} alt="Loqd Logo" className="h-16 w-auto mr-2" /></a>
+        <nav className="bg-[#1a5c8b] shadow-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between h-16">
+                    <div className="flex items-center">
+                        <Link to="/" className="flex-shrink-0 flex items-center">
+                            <img src={logo} alt="Loqd Logo" className="h-8 w-auto" />
+                        </Link>
                     </div>
-                    <div className="space-x-4">
-                        <a href="/about" className="text-gray-700 hover:text-blue-600">About Loqd</a>
-                        <a href="/suggestion-box" className="text-gray-700 hover:text-blue-600">Give Feedback</a>
+                    <div className="flex items-center space-x-4">
+                        <Link
+                            to="/signin"
+                            className="text-white hover:text-[#f8f9fa] px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            to="/signup"
+                            className="bg-white text-[#1a5c8b] hover:bg-[#f8f9fa] px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                            Get Started
+                        </Link>
                     </div>
                 </div>
-            </nav>
-        </header>
+            </div>
+        </nav>
     );
-}
+};
 
 export default LandingNav;
