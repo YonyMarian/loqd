@@ -173,6 +173,6 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
     />
   </div>
 );
-
+};
 
 export default MatchGrid;
