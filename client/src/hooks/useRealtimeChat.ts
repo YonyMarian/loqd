@@ -35,11 +35,13 @@ export default function useRealtimeChat(
         .select('*')
         .eq('id', own_id)
         .single();
-    if (error) {
+    if (error || !data) {
         console.log("error retrieving own profile info:", error);
+        setOwnUsername("Own user not found");
+        return;
     }
     console.log("own data.full_name in userealtimechat:", data.full_name);
-    setOwnUsername(data.full_name);
+    setOwnUsername(data?.full_name || "No other name found");
   };
   const fetchOtherUsername = async () => {
     let {data, error} = await supabase
@@ -49,9 +51,11 @@ export default function useRealtimeChat(
         .single();
     if (error) {
         console.log("error retrieving other profile info:", error);
+        setOtherUsername("Other user not found");
+        return;
     }
-    console.log("other data.full_name in userealtimechat:", data.full_name);
-    setOtherUsername(data.full_name);
+    console.log("other data.full_name in userealtimechat:", data?.full_name||"its null, userealtime hook");
+    setOtherUsername(data?.full_name || "No own name found");
   };
 
   const [chatMessages, setChatMessages] = useState<printedChatMessage[]>([]);
@@ -74,6 +78,49 @@ export default function useRealtimeChat(
         }));
         console.log("fetched messages:", mapped);
         setChatMessages(mapped);
+        if (mapped.length === 0) {
+            console.log("triggering insertion into rooms table");
+            const createRoom = async () => {
+                if (!roomName){
+                    console.log("no room name, not inserting into 'rooms'");
+                    return;
+                }
+                if (!own_id) {
+                    console.log("no user id, not inserting into 'rooms'");
+                    return;
+                }
+                var {error: error1} = await supabase
+                    .from('rooms')
+                    .upsert({
+                        member_id: own_id, 
+                        room_name: roomName
+                }, {
+                    onConflict: 'member_id, room_name',
+                    ignoreDuplicates: true
+                });
+                if (error1) {
+                    console.log("error creating own row in rooms table:", error1);
+                }
+
+                if (!other_id) {
+                    console.log("no user id, not inserting into 'rooms'");
+                    return;
+                }
+                var {error: error2} = await supabase
+                    .from('rooms')
+                    .upsert({
+                        member_id: other_id,
+                        room_name: roomName
+                }, {
+                    onConflict: 'member_id, room_name',
+                    ignoreDuplicates: true
+                });
+                if (error2) {
+                    console.log("error creating others row in rooms table:", error2);
+                }
+            };
+            createRoom();
+        }
       }
     };
 

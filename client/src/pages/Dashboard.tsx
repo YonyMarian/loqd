@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
-import ChatWrapper from './ChatWrapper';
+import ChatInstance from '../components/ChatInstance';
+import ChatContainer from './ChatContainer.tsx';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 
@@ -111,11 +112,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="profile-box right-profile">
-        <ChatWrapper ownUserId={userProfileData.id} otherUserId={otherId}/>
+        <ChatContainer ownUserId={userProfileData.id} otherUserId={otherId}/>
       </div>
     </div>
   );
 };
-// TODO: NEED TO GET OTHERUSERID FROM MATCH GRID SOMEHOW!!!!!
 
 export default Dashboard;

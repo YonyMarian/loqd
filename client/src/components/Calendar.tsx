@@ -48,7 +48,7 @@ const days = ["MO", "TU", "WE", "TH", "FR"];
 
 const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({ classSchedule }) => {
   const times = getUniqueStartTimes(classSchedule);
-  console.log(times);
+  //console.log(times);
   return (
     <div className="calendar-card">
       {/* <div className="calendar-header">
