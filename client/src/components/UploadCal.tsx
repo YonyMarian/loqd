@@ -7,6 +7,7 @@ type UploadCalProps = {
 }
 
 const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
+    console.log(`API path should be: ${import.meta.env.VITE_API_URL}`)
     const [file, setFile] = useState<File|null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();
