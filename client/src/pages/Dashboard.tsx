@@ -24,12 +24,12 @@ interface UserProfileInterface {
   calendar_data: any;
   grad_year: number;
   major: string;
+  bio: string;
 }
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-
   const [profileData, setProfileData] = useState<UserProfileInterface | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourses, setSelectedCourses] = useState<Set<Course>>(new Set());
@@ -157,6 +157,7 @@ const Dashboard: React.FC = () => {
     year: profileData.grad_year || 2025,
     id: profileData.id,
     calendar_data: profileData.calendar_data,
+    bio: profileData.bio || "",
   };
 
   const courseList = parseCourseSchedule(userProfileData.calendar_data || {});
@@ -212,7 +213,8 @@ const Dashboard: React.FC = () => {
           match_percentage={userProfileData.match_percentage}
           major={userProfileData.major}
           year={userProfileData.year}
-          id={userProfileData.id}            
+          id={userProfileData.id}
+          bio={userProfileData.bio}            
         />
         <Classes 
           classes={uniqueClasses} 
