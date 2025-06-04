@@ -1,20 +1,22 @@
 import { FormEvent } from 'react';
 import ChatMessage from './ChatMessage.tsx';
-import useRealtimeChat, { ChatMessage as MessageType } from '../hooks/useRealtimeChat.ts';
+import useRealtimeChat, { printedChatMessage } from '../hooks/useRealtimeChat.ts';
 import useChatScroll from '../hooks/useChatScroll.ts';
 import '../styles/chat.css';
 
 interface RealtimeChatProps {
   roomName: string;
-  username: string;
+  // ownUsername: string;
+  // otherUsername: string;
   ownUserId: string;
   otherUserId: string;
-  messages?: MessageType[];
-  onMessage?: (messages: MessageType[]) => void;
+  messages?: printedChatMessage[];
+  // onMessage?: (messages: MessageType[]) => void;
 }
 
-export default function RealtimeChat({ roomName, username, ownUserId, otherUserId, messages = [], onMessage }: RealtimeChatProps) {
-  const { chatMessages, sendMessage } = useRealtimeChat(roomName, username, messages, onMessage);
+export default function RealtimeChat({ roomName, ownUserId, otherUserId, messages = []}: RealtimeChatProps) {
+  // const { chatMessages, sendMessage } = useRealtimeChat(roomName, ownUserId, otherUserId, messages, onMessage);
+  const { chatMessages, sendMessage } = useRealtimeChat(roomName, ownUserId, otherUserId, messages);
   const messagesEndRef = useChatScroll(chatMessages);
 
   const handleSend = (e: FormEvent<HTMLFormElement>) => {
@@ -30,7 +32,7 @@ export default function RealtimeChat({ roomName, username, ownUserId, otherUserI
     <div className="chat-container">
       <div className="chat-messages">
         {chatMessages.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} />
+          <ChatMessage key={msg.createdAt} message={msg} />
         ))}
         <div ref={messagesEndRef} />
       </div>

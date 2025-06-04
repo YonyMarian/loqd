@@ -5,7 +5,13 @@ interface ChatWrapperProps {
     otherUserId: string;
 }
 
+// interface Instance {
+
+// }
+
 const ChatWrapper:React.FC<ChatWrapperProps> = ({ownUserId, otherUserId}) => {
+    // const [allInstances, setAllInstances] = useState(null);
+
     return <div>
         <ChatInstance ownUserId={ownUserId} otherUserId={otherUserId}/>
     </div>
