@@ -221,7 +221,7 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
-      <div className="match-grid-container">
+      <div className="middle-container">
         <MatchGrid 
           searchTerm={searchTerm} 
           filterCourses={filterCourses}
