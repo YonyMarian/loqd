@@ -67,8 +67,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
 
     try {
       // Create a unique room name by combining user IDs
-      const roomName = user.id.slice(-12) + profile.id.slice(-12);
-      const flippedRoomName = profile.id.slice(-12) + user.id.slice(-12);
+      let roomName = user.id.slice(-12) + profile.id.slice(-12);
+      let flippedRoomName = profile.id.slice(-12) + user.id.slice(-12);
 
       // Check if room already exists
       const { data: existingRoom } = await supabase
@@ -99,7 +99,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
           return;
         }
       }
-
+      else if (!existingRoom && flippedRoom) {
+        // There is already a flippedRoom 
+        // (i.e. the other person started the conversation)
+        roomName = flippedRoomName;
+      }
       // Set the other user ID and navigate to chat
       setOtherId(profile.id);
       onClose();
