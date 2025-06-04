@@ -182,7 +182,6 @@ const SignUp: React.FC = () => {
           })
           .select();
 
-        alert('✅ Account created successfully, now update calendar data');
       } else {
         console.log(result);
         alert('Something went wrong with account creation');
@@ -220,7 +219,10 @@ const SignUp: React.FC = () => {
 
             <label>
               UCLA Email
-              <input type="email" name="email" value={form.email} onChange={handleChange} required />
+              <input type="email" name="email" value={form.email} onChange={handleChange}
+                pattern="[a-z.]*[@]\b(g\.)?ucla.edu"
+                title="Ensure your email ends with '@ucla.edu'"
+                required />
             </label>
 
             <label>
