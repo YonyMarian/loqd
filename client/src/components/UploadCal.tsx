@@ -29,7 +29,7 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
         
         try {
             // Upload and parse calendar file
-            let upload_res = await fetch("http://localhost:5001/api/calendar/upload_cal", {
+            let upload_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/upload_cal`, {
                 method: 'POST',
                 body: formData
             });
@@ -42,7 +42,7 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             console.log("Parsed calendar data:", schedule);
             
             // Update user's profile with calendar data
-            let update_res = await fetch('http://localhost:5001/api/calendar/update_calendar', {
+            let update_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/update_calendar`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
