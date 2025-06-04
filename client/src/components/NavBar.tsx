@@ -41,6 +41,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
         </div>
       </div>
       <div className="nav-bar-right">
+        {/*<div className="icon-background">        </div>*/}
         <div className="icon-background">
           <img 
             src="/logout.svg" 
@@ -50,9 +51,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
               signOut(); navigate('/');}
             }
             style={{ cursor: 'pointer' }}
-          />
-        </div>
-        <div className="icon-background">
+          />        
         </div>
         <div className="icon-background">
           <img src="/settings.svg" alt="Settings" className="settings" width={25} height={25}/>
