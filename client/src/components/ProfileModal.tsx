@@ -30,6 +30,7 @@ interface ProfileModalProps {
     stime?: string;
     etime?: string;
     location?: string;
+    color: string;
   }>;
 }
 
@@ -75,10 +76,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
           <div className="modal-header-info">
             <div className="modal-name-container">
               <h2>{profile.full_name}</h2>
-              <p className="modal-major">{profile.major || 'Undeclared'}</p>
+              <p className="modal-major">{profile.major || 'Undeclared'} '{profile.grad_year.toString().slice(-2)}</p>
             </div>
             <p className="modal-email">{profile.email}</p>
-            <p className="modal-graduation">Class of {profile.grad_year}</p>
             <button className="modal-connect-btn">Connect</button>
           </div>
         </div>
@@ -93,13 +93,24 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
           
           {matchResult.matchedClasses.length > 0 ? (
             <div className="modal-matched-classes">
-              {matchResult.matchedClasses.map((match, index) => (
-                <div key={index} className="modal-course">
-                  <h4>{match.courseNumber}</h4>
-                  {match.lecture && <p>Lecture: {match.lecture}</p>}
-                  {match.discussion && <p>Discussion: {match.discussion}</p>}
-                </div>
-              ))}
+              {matchResult.matchedClasses.map((match, index) => {
+                const matchingCourse = filterCourses.find(course => 
+                  course.description === match.courseNumber
+                );
+                
+                return (
+                  <div key={index} className="modal-course"
+                    style={{ 
+                      backgroundColor: matchingCourse?.color ? `${matchingCourse.color}15` : '#fff',
+                      borderLeft: `4px solid ${matchingCourse?.color || '#2774AE'}`
+                    }}
+                  >
+                    <h4>{match.courseNumber}</h4>
+                    {match.lecture && <p>Lecture: {match.lecture}</p>}
+                    {match.discussion && <p>Discussion: {match.discussion}</p>}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="no-courses">

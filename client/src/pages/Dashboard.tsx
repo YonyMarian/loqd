@@ -40,6 +40,7 @@ const Dashboard: React.FC = () => {
     stime?: string;
     etime?: string;
     location?: string;
+    color: string;
   }>>([]);
 
   /* ---------- fetch profile on login ---------- */
@@ -134,7 +135,8 @@ const Dashboard: React.FC = () => {
           day: c.day,
           stime: c.stime,
           etime: c.etime,
-          location: c.location
+          location: c.location,
+          color: c.color
         }));
       
       setFilterCourses(calendarCourses);
