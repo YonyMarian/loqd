@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/ProfileModal.css';
+import { getMatchWithUser, MatchResult } from '../services/matchingService';
+import { useAuth } from '../hooks/useAuth';
 
 interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   profile: {
+    id: string;
     full_name: string;
     avatar_url: string;
     major: string;
     email: string;
     grad_year: number;
-    match_percentage?: number;
     parsed_courses?: Array<{
       num: string;
       title: string;
@@ -32,14 +34,30 @@ interface ProfileModalProps {
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, filterCourses }) => {
-  if (!isOpen) return null;
+  const { user } = useAuth();
+  const [matchResult, setMatchResult] = useState<MatchResult>({ matchPercentage: 0, matchedClasses: [] });
+  const [loading, setLoading] = useState(true);
 
-  // Find matching courses between the profile and filterCourses
-  const matchingCourses = profile.parsed_courses?.filter(profileCourse => 
-    filterCourses.some(filterCourse => 
-      filterCourse.description === profileCourse.title
-    )
-  ) || [];
+  useEffect(() => {
+    const fetchMatchPercentage = async () => {
+      if (user && profile.id) {
+        try {
+          const result = await getMatchWithUser(user.id, profile.id);
+          setMatchResult(result);
+        } catch (error) {
+          console.error('Error calculating match:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (isOpen) {
+      fetchMatchPercentage();
+    }
+  }, [user, profile.id, isOpen]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -67,27 +85,28 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
 
         <div className="modal-body">
           <div className="modal-section-header">
-            <h3>Shared Courses</h3>
-            <p className="modal-match">{profile.match_percentage ? `${profile.match_percentage}% Match` : 'No match percentage available'}</p>
+            <h3>Match Details</h3>
+            <p className="modal-match">
+              {loading ? 'Calculating...' : `${matchResult.matchPercentage}% Match`}
+            </p>
           </div>
-          <div className="modal-courses">
-            {matchingCourses.length > 0 ? (
-              matchingCourses.map((course, index) => (
+          
+          {matchResult.matchedClasses.length > 0 ? (
+            <div className="modal-matched-classes">
+              <h4>Shared Classes</h4>
+              {matchResult.matchedClasses.map((match, index) => (
                 <div key={index} className="modal-course">
-                  <h4>{course.title}</h4>
-                  <p>Course Number: {course.num}</p>
-                  <p>Time: {course.stime} - {course.etime}</p>
-                  <p>Day: {course.day}</p>
-                  <p>Location: {course.location}</p>
-                  <p>Instructor: {course.instructor}</p>
+                  <h4>{match.courseNumber}</h4>
+                  {match.lecture && <p>Lecture: {match.lecture}</p>}
+                  {match.discussion && <p>Discussion: {match.discussion}</p>}
                 </div>
-              ))
-            ) : (
-              <div className="no-courses">
-                No shared courses found
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-courses">
+              No shared classes found
+            </div>
+          )}
         </div>
       </div>
     </div>
