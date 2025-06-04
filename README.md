@@ -98,7 +98,7 @@ git --version
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/loqd.git
+git clone https://github.com/YonyMarian/loqd.git
 cd loqd
 ```
 
@@ -118,28 +118,28 @@ npm install
 #### Windows (Git Bash)
 ```bash
 # In the server directory
-echo "SUPABASE_URL=your_supabase_url" > .env
-echo "SUPABASE_ANON_KEY=your_supabase_anon_key" >> .env
-echo "JWT_SECRET=your_jwt_secret" >> .env
+echo "VITE_SUPABASE_URL=your_supabase_url" > .env
+echo "VITE_SUPABASE_ANON_KEY=your_supabase_anon_key" >> .env
+echo "VITE_SUPABASE_SVC_KEY=your_supabase_service_key" >> .env
 
 # In the client directory
-echo "REACT_APP_SUPABASE_URL=your_supabase_url" > .env
-echo "REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key" >> .env
+echo "VITE_SUPABASE_URL=your_supabase_url" > .env
+echo "VITE_SUPABASE_ANON_KEY=your_supabase_anon_key" >> .env
 ```
 
 #### macOS/Linux
 ```bash
 # In the server directory
 cat > .env << EOL
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-JWT_SECRET=your_jwt_secret
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_SVC_KEY=your_supabase_service_key
 EOL
 
 # In the client directory
 cat > .env << EOL
-REACT_APP_SUPABASE_URL=your_supabase_url
-REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 EOL
 ```
 
@@ -153,8 +153,8 @@ npm start
 ```
 
 5. Access the application:
-- Frontend: http://localhost:3000
-- Backend: http://localhost:3001
+- Frontend: http://localhost:5173
+- Backend: http://localhost:5001
 
 ## Troubleshooting
 
@@ -230,6 +230,6 @@ loqd/
 This project is licensed under the MIT License - see the LICENSE file for details
 
 ## Acknowledgments
-- UCLA Computer Science Department
+- Omar, Paul Richard Eggert, Jesus Christ
 - CS 35L Teaching Staff
 - Project Team Members

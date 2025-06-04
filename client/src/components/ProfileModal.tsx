@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../styles/ProfileModal.css';
 import { getMatchWithUser, MatchResult } from '../services/matchingService';
 import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -32,13 +34,14 @@ interface ProfileModalProps {
     location?: string;
     color: string;
   }>;
-  setOtherId: (id:string) => void
+  setOtherId: (id: string) => void;
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, filterCourses, setOtherId }) => {
   const { user } = useAuth();
   const [matchResult, setMatchResult] = useState<MatchResult>({ matchPercentage: 0, matchedClasses: [] });
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMatchPercentage = async () => {
@@ -58,6 +61,51 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
       fetchMatchPercentage();
     }
   }, [user, profile.id, isOpen]);
+
+  const handleConnect = async () => {
+    if (!user) return;
+
+    try {
+      // Create a unique room name by combining user IDs
+      const roomName = user.id.slice(-12) + profile.id.slice(-12);
+      const flippedRoomName = profile.id.slice(-12) + user.id.slice(-12);
+
+      // Check if room already exists
+      const { data: existingRoom } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('room_name', roomName)
+        .maybeSingle();
+
+        const { data: flippedRoom } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('room_name', flippedRoomName)
+        .maybeSingle();
+
+      if (!existingRoom && !flippedRoom) {
+        // Create new room with both users
+        const { error: roomError } = await supabase
+          .from('rooms')
+          .insert([
+            { room_name: roomName, member_id: user.id },
+            { room_name: roomName, member_id: profile.id }
+          ]);
+
+        if (roomError) {
+          console.error('Error creating chat room:', roomError);
+          return;
+        }
+      }
+
+      // Set the other user ID and navigate to chat
+      setOtherId(profile.id);
+      onClose();
+      navigate(`/chat/${roomName}`);
+    } catch (error) {
+      console.error('Error in handleConnect:', error);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -80,9 +128,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
               <p className="modal-major">{profile.major || 'Undeclared'} '{profile.grad_year.toString().slice(-2)}</p>
             </div>
             <p className="modal-email">{profile.email}</p>
-            <button className="modal-connect-btn"
-              onClick={() => setOtherId(profile.id)}>
-                Connect
+            <button className="modal-connect-btn" onClick={handleConnect}>
+              Connect
             </button>
           </div>
         </div>
