@@ -104,14 +104,14 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
       profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       profile.major?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Check if profile has any of the selected courses
-    const hasMatchingCourse = profile.parsed_courses?.some(profileCourse => 
-      filterCourses.some(filterCourse => 
+    // Check if profile has ALL of the selected courses
+    const hasAllMatchingCourses = filterCourses.every(filterCourse => 
+      profile.parsed_courses?.some(profileCourse => 
         filterCourse.description === profileCourse.title
       )
     );
 
-    return matchesSearch && hasMatchingCourse;
+    return matchesSearch && hasAllMatchingCourses;
   });
 
   const handleShowMore = () => {
