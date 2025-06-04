@@ -37,9 +37,10 @@ interface MatchGridProps {
     location?: string;
     color: string;
   }>;
+  setOtherId: (id: string) => void
 }
 
-const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
+const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses, setOtherId }) => {
   const [profiles, setProfiles] = useState<MatchProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
@@ -179,6 +180,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
         }
       }
       filterCourses={filterCourses}
+      setOtherId={setOtherId}
     />
   </div>
 );

@@ -32,9 +32,10 @@ interface ProfileModalProps {
     location?: string;
     color: string;
   }>;
+  setOtherId: (id:string) => void
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, filterCourses }) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, filterCourses, setOtherId }) => {
   const { user } = useAuth();
   const [matchResult, setMatchResult] = useState<MatchResult>({ matchPercentage: 0, matchedClasses: [] });
   const [loading, setLoading] = useState(true);
@@ -79,7 +80,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
               <p className="modal-major">{profile.major || 'Undeclared'} '{profile.grad_year.toString().slice(-2)}</p>
             </div>
             <p className="modal-email">{profile.email}</p>
-            <button className="modal-connect-btn">Connect</button>
+            <button className="modal-connect-btn"
+              onClick={() => setOtherId(profile.id)}>
+                Connect
+            </button>
           </div>
         </div>
 

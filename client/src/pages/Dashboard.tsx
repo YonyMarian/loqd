@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
-import Chat from '../components/Chat';
+import ChatContainer from './ChatContainer';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 import { Course } from '../components/CourseInterface';
@@ -42,6 +42,8 @@ const Dashboard: React.FC = () => {
     location?: string;
     color: string;
   }>>([]);
+
+  const [otherUserId, setOtherUserId] = useState<string>("");
 
   /* ---------- fetch profile on login ---------- */
   useEffect(() => {
@@ -229,6 +231,7 @@ const Dashboard: React.FC = () => {
         <MatchGrid 
           searchTerm={searchTerm} 
           filterCourses={filterCourses}
+          setOtherId={setOtherUserId}
         />
         <WeekScheduleComponent 
           classSchedule={courseListWithColors} 
@@ -238,7 +241,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="profile-box right-profile">
-        <Chat />
+        <ChatContainer ownUserId={userProfileData.id} otherUserId={otherUserId}/>
       </div>
     </div>
   );
