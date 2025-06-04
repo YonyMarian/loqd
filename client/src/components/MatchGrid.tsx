@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MatchProfile from './MatchProfile';
+import ProfileModal from './ProfileModal';
 import '../styles/MatchProfile.css';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -12,6 +13,8 @@ interface MatchProfile {
   major: string;
   match_percentage?: number; // We'll calculate this later
   calendar_data: any;
+  email: string;
+  grad_year: number;
   parsed_courses?: Array<{
     num: string;
     title: string;
@@ -39,6 +42,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
   const [profiles, setProfiles] = useState<MatchProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<MatchProfile | null>(null);
   const { user } = useAuth();
   const DEFAULT_LIMIT = 8;
 
@@ -50,7 +54,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
         
         let query = supabase
           .from('profiles')
-          .select('id, full_name, avatar_url, major, calendar_data')
+          .select('id, full_name, email, avatar_url, major, grad_year, calendar_data')
           .neq('id', user?.id)
           .order('full_name');
 
@@ -119,31 +123,56 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
   }
 
   return (
-    <div className="match-grid-container">
-      <div className="match-grid">
-        {filteredProfiles.map(profile => (
-          <MatchProfile 
-            key={profile.id}
+  <div className="match-grid-container">
+    <div className="match-grid">
+      {filteredProfiles.map(profile => (
+        <div
+          key={profile.id}
+          onClick={() => setSelectedProfile(profile)}
+          style={{ cursor: 'pointer' }}
+        >
+          <MatchProfile
             name={profile.full_name}
             image={profile.avatar_url || '/default-avatar.svg'}
             major={profile.major || 'Undeclared'}
+            /* extra metadata */
+            match_percentage={profile.match_percentage ?? 0}
             userId={profile.id}
           />
-        ))}
-        {filteredProfiles.length === 0 && (
-          <div className="no-matches">
-            No matches found. Try adjusting your search criteria.
-          </div>
-        )}
-      </div>
-      
-      {!searchTerm && !showAll && profiles.length >= DEFAULT_LIMIT && (
-        <button className="show-more-button" onClick={handleShowMore}>
-          Show More Users
-        </button>
+        </div>
+      ))}
+
+      {filteredProfiles.length === 0 && searchTerm.trim() !== '' && (
+        <div className="no-matches">
+          No matches found. Try adjusting your search criteria.
+        </div>
       )}
     </div>
-  );
-};
+
+    {!searchTerm && !showAll && profiles.length >= DEFAULT_LIMIT && (
+      <button className="show-more-button" onClick={handleShowMore}>
+        Show More Users
+      </button>
+    )}
+
+    <ProfileModal
+      isOpen={selectedProfile !== null}
+      onClose={() => setSelectedProfile(null)}
+      profile={
+        selectedProfile ?? {
+          full_name: '',
+          avatar_url: '',
+          major: '',
+          email: '',
+          graduation_year: 0,
+          match_percentage: 0,
+          parsed_courses: [],
+        }
+      }
+      filterCourses={filterCourses}
+    />
+  </div>
+);
+
 
 export default MatchGrid;
