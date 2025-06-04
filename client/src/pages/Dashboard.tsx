@@ -149,7 +149,11 @@ const Dashboard: React.FC = () => {
 
   /* ---------- loading gates ---------- */
   if (loading || !profileData) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">
+      Loading... Make sure to be signed in/up!
+      <br/>
+      Click <a href="/">here</a> to redirect yourself.
+    </div>;
   }
 
   /* ---------- derived data ---------- */
