@@ -75,12 +75,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
         .from('rooms')
         .select('*')
         .eq('room_name', roomName)
+        .eq('member_id', profile.id)
         .maybeSingle();
 
         const { data: flippedRoom } = await supabase
         .from('rooms')
         .select('*')
         .eq('room_name', flippedRoomName)
+        .eq('member_id', profile.id)
         .maybeSingle();
 
       if (!existingRoom && !flippedRoom) {
