@@ -4,6 +4,7 @@ import '../styles/NavBar.css';
 import logo from '../assets/logo.svg';
 import { signOut } from '../lib/session.ts';
 import SettingsPopup from './SettingsPopup';
+import HelpPopup from './HelpPopup';
 
 interface NavBarProps {
   onSearch: (searchTerm: string) => void;
@@ -88,17 +89,12 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
 
       {/* Help Popup */}
       {showHelpPopup && (
-        <div className="popup-overlay" onClick={() => setShowHelpPopup(false)}>
-          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-            <p>You clicked the HELP button. Yikes!</p>
-            <button onClick={() => setShowHelpPopup(false)}>Close</button>
-          </div>
-        </div>
+        <HelpPopup onClose={() => setShowHelpPopup(false)} />
       )}
 
       {/* Settings Popup */}
       {showSettingsPopup && (
-        <SettingsPopup onClose={() => {setShowSettingsPopup(false); window.location.reload();}} />
+        <SettingsPopup onClose={() => setShowSettingsPopup(false)} />
       )}
     </>
   );
