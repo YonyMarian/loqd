@@ -7,12 +7,12 @@ type UploadCalProps = {
 }
 
 const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
-    console.log(`API path should be: ${import.meta.env.VITE_API_URL}`)
     const [file, setFile] = useState<File|null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        console.log(`API path should be: ${import.meta.env.VITE_API_URL}`)
         event.preventDefault();
         if (!file) {
             alert("Please select a file before uploading.");
