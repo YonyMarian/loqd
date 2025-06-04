@@ -2,11 +2,12 @@ import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type UploadCalProps = {
-    userId: string | null;
+interface UploadCalProps {
+    userId: string;
+    onUploadComplete?: () => void;
 }
 
-const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
+const UploadCal: React.FC<UploadCalProps> = ({ userId, onUploadComplete }) => {
     const [file, setFile] = useState<File|null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();
@@ -56,6 +57,11 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             }
 
             navigate('/dashboard');
+
+            // After successful upload
+            if (onUploadComplete) {
+                onUploadComplete();
+            }
         } catch (error) {
             console.error("Error uploading file:", error);
             if (error instanceof Error) {
@@ -89,17 +95,24 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
                         name="calendarFile" 
                         onChange={handleChange} 
                         accept=".ics"
-                        className="file-input"
+                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e3eaf6] file:text-[#2774AE] hover:file:bg-[#d0dff7]"
                         disabled={isUploading}
                     />
                 </div>
                 <button 
                     onClick={handleClick} 
                     type="button"
-                    className="upload-button"
+                    className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors duration-200 ${
+                        !file || isUploading
+                            ? 'bg-gray-300 cursor-not-allowed'
+                            : 'bg-[#2774AE] hover:bg-[#1a5c8b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2774AE]'
+                    }`}
                     disabled={!file || isUploading}
+                    style={{
+                        marginTop: '20px',
+                    }}
                 >
-                    {isUploading ? 'Uploading...' : 'Upload Schedule'}
+                    {isUploading ? 'Uploading...' : 'Upload Calendar'}
                 </button>
             </form>
         </div>
