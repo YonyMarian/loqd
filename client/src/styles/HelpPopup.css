@@ -27,6 +27,12 @@
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+  text-align: left;
+}
+
+.help-title {
+  text-align: center;
+  font-size: 2rem;     /* You can increase this for a bigger title */
 }
 
 .popup-footer {
