@@ -160,12 +160,13 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
       onClose={() => setSelectedProfile(null)}
       profile={
         selectedProfile ?? {
+          id: '',
           full_name: '',
           avatar_url: '',
           major: '',
           email: '',
-          graduation_year: 0,
-          match_percentage: 0,
+          grad_year: 0,
+          // match_percentage: 0,
           parsed_courses: [],
         }
       }
