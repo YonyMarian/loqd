@@ -16,6 +16,7 @@ interface MatchProfile {
   calendar_data: any;
   email: string;
   grad_year: number;
+  bio: string;
   parsed_courses?: Array<{
     num: string;
     title: string;
@@ -56,7 +57,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses, setOth
         
         let query = supabase
           .from('profiles')
-          .select('id, full_name, email, avatar_url, major, grad_year, calendar_data')
+          .select('id, full_name, email, avatar_url, major, grad_year, bio, calendar_data')
           .neq('id', user?.id);
 
         const { data, error } = await query;
@@ -186,6 +187,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses, setOth
           major: selectedProfile.major,
           email: selectedProfile.email,
           grad_year: selectedProfile.grad_year,
+          bio: selectedProfile.bio,
           parsed_courses: selectedProfile.parsed_courses ?? [],
         } : {
           id: '',
