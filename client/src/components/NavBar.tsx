@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
 import logo from '../assets/logo.svg'
 import { signOut } from '../lib/session.ts';
+import PopupExample from './Tutorial.tsx';
 
 interface NavBarProps {
   onSearch: (searchTerm: string) => void;
@@ -57,7 +58,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
           <img src="/settings.svg" alt="Settings" className="settings" width={25} height={25}/>
         </div>
         <div className="icon-background">
-          <img src="/help.svg" alt="Info" className="info" width={25} height={25}/>
+          <PopupExample />
         </div>
       </div>
     </div>
