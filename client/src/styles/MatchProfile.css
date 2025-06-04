@@ -160,3 +160,35 @@
   background-color: #1a5c8b;
   transform: translateY(-2px);
 }
+
+.matched-classes {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: rgba(39, 116, 174, 0.1);
+  width: 100%;
+}
+
+.matched-classes-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2774AE;
+  margin-bottom: 0.5rem;
+}
+
+.matched-classes ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.matched-classes li {
+  font-size: 0.8rem;
+  color: #333;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(39, 116, 174, 0.1);
+}
+
+.matched-classes li:last-child {
+  border-bottom: none;
+}
