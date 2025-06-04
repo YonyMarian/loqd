@@ -5,16 +5,17 @@ import { supabase } from '../lib/supabase';
 
 interface UserBioProps {
     userid: string
+    currBio: string
 }
 type FormState = {
     bio: string;
 };
 
-const UserBio:React.FC<UserBioProps> = ({userid}) => {
+const UserBio:React.FC<UserBioProps> = ({userid, currBio}) => {
 
      
     const [form, setForm] = useState<FormState>({
-        bio: ""
+        bio: currBio
     }); // ADD TYPE HERE
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -48,8 +49,8 @@ const UserBio:React.FC<UserBioProps> = ({userid}) => {
     return <form onSubmit={handleSubmit} className="bio-form">
         <label>
             Bio
-            <input type="text" name="bio" value={form.bio} onChange={handleChange}
-                placeholder="Write something about yourself ... (50 char)" />
+            <input type="textarea" name="bio" value={form.bio} onChange={handleChange}
+                placeholder="Write something about yourself..." />
         </label>
         <button type="submit" className="signup-button">Update</button>
     </form>;

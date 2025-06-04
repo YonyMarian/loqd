@@ -9,9 +9,10 @@ interface UserProfileProps {
   major: string;
   year: number;
   id: string;
+  bio: string;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage, major, year, id }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage, major, year, id, bio }) => {
   return (
     <div className="user-profile-box">
       <div className="header-bg">
@@ -37,7 +38,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ name, image, match_percentage
         <p className="major">{major}</p>
       </div>
       <div className="placeholder">
-        <UserBio userid={id}/>
+        <UserBio userid={id} currBio={bio}/>
       </div>
     </div>
   );
