@@ -133,14 +133,22 @@
   display: inline-block;
   border: none;
   box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2);
+  margin: 0;
 }
 
 .modal-body {
   padding-top: 0.5rem;
 }
 
-.modal-body h3 {
-  margin: 0 0 1rem 0;
+.modal-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-section-header h3 {
+  margin: 0;
   font-size: 1.2rem;
   color: #202124;
   font-weight: 500;

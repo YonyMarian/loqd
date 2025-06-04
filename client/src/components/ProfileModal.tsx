@@ -66,10 +66,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
         </div>
 
         <div className="modal-body">
-          <div className="modal-match-container">
+          <div className="modal-section-header">
+            <h3>Shared Courses</h3>
             <p className="modal-match">{profile.match_percentage ? `${profile.match_percentage}% Match` : 'No match percentage available'}</p>
           </div>
-          <h3>Shared Courses</h3>
           <div className="modal-courses">
             {matchingCourses.length > 0 ? (
               matchingCourses.map((course, index) => (
