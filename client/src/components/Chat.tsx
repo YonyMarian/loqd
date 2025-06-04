@@ -10,9 +10,7 @@ interface ChatPreview {
   other_mem_name: string;
   created_at: string;
   last_message?: string;
-  // unread?: number;
   avatar?: string;
-  // online?: boolean;
 }
 
 const Chat: React.FC = () => {
@@ -84,7 +82,6 @@ const Chat: React.FC = () => {
 
     fetchConversations();
 
-    // Subscribe to changes in rooms table
     const subscription = supabase
       .channel('rooms_changes')
       .on('postgres_changes', {
@@ -131,7 +128,7 @@ const Chat: React.FC = () => {
     <div className="chat-box">
       <div className="chat-header">
         <h2>Messages</h2>
-        <img src="/chat.svg" alt="New Chat" className="new-chat-button" />
+        <img src="/chat.svg" alt="Chat" className="new-chat-button" />
       </div>
       
       <div className="conversations-list">
