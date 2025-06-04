@@ -124,7 +124,10 @@ const SignUp: React.FC = () => {
 
             <label>
               UCLA Email
-              <input type="email" name="email" value={form.email} onChange={handleChange} required />
+              <input type="email" name="email" value={form.email} onChange={handleChange}
+                pattern="[a-z.]*[@]\bucla.edu"
+                title="Ensure your email ends with '@ucla.edu'"
+                required />
             </label>
 
             <label>
