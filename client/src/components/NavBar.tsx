@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
 import logo from '../assets/logo.svg';
 import { signOut } from '../lib/session.ts';
+import SettingsPopup from './SettingsPopup';
 
 interface NavBarProps {
   onSearch: (searchTerm: string) => void;
@@ -11,6 +12,7 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [showSettingsPopup, setShowSettingsPopup] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +33,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
             style={{ cursor: 'pointer' }}
           />
         </div>
+
         <div className="nav-bar-center">
           <div className="search-bar">
             <img src="/search.svg" alt="Search" className="search" width={20} height={20} />
@@ -42,6 +45,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
             />
           </div>
         </div>
+
         <div className="nav-bar-right">
           <div className="icon-background">
             <img
@@ -55,9 +59,19 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
               style={{ cursor: 'pointer' }}
             />
           </div>
+
           <div className="icon-background">
-            <img src="/settings.svg" alt="Settings" className="settings" width={25} height={25} />
+            <img
+              src="/settings.svg"
+              alt="Settings"
+              className="settings"
+              width={25}
+              height={25}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setShowSettingsPopup(true)}
+            />
           </div>
+
           <div className="icon-background">
             <img
               src="/help.svg"
@@ -80,6 +94,11 @@ const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
             <button onClick={() => setShowHelpPopup(false)}>Close</button>
           </div>
         </div>
+      )}
+
+      {/* Settings Popup */}
+      {showSettingsPopup && (
+        <SettingsPopup onClose={() => {setShowSettingsPopup(false); window.location.reload();}} />
       )}
     </>
   );

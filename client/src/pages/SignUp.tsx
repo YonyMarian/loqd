@@ -7,7 +7,7 @@ import logo from '../assets/logo.svg';
 import { Link } from 'react-router-dom';
 
 // List of valid UCLA majors
-const validMajors = [
+export const validMajors = [
   "Aerospace Engineering",
   "African American Studies",
   "African and Middle Eastern Studies",
