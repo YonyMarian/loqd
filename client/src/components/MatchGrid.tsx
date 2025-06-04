@@ -14,9 +14,10 @@ interface MatchProfile {
 
 interface MatchGridProps {
   searchTerm: string;
+  setOtherId: (id: string) => void;
 }
 
-const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
+const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, setOtherId }) => {
   const [profiles, setProfiles] = useState<MatchProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
@@ -51,7 +52,9 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
         const profilesWithMatch = data.map(profile => ({
           ...profile,
           match_percentage: Math.floor(Math.random() * (95 - 60 + 1)) + 60
+          // TODO: SET THIS PERCENTAGE!!
         }));
+        // HERE IS WHERE THE PEOPLE ARE SHOWN <-- ACCESS HERE FOR OTHER USER ID
 
         setProfiles(profilesWithMatch);
       } catch (error) {
@@ -86,11 +89,12 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm }) => {
       <div className="match-grid">
         {filteredProfiles.map(profile => (
           <MatchProfile 
-            key={profile.id}
+            id={profile.id}
             name={profile.full_name}
             image={profile.avatar_url || '/default-avatar.svg'}
             match_percentage={profile.match_percentage || 0}
             major={profile.major || 'Undeclared'}
+            setOtherId={setOtherId}
           />
         ))}
         {filteredProfiles.length === 0 && (

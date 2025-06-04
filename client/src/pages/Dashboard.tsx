@@ -29,6 +29,7 @@ const Dashboard: React.FC = () => {
 
     const [user, setUser] = useState<any|null>(null);
     const [userData, setUserData] = useState<UserProfileInterface|null>(null);
+    const [otherId, setOtherId] = useState<string>("");
 
     useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -105,12 +106,12 @@ const Dashboard: React.FC = () => {
             </div>
 
       <div className="match-grid-container">
-        <MatchGrid searchTerm={searchTerm} />
+        <MatchGrid searchTerm={searchTerm} setOtherId={setOtherId} />
         <WeekScheduleComponent classSchedule={courseList} />
       </div>
 
       <div className="profile-box right-profile">
-        <ChatWrapper ownUserId={userProfileData.id} otherUserId={""}/>
+        <ChatWrapper ownUserId={userProfileData.id} otherUserId={otherId}/>
       </div>
     </div>
   );
