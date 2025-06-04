@@ -16,7 +16,7 @@ const HelpPopup: React.FC<HelpPopupProps> = ({ onClose }) => {
             <br />
             <p>Your <strong>Profile</strong> displays your profile picture, full name, major, graduating year, and biography.</p>
             <br />
-            <p>Your <strong>Bio</strong> is a 49 character blurb that can be anything you want! To save your current bio, make sure to click <em>Update</em>!</p>
+            <p>Your <strong>Bio</strong> is a 49 character blurb that other users can see! To save your current bio, make sure to click <em>Update</em>!</p>
             <br />
             <p>Your <strong>Classes</strong> is a collection of your current classes. Clicking on a class filters Loqd users in the Match Grid that share that class. If anything looks off, be sure to use the <em>Upload Calendar</em> interface below this component.</p>
             <br />

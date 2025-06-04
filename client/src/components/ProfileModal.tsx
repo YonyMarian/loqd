@@ -15,6 +15,7 @@ interface ProfileModalProps {
     major: string;
     email: string;
     grad_year: number;
+    bio: string;
     parsed_courses?: Array<{
       num: string;
       title: string;
@@ -134,6 +135,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, profile, f
               <p className="modal-major">{profile.major || 'Undeclared'} '{profile.grad_year.toString().slice(-2)}</p>
             </div>
             <p className="modal-email">{profile.email}</p>
+            <p className="bio">{profile.bio}</p>
             <button className="modal-connect-btn" onClick={handleConnect}>
               Connect
             </button>
