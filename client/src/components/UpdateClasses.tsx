@@ -44,7 +44,7 @@ const UpdateClasses: React.FC<UpdateClassesProps> = ({ onUpdateClasses }) => {
 
         try {
             // First, upload and parse the calendar file
-            let upload_res = await fetch("http://localhost:5001/api/calendar/upload_cal", {
+            let upload_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/upload_cal`, {
                 method: 'POST',
                 body: formData
             });
@@ -57,7 +57,7 @@ const UpdateClasses: React.FC<UpdateClassesProps> = ({ onUpdateClasses }) => {
             console.log("Parsed calendar data:", schedule);
 
             // Update Supabase through the backend endpoint
-            let update_res = await fetch('http://localhost:5001/api/calendar/update_calendar', {
+            let update_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/update_calendar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -109,4 +109,4 @@ const UpdateClasses: React.FC<UpdateClassesProps> = ({ onUpdateClasses }) => {
     );
 };
 
-export default UpdateClasses; 
+export default UpdateClasses;

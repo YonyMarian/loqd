@@ -13,6 +13,7 @@ const UploadCal: React.FC<UploadCalProps> = ({ userId, onUploadComplete }) => {
     const navigate = useNavigate();
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        console.log(`API path should be: ${import.meta.env.VITE_API_URL}`)
         event.preventDefault();
         if (!file) {
             alert("Please select a file before uploading.");
@@ -30,20 +31,26 @@ const UploadCal: React.FC<UploadCalProps> = ({ userId, onUploadComplete }) => {
         
         try {
             // Upload and parse calendar file
-            let upload_res = await fetch("http://localhost:5001/api/calendar/upload_cal", {
+            let upload_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/upload_cal`, {
                 method: 'POST',
                 body: formData
             });
             
             if (!upload_res.ok) {
-                throw new Error(`Upload failed: ${upload_res.statusText}`);
+                // Try to parse error message if available
+                let errorMsg = 'Upload failed';
+                try {
+                    const errJson = await upload_res.json();
+                    errorMsg = errJson.error || errorMsg;
+                } catch {}
+                throw new Error(errorMsg);
             }
             
             let schedule = await upload_res.json();
             console.log("Parsed calendar data:", schedule);
             
             // Update user's profile with calendar data
-            let update_res = await fetch('http://localhost:5001/api/calendar/update_calendar', {
+            let update_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/update_calendar`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({

@@ -169,6 +169,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
           grad_year: selectedProfile.grad_year,
           parsed_courses: selectedProfile.parsed_courses ?? [],
         } : {
+        selectedProfile ?? {
           id: '',
           full_name: '',
           avatar_url: '',
