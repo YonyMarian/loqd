@@ -5,6 +5,7 @@
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Prevent double scrollbars */
 }
 
 .chat-instance.loading {
@@ -20,6 +21,7 @@
   border-bottom: 1px solid #e0e0e0;
   background-color: #f8f9fa;
   border-radius: 8px 8px 0 0;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .chat-header-info {
@@ -35,12 +37,15 @@
 }
 
 .messages-container {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1 1 auto;
+  overflow-y: scroll; 
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
+  /* max-height: 120vh;  */
+  /*max-height: calc(100vh - 120px);  */
 }
 
 .message {
@@ -88,6 +93,7 @@
   border-top: 1px solid #e0e0e0;
   background-color: #f8f9fa;
   border-radius: 0 0 8px 8px;
+  flex-shrink: 0; /* Prevent input container from shrinking */
 }
 
 .message-input {
