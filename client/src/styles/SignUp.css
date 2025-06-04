@@ -95,7 +95,8 @@ body {
   .signup-form input[type="email"],
   .signup-form input[type="password"],
   .signup-form input[type="file"],
-  .signup-form input[type="number"] {
+  .signup-form input[type="number"],
+  .signup-form select {
     margin-top: 0.5rem;
     padding: 0.75rem;
     font-size: 1rem;
@@ -103,9 +104,11 @@ body {
     border-radius: 8px;
     background-color: #f9f9f9;
     transition: border 0.2s ease;
+    width: 100%;
   }
   
-  .signup-form input:focus {
+  .signup-form input:focus,
+  .signup-form select:focus {
     border-color: #003b5c;
     outline: none;
   }

@@ -4,6 +4,93 @@ import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
 import {supabase} from '../lib/supabase';
 
+// List of valid UCLA majors
+const validMajors = [
+  "African American Studies",
+  "American Indian Studies",
+  "Anthropology",
+  "Architecture and Urban Design",
+  "Art",
+  "Art History",
+  "Arts and Architecture-General",
+  "Asian American Studies",
+  "Asian Languages and Cultures",
+  "Atmospheric and Oceanic Sciences",
+  "Bioengineering",
+  "Chemical and Biomolecular Engineering",
+  "Chemistry and Biochemistry",
+  "Chicana and Chicano Studies (Pre-21W)",
+  "Chicana/o and Central American Studies",
+  "Civil and Environmental Engineering",
+  "Classics",
+  "Communication",
+  "Comparative Literature",
+  "Computational and Systems Biology",
+  "Computer Science",
+  "Design|Media Arts",
+  "Disability Studies",
+  "Earth, Planetary, and Space Sciences",
+  "Ecology and Evolutionary Biology",
+  "Economics",
+  "Education",
+  "Electrical and Computer Engineering",
+  "Electrical and Computer Engineering/Computer Science",
+  "Engineering and Applied Science",
+  "English",
+  "Environment and Sustainability",
+  "Ethnomusicology",
+  "European Languages and Transcultural Studies",
+  "Film, Television, and Digital Media",
+  "French and Francophone Studies (pre-21S)",
+  "Gender Studies",
+  "Geography",
+  "Germanic Languages (pre-21S)",
+  "Global Jazz Studies",
+  "Global Studies",
+  "History",
+  "Humanities-General",
+  "Integrative Biology and Physiology",
+  "International Development Studies",
+  "International and Area Studies",
+  "Italian (pre-21S)",
+  "Labor Studies",
+  "Letters and Science-General",
+  "Life Sciences-General",
+  "Linguistics",
+  "Materials Science and Engineering",
+  "Mathematics",
+  "Mathematics/Economics",
+  "Mathematics/Statistics and Data Science",
+  "Mechanical and Aerospace Engineering",
+  "Microbiology, Immunology, and Molecular Genetics",
+  "Molecular, Cell, and Developmental Biology",
+  "Music",
+  "Music Industry",
+  "Musicology",
+  "Near Eastern Languages and Cultures",
+  "Neuroscience",
+  "Nursing",
+  "Philosophy",
+  "Physical Sciences-General",
+  "Physics and Astronomy",
+  "Political Science",
+  "Psychology",
+  "Public Affairs",
+  "Public Health",
+  "Religion, Study of",
+  "Slavic, East European, and Eurasian Languages and Cultures",
+  "Social Sciences-General",
+  "Society and Genetics",
+  "Sociology",
+  "Spanish and Portuguese",
+  "Statistics",
+  "Statistics and Data Science",
+  "Statistics and Data Science/Mathematics",
+  "Theater",
+  "Theater, Film, and Television-General",
+  "World Arts and Cultures/Dance"
+];
+
 type FormState = {
   username: string;
   password: string;
@@ -28,12 +115,20 @@ const SignUp: React.FC = () => {
     grad_year: 2025
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, type, value, files } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'file' ? (files ? files[0] : null) : value,
-    }));
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, type, value } = e.target;
+    if (type === 'file') {
+      const files = (e.target as HTMLInputElement).files;
+      setForm((prev) => ({
+        ...prev,
+        [name]: files ? files[0] : null,
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const [userId, setUserId] = useState<string | null>(null);
@@ -135,7 +230,20 @@ const SignUp: React.FC = () => {
 
             <label>
               Major
-              <input type="text" name="major" value={form.major} onChange={handleChange} required />
+              <select 
+                name="major" 
+                value={form.major} 
+                onChange={handleChange}
+                required
+                className="signup-select"
+              >
+                <option value="">Select a major</option>
+                {validMajors.map((major) => (
+                  <option key={major} value={major}>
+                    {major}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label>
