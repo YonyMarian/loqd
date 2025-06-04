@@ -35,6 +35,7 @@ interface MatchGridProps {
     stime?: string;
     etime?: string;
     location?: string;
+    color: string;
   }>;
 }
 
