@@ -307,7 +307,7 @@ const SignUp: React.FC = () => {
                   name="email" 
                   value={form.email} 
                   onChange={handleChange}
-                  pattern="[a-z.]*[@]\b(g\.)?ucla.edu"
+                  pattern="[a-z0-9.]*[@]\b(g\.)?ucla.edu"
                   title="Ensure your email ends with '@ucla.edu'"
                   required 
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2774AE] focus:border-[#2774AE]"
