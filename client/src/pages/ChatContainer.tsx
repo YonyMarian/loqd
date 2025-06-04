@@ -25,67 +25,6 @@ const ChatContainer:React.FC<ChatContainerProps> = ({ownUserId, otherUserId}) =>
         console.log("changed selectedChat");
     }, [otherUserId]);
 
-    // const fetchAll = async () => {
-    //     let {data, error} = await supabase
-    //         .from('rooms')
-    //         .select('*')
-    //         .eq('member_id', ownUserId);
-    //     if (error) {
-    //         console.log("error grabbing convo list in chatcontainer:", error);
-    //     }
-    //     // console.log("fetchconvos return:", data);
-    //     const formattedPreviews: PreviewInterface[] = data?.map(item => ({
-    //         room_name: item.room_name,
-    //         other_mem_id: "",
-    //         other_mem_name: "",
-    //         created_at: item.created_at
-    //     })) || [];
-
-    //     // console.log("fetchconvos previews:", formattedPreviews);
-
-    //     // // setPreviews(prevPreviews => [...prevPreviews, ...formattedPreviews]);
-    //     // setPreviews(formattedPreviews);
-
-    //     // const updatedPreviews = [...previews];
-    //     for (let i=0; i<formattedPreviews.length; i++) {
-
-    //         const pre = formattedPreviews[i];
-    //         console.log("fetchothermember roomname:", pre.room_name); 
-            
-    //         var {data: other_mem_id, error: error_id} = await supabase
-    //             .from('rooms')
-    //             .select('member_id')
-    //             .eq('room_name', pre.room_name)
-    //             .neq('member_id', ownUserId)
-    //             .maybeSingle();
-    //         if (error_id || !other_mem_id?.member_id) {
-    //             console.log("error finding other member id - chatcontainer:", error_id);
-    //             console.log("other_mem exists?:", other_mem_id?.member_id);
-    //             continue;
-    //         }
-    //         const {data: other_mem_name, error: error_name} = await supabase
-    //             .from('profiles')
-    //             .select('full_name')
-    //             .eq('id', other_mem_id?.member_id)
-    //             .maybeSingle();
-    //         if(error_name) {
-    //             console.log("error finding other member name:", error_name);
-    //         }
-    //         formattedPreviews[i] = {
-    //             ...pre,
-    //             other_mem_id: other_mem_id?.member_id || "",
-    //             other_mem_name: other_mem_name?.full_name || ""
-    //         }
-    //     }
-    //     console.log("fetchother preview:", formattedPreviews);
-
-    //     setPreviews(formattedPreviews);
-    // }
-
-    // useEffect(()=> {
-    //     fetchAll();
-    // }, [ownUserId, otherUserId]);
-
 useEffect(() => {
     let isMounted = true;
 

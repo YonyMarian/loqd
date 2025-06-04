@@ -13,20 +13,21 @@ interface ChatMessage {
 }
 
 export interface printedChatMessage {
-    content: string;
-    sender_name: string;
-    createdAt: string;
+  content: string;
+  createdAt: string;
+  sender_name: string;
+  isOwn: boolean;
 }
  
 export default function useRealtimeChat(
-  roomName: string,
+  initRoomName: string,
   own_id: string,
   other_id: string,
   _initialMessages: printedChatMessage[] = [],
 //   onMessage?: (messages: ChatMessage[]) => void
     ) 
     {
-
+  const [roomName, setRoomName] = useState<string>(initRoomName);
   const [ownUsername, setOwnUsername] = useState<string>("own name not found");
   const [otherUsername, setOtherUsername] = useState<string>("other name not found");
   const fetchOwnUsername = async () => {
@@ -70,15 +71,15 @@ export default function useRealtimeChat(
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        const mapped = data.map((msg) => ({
-        //   room_name: msg.room_name,
+        const formattedMessages = data.map((msg) => ({
           content: msg.content,
-          sender_name: (msg.sender_id===own_id)?ownUsername:otherUsername,
           createdAt: msg.created_at,
+          sender_name: (msg.sender_id===own_id)?ownUsername:otherUsername,
+          isOwn: msg.sender_id === own_id
         }));
-        console.log("fetched messages:", mapped);
-        setChatMessages(mapped);
-        if (mapped.length === 0) {
+        console.log("fetched messages:", formattedMessages);
+        setChatMessages(formattedMessages);
+        if (formattedMessages.length === 0) {
             console.log("triggering insertion into rooms table");
             const createRoom = async () => {
                 if (!roomName){
@@ -89,11 +90,43 @@ export default function useRealtimeChat(
                     console.log("no user id, not inserting into 'rooms'");
                     return;
                 }
+                const flippedRoomName = roomName.slice(-12) + roomName.slice(0, -12);
+                const { data: existingRooms, error: checkError } = await supabase
+                  .from('rooms')
+                  .select('room_name')
+                  .in('room_name', [roomName, flippedRoomName]);
+
+                if (checkError) {
+                  console.log("Error checking for existing rooms:", checkError);
+                  return;
+                }
+                if (existingRooms && existingRooms.length > 0) {
+                  const canonical = existingRooms[0].room_name;
+                  if (canonical !== roomName) setRoomName(canonical);
+                  console.log("flipped logic!!");
+                  return;
+                }
+                //flipped room does NOT already exist, create the room
+                const { data: regRoom, error: regError } = await supabase
+                  .from('rooms')
+                  .select('room_name')
+                  .eq('room_name', roomName)
+                  .eq('member_id', own_id)
+                  .single();
+                if (regError) {
+                  console.log("regError -  userealtime:", regError);
+                }
+                if (regRoom) {
+                  console.log("Reg room already exists!!");
+                  // setRoomName(regRoom);
+                  return;
+                }
                 var {error: error1} = await supabase
                     .from('rooms')
                     .upsert({
                         member_id: own_id, 
                         room_name: roomName
+                        // flipped_room_name: flippedRoomName
                 }, {
                     onConflict: 'member_id, room_name',
                     ignoreDuplicates: true
@@ -111,6 +144,7 @@ export default function useRealtimeChat(
                     .upsert({
                         member_id: other_id,
                         room_name: roomName
+                        // flipped_room_name: flippedRoomName
                 }, {
                     onConflict: 'member_id, room_name',
                     ignoreDuplicates: true
@@ -118,6 +152,7 @@ export default function useRealtimeChat(
                 if (error2) {
                     console.log("error creating others row in rooms table:", error2);
                 }
+                
             };
             createRoom();
         }
@@ -166,6 +201,7 @@ export default function useRealtimeChat(
       content,
       sender_name: ownUsername,
       createdAt,
+      isOwn: true,
     };
 
     setChatMessages((prev) => [...prev, newMessage]);

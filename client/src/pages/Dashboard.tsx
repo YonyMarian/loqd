@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import MatchGrid from '../components/MatchGrid';
 import UserProfile from '../components/UserProfile';
-import ChatContainer from './ChatContainer';
+import Chat from '../components/Chat';
 import Classes from '../components/Classes';
 import WeekScheduleComponent from '../components/Calendar';
 import { Course } from '../components/CourseInterface';
@@ -241,7 +241,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="profile-box right-profile">
-        <ChatContainer ownUserId={userProfileData.id} otherUserId={otherUserId}/>
+        <Chat />
       </div>
     </div>
   );

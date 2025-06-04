@@ -1,17 +1,29 @@
-// import React from 'react';
-
+import React from 'react';
 import { printedChatMessage } from '../hooks/useRealtimeChat';
-import '../styles/chat.css';
+import '../styles/ChatInstance.css';
 
 interface ChatMessageProps {
   message: printedChatMessage;
 }
 
-export default function ChatMessage({ message }: ChatMessageProps) {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
   return (
-    <div className="chat-message">
-      <strong>{message.sender_name}</strong>: {message.content}
-      <div className="chat-timestamp">{new Date(message.createdAt).toLocaleTimeString()}</div>
+    <div 
+      className={`message ${message.isOwn ? 'user-message' : 'other-message'}`}
+    >
+      <div className="message-content">
+        <p>{message.content}</p>
+        <span className="message-time">{formatTime(message.createdAt)}</span>
+      </div>
     </div>
   );
-}
+};
+
+export default ChatMessage;
