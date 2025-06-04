@@ -57,6 +57,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ onClose }) => {
       alert('Error updating profile. Please try again.');
     } else {
       onClose();
+      window.location.reload();
     }
   };
 
