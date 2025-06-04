@@ -37,21 +37,21 @@ const Landing: React.FC = () => {
                         <h2 className="text-3xl font-bold text-center mb-12 text-[#202124]">Key Features</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="text-center p-6 bg-white rounded-lg shadow-sm">
-                                <h3 className="text-xl font-semibold mb-4 text-[#202124]">Find study buddies</h3>
+                                <h3 className="text-xl font-semibold mb-4 text-[#202124]">Compare your schedules</h3>
                                 <p className="text-[#5f6368]">
-                                    Create and modify unlimited study groups with your classmates
+                                    Upload your calendar and see how well it aligns with others'
                                 </p>
                             </div>
                             <div className="text-center p-6 bg-white rounded-lg shadow-sm">
                                 <h3 className="text-xl font-semibold mb-4 text-[#202124]">Fine-tune your searches</h3>
                                 <p className="text-[#5f6368]">
-                                    Visually specify how closely you want your schedules to align with others'
+                                    Visually specify how closely you want your schedules to match your partners'
                                 </p>
                             </div>
                             <div className="text-center p-6 bg-white rounded-lg shadow-sm">
                                 <h3 className="text-xl font-semibold mb-4 text-[#202124]">Get real-time updates</h3>
                                 <p className="text-[#5f6368]">
-                                    Real-time interaction via course-specific megathreads
+                                    Chat with your study buddies one-on-one or in groups
                                 </p>
                             </div>
                         </div>
