@@ -11,7 +11,7 @@ interface MatchProfile {
   full_name: string;
   avatar_url: string;
   major: string;
-  match_percentage?: number; // We'll calculate this later
+  match_percentage: number;
   calendar_data: any;
   email: string;
   grad_year: number;
@@ -35,6 +35,7 @@ interface MatchGridProps {
     stime?: string;
     etime?: string;
     location?: string;
+    color: string;
   }>;
 }
 
@@ -104,14 +105,14 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
       profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       profile.major?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Check if profile has any of the selected courses
-    const hasMatchingCourse = profile.parsed_courses?.some(profileCourse => 
-      filterCourses.some(filterCourse => 
+    // Check if profile has ALL of the selected courses
+    const hasAllMatchingCourses = filterCourses.every(filterCourse => 
+      profile.parsed_courses?.some(profileCourse => 
         filterCourse.description === profileCourse.title
       )
     );
 
-    return matchesSearch && hasMatchingCourse;
+    return matchesSearch && hasAllMatchingCourses;
   });
 
   const handleShowMore = () => {
@@ -159,6 +160,15 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
       isOpen={selectedProfile !== null}
       onClose={() => setSelectedProfile(null)}
       profile={
+        selectedProfile ? {
+          id: selectedProfile.id,
+          full_name: selectedProfile.full_name,
+          avatar_url: selectedProfile.avatar_url,
+          major: selectedProfile.major,
+          email: selectedProfile.email,
+          grad_year: selectedProfile.grad_year,
+          parsed_courses: selectedProfile.parsed_courses ?? [],
+        } : {
         selectedProfile ?? {
           id: '',
           full_name: '',
@@ -166,7 +176,6 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
           major: '',
           email: '',
           grad_year: 0,
-          // match_percentage: 0,
           parsed_courses: [],
         }
       }

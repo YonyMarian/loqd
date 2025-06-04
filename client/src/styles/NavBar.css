@@ -77,3 +77,28 @@
 .icon-background img {
   position: relative;
 }
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  height: 500px;
+  overflow-y: auto;
+  text-align: center;
+  font-size: 12px;
+}

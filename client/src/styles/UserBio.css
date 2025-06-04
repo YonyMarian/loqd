@@ -18,7 +18,7 @@
     font-weight: 700;
 }
 
-.bio-form input[type="text"] {
+.bio-form input[type="textarea"] {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #D7D8E2;
@@ -28,7 +28,7 @@
     transition: all 0.2s ease;
 }
 
-.bio-form input[type="text"]:focus {
+.bio-form input[type="textarea"]:focus {
     border-color: #2774AE;
     outline: none;
     background-color: #fff;
@@ -38,7 +38,7 @@
     padding: 0.5rem 1.5rem;
     border: none;
     border-radius: 20px;
-    background-color: #2774AE;
+    background-color: #000000;
     color: white;
     font-weight: 600;
     cursor: pointer;

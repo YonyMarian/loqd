@@ -3,102 +3,154 @@ import { signUp } from '../lib/session'
 import '../styles/SignUp.css';
 import UploadCal from '../components/UploadCal';
 import {supabase} from '../lib/supabase';
+import logo from '../assets/logo.svg';
+import { Link } from 'react-router-dom';
 
 // List of valid UCLA majors
 const validMajors = [
+  "Aerospace Engineering",
   "African American Studies",
+  "African and Middle Eastern Studies",
   "American Indian Studies",
+  "American Literature and Culture",
+  "Ancient Near East and Egyptology",
   "Anthropology",
-  "Architecture and Urban Design",
+  "Applied Lingustics",
+  "Applied Mathematics",
+  "Arabic",
+  "Architectural Studies",
   "Art",
   "Art History",
-  "Arts and Architecture-General",
   "Asian American Studies",
-  "Asian Languages and Cultures",
+  "Asian Humanities",
+  "Asian Languages and Linguistics",
+  "Asian Religions",
+  "Asian Studies",
+  "Astrophysics",
   "Atmospheric and Oceanic Sciences",
+  "Atmospheric and Oceanic Sciences/Mathematics",
+  "Biochemistry",
   "Bioengineering",
-  "Chemical and Biomolecular Engineering",
-  "Chemistry and Biochemistry",
-  "Chicana and Chicano Studies (Pre-21W)",
-  "Chicana/o and Central American Studies",
-  "Civil and Environmental Engineering",
-  "Classics",
+  "Biology",
+  "Biophysics",
+  "Business Economics",
+  "Central and East European Languages and Cultures",
+  "Chemical Engineering",
+  "Chemistry",
+  "Chemistry/Materials Science",
+  "Chicana and Chicano Studies",
+  "Chinese",
+  "Civil Engineering",
+  "Classical Civilization",
+  "Climate Science",
+  "Cognitive Science",
   "Communication",
   "Comparative Literature",
   "Computational and Systems Biology",
+  "Computer Engineering",
   "Computer Science",
-  "Design|Media Arts",
-  "Disability Studies",
-  "Earth, Planetary, and Space Sciences",
-  "Ecology and Evolutionary Biology",
+  "Computer Science and Engineering",
+  "Dance",
+  "Data Theory",
+  "Design Media Arts",
+  "Earth and Environmental Science",
+  "Ecology, Behavior and Evolution",
   "Economics",
-  "Education",
-  "Electrical and Computer Engineering",
-  "Electrical and Computer Engineering/Computer Science",
-  "Engineering and Applied Science",
+  "Education and Social Transformation",
+  "Electrical Engineering",
+  "Engineering Geology",
   "English",
-  "Environment and Sustainability",
+  "Environmental Science",
   "Ethnomusicology",
   "European Languages and Transcultural Studies",
-  "Film, Television, and Digital Media",
-  "French and Francophone Studies (pre-21S)",
+  "European Languages and Transcultural Studies with French and Francophone",
+  "European Languages and Transcultural Studies with German",
+  "European Languages and Transcultural Studies with Italian",
+  "European Languages and Transcultural Studies with Scandinavian",
+  "European Studies",
+  "Film and Television",
+  "Financial Actuarial Mathematics",
   "Gender Studies",
+  "General Chemistry",
   "Geography",
-  "Germanic Languages (pre-21S)",
+  "Geography/Environmental Studies",
+  "Geology",
+  "Geophysics",
   "Global Jazz Studies",
   "Global Studies",
+  "Greek",
+  "Greek and Latin",
   "History",
-  "Humanities-General",
-  "Integrative Biology and Physiology",
+  "Human Biology and Society",
+  "Individual Field of Concentration (Arts & Architecture)",
+  "Individual Field of Concentration (College)",
+  "Individual Field of Concentration (Theater, Film and Television)",
   "International Development Studies",
-  "International and Area Studies",
-  "Italian (pre-21S)",
+  "Iranian Studies",
+  "Japanese",
+  "Jewish Studies",
+  "Korean",
   "Labor Studies",
-  "Letters and Science-General",
-  "Life Sciences-General",
+  "Latin",
+  "Latin American Studies",
   "Linguistics",
+  "Linguistics and Anthropology",
+  "Linguistics and Asian Languages and Cultures",
+  "Linguistics and Computer Science",
+  "Linguistics and English",
+  "Linguistics and Philosophy",
+  "Linguistics and Psychology",
+  "Linguistics and Spanish",
+  "Marine Biology",
   "Materials Science and Engineering",
   "Mathematics",
+  "Mathematics for Teaching",
+  "Mathematics of Computation",
+  "Mathematics/Applied Science",
   "Mathematics/Economics",
-  "Mathematics/Statistics and Data Science",
-  "Mechanical and Aerospace Engineering",
-  "Microbiology, Immunology, and Molecular Genetics",
-  "Molecular, Cell, and Developmental Biology",
+  "Mechanical Engineering",
+  "Microbiology, Immunology and Molecular Genetics",
+  "Middle Eastern Studies",
+  "Molecular, Cell and Developmental Biology",
   "Music",
+  "Music Composition",
+  "Music Education",
+  "Music History and Industry",
   "Music Industry",
+  "Music Performance",
   "Musicology",
-  "Near Eastern Languages and Cultures",
   "Neuroscience",
+  "Nordic Studies",
   "Nursing",
   "Philosophy",
-  "Physical Sciences-General",
-  "Physics and Astronomy",
+  "Physics",
+  "Physiological Science",
   "Political Science",
+  "Portuguese and Brazilian Studies",
+  "Psychobiology",
   "Psychology",
   "Public Affairs",
   "Public Health",
-  "Religion, Study of",
-  "Slavic, East European, and Eurasian Languages and Cultures",
-  "Social Sciences-General",
-  "Society and Genetics",
+  "Russian Language and Literature",
+  "Russian Studies",
   "Sociology",
+  "Southeast Asian Studies",
+  "Spanish",
+  "Spanish and Community and Culture",
+  "Spanish and Linguistics",
   "Spanish and Portuguese",
-  "Statistics",
   "Statistics and Data Science",
-  "Statistics and Data Science/Mathematics",
+  "Study of Religion",
   "Theater",
-  "Theater, Film, and Television-General",
-  "World Arts and Cultures/Dance"
+  "World Arts and Cultures"
 ];
+
 
 type FormState = {
   username: string;
   password: string;
   email: string;
-  //preferences: string[];
   profilePic: File | null;
-  //scheduleFile: File | null;
-
   major: string;
   grad_year: number;
 };
@@ -108,12 +160,14 @@ const SignUp: React.FC = () => {
     username: '',
     password: '',
     email: '',
-    //preferences: [],
     profilePic: null,
-    //scheduleFile: null,
-    major:'',
+    major: '',
     grad_year: 2025
   });
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isCalendarUploaded, setIsCalendarUploaded] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, type, value } = e.target;
@@ -129,9 +183,9 @@ const SignUp: React.FC = () => {
         [name]: value,
       }));
     }
+
   };
 
-  const [userId, setUserId] = useState<string | null>(null);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -144,7 +198,6 @@ const SignUp: React.FC = () => {
         
         let avatar_url = null;
         
-        // Upload profile picture if one was selected
         if (form.profilePic) {
           const fileExt = form.profilePic.name.split('.').pop();
           const fileName = `${result.user.id}-${Math.random()}.${fileExt}`;
@@ -160,16 +213,14 @@ const SignUp: React.FC = () => {
           if (uploadError) {
             console.error('Error uploading avatar:', uploadError);
           } else {
-            // Get the public URL using the newer method
             const { data: urlData } = await supabase.storage
               .from('avatars')
-              .createSignedUrl(filePath, 31536000); // URL valid for 1 year
+              .createSignedUrl(filePath, 31536000);
 
             avatar_url = urlData?.signedUrl;
           }
         }
 
-        // Update profile with all information including avatar_url
         await supabase
           .from('profiles')
           .upsert({ 
@@ -182,6 +233,7 @@ const SignUp: React.FC = () => {
           })
           .select();
 
+        setShowUploadModal(true);
       } else {
         console.log(result);
         alert('Something went wrong with account creation');
@@ -192,86 +244,168 @@ const SignUp: React.FC = () => {
     }
   };
 
+  const handleCalendarUploaded = () => {
+    setIsCalendarUploaded(true);
+  };
 
   return (
-    <div className="signup-page">
-      <div className="signup-left">
-        <div className="signup-branding">
-          <h1>Loqd</h1>
-          <p>Connect. Collaborate. Study smarter at UCLA.</p>
+    <div className="min-h-screen bg-white flex">
+      {/* Left side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1a5c8b] items-center justify-center">
+        <div className="max-w-md text-center px-12">
+          <img src={logo} alt="Loqd Logo" className="h-32 w-32 mx-auto mb-8 rounded-full bg-white p-4 shadow-lg" />
+          <h1 className="text-4xl font-bold text-white mb-4">Join Loqd!</h1>
+          <p className="text-[#f8f9fa] text-lg">
+            Connect. Collaborate. Study smarter at UCLA.
+          </p>
         </div>
       </div>
-      <div className="signup-right">
-        <div className="signup-form-container">
-          <h2>Create Your Account</h2>
-          <p className="signup-subtitle">Sign up with your UCLA email and get started</p>
 
-          <form className="signup-form" onSubmit={handleSubmit}>
-            <label>
-              Profile Picture
-              <input type="file" name="profilePic" accept="image/*" onChange={handleChange} />
-            </label>
+      {/* Right side - Sign Up Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-[#202124]">Create Your Account</h2>
+            <p className="mt-2 text-[#5f6368]">
+              Already have an account?{' '}
+              <Link to="/signin" className="text-[#2774AE] hover:text-[#1a5c8b] font-medium">
+                Sign in
+              </Link>
 
-            <label>
-              Username
-              <input type="text" name="username" value={form.username} onChange={handleChange} required />
-            </label>
-
-            <label>
-              UCLA Email
-              <input type="email" name="email" value={form.email} onChange={handleChange}
-                pattern="[a-z.]*[@]\b(g\.)?ucla.edu"
-                title="Ensure your email ends with '@ucla.edu'"
-                required />
-            </label>
-
-            <label>
-              Password
-              <input type="password" name="password" value={form.password} onChange={handleChange} required />
-            </label>
-
-            <label>
-              Major
-              <select 
-                name="major" 
-                value={form.major} 
-                onChange={handleChange}
-                required
-                className="signup-select"
-              >
-                <option value="">Select a major</option>
-                {validMajors.map((major) => (
-                  <option key={major} value={major}>
-                    {major}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              Graduation Year
-              <input type="number" name="grad_year" min="2000" max="3000" value={form.grad_year} onChange={handleChange} required />
-            </label>
-
-            <button type="submit" className="signup-button">Sign Up</button>
-          </form>
-
-          {/* PROBLEM WE HAD: we only want to upload calendar data 
-              AFTER a successful signup.
-            So, only allow users to upload calendar AFTER their signup 
-              is successful (ie now exists a userId)
-          */} 
-          {userId && (
-          <div className="calendar-upload-section">
-            <label>
-              Upload .ics Schedule
-              <UploadCal userId={userId} />
-            </label> 
+            </p>
           </div>
-          )}
-            
+
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left">Profile Picture</label>
+                <input 
+                  type="file" 
+                  name="profilePic" 
+                  accept="image/*" 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e3eaf6] file:text-[#2774AE] hover:file:bg-[#d0dff7]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left">Username</label>
+                <input 
+                  type="text" 
+                  name="username" 
+                  value={form.username} 
+                  onChange={handleChange} 
+                  required 
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2774AE] focus:border-[#2774AE]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left">UCLA Email</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  value={form.email} 
+                  onChange={handleChange}
+                  pattern="[a-z0-9.]*[@]\b(g\.)?ucla.edu"
+                  title="Ensure your email ends with '@ucla.edu'"
+                  required 
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2774AE] focus:border-[#2774AE]"
+                  placeholder="your.email@ucla.edu"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left">Password</label>
+                <input 
+                  type="password" 
+                  name="password" 
+                  value={form.password} 
+                  onChange={handleChange} 
+                  required 
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2774AE] focus:border-[#2774AE]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left">Major</label>
+                <select 
+                  name="major" 
+                  value={form.major} 
+                  onChange={handleChange}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2774AE] focus:border-[#2774AE]"
+                >
+                  <option value="">Select a major</option>
+                  {validMajors.map((major) => (
+                    <option key={major} value={major}>
+                      {major}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left">Graduation Year</label>
+                <input 
+                  type="number" 
+                  name="grad_year" 
+                  min="2000" 
+                  max="3000" 
+                  value={form.grad_year} 
+                  onChange={handleChange} 
+                  required 
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2774AE] focus:border-[#2774AE]"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2774AE] hover:bg-[#1a5c8b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2774AE] transition-colors duration-200"
+            >
+              Sign Up
+
+
+            </button>
+          </form>
         </div>
       </div>
+
+      {/* Upload Calendar Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 min-h-screen w-full">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div className="mb-6 text-center">
+              <h3 className="text-2xl font-bold text-[#202124] mb-2">Upload Your Schedule</h3>
+              <p className="text-[#5f6368]">Download your schedule as an .ics file from the "Download calendar data" option in your Study List</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#202124] text-left mb-2">
+                  Upload .ics Schedule
+                </label>
+                <UploadCal userId={userId!} onUploadComplete={handleCalendarUploaded} />
+              </div>
+              
+              <button
+                onClick={() => setShowUploadModal(false)}
+                disabled={!isCalendarUploaded}
+                className={`w-full mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors duration-200 ${
+                  isCalendarUploaded 
+                    ? 'bg-[#2774AE] hover:bg-[#1a5c8b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2774AE]' 
+                    : 'bg-gray-300 cursor-not-allowed'
+                }`}
+              >
+                {/* {isCalendarUploaded ? 'Continue to Dashboard' : 'Please Upload Your Schedule'} */}
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      )}
     </div>
   );
 };
