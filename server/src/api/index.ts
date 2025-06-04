@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import calendarRoutes from './routes/calendar';
+import 'dotenv/config';
 
 const router = Router();
 
