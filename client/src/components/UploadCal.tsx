@@ -35,7 +35,13 @@ const UploadCal: React.FC<UploadCalProps> = ({userId}) => {
             });
             
             if (!upload_res.ok) {
-                throw new Error(`Upload failed: ${upload_res.statusText}`);
+                // Try to parse error message if available
+                let errorMsg = 'Upload failed';
+                try {
+                    const errJson = await upload_res.json();
+                    errorMsg = errJson.error || errorMsg;
+                } catch {}
+                throw new Error(errorMsg);
             }
             
             let schedule = await upload_res.json();

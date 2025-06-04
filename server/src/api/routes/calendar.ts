@@ -20,7 +20,7 @@ const upload = multer({ dest: uploadsDir }); // Temporary upload directory with 
 router.post('/upload_cal', upload.single('calendarFile'), async (req: Request, res: Response) => {
     try {
         if (!req.file) {
-            res.status(400).send('No file uploaded.');
+            res.status(400).json({ error: 'No file uploaded.' });
             return;
         }
         
@@ -57,7 +57,7 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req: Request, r
         res.json(realSchedule);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error processing the file.');
+        res.status(500).json({ error: 'Error processing the file.' });
     }
 });
 
@@ -65,7 +65,7 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req: Request, r
 router.post('/update_calendar', async (req: Request, res: Response) => {
     const { user_id, calendar_data } = req.body;
     if (!user_id || !calendar_data) {
-        res.status(400).send("Missing data!");
+        res.status(400).json({ error: "Missing data!" });
         return;
     }
 
@@ -76,11 +76,11 @@ router.post('/update_calendar', async (req: Request, res: Response) => {
     
     if (error) {
         console.error(error);
-        res.status(500).send("Error sending calendar data");
+        res.status(500).json({ error: "Error sending calendar data" });
         return;
     }
     
-    res.send("Calendar data added to profiles table!");
+    res.json({ message: "Calendar data added to profiles table!" });
 });
 
 export default router;
