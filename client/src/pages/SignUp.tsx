@@ -345,13 +345,13 @@ const SignUp: React.FC = () => {
                     : 'bg-gray-300 cursor-not-allowed'
                 }`}
               >
-                {isCalendarUploaded ? 'Continue to Dashboard' : 'Please Upload Your Schedule'}
+                {/* {isCalendarUploaded ? 'Continue to Dashboard' : 'Please Upload Your Schedule'} */}
               </button>
             </div>
 
           </div>
         </div>
-        
+
       )}
     </div>
   );
