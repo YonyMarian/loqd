@@ -56,20 +56,6 @@ const MatchProfile: React.FC<MatchProfileProps> = ({ name, image, major, userId 
           {loading ? 'Calculating...' : `${matchResult.matchPercentage}%`}
         </button>
       </div>
-      {matchResult.matchedClasses.length > 0 && (
-        <div className="matched-classes">
-          <p className="matched-classes-title">Matched Classes:</p>
-          <ul>
-            {matchResult.matchedClasses.map((match, index) => (
-              <li key={index}>
-                {match.courseNumber}
-                {match.lecture && ` - ${match.lecture}`}
-                {match.discussion && ` - ${match.discussion}`}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };
