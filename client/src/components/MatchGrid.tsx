@@ -126,8 +126,8 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
             key={profile.id}
             name={profile.full_name}
             image={profile.avatar_url || '/default-avatar.svg'}
-            match_percentage={profile.match_percentage || 0}
             major={profile.major || 'Undeclared'}
+            userId={profile.id}
           />
         ))}
         {filteredProfiles.length === 0 && (
