@@ -13,33 +13,28 @@ type ClassEntry = {
   color?: string; // Add color to ClassEntry
 };
 
-function getUniqueStartTimes(entries: ClassEntry[]): string[] {
-  const timeSet = new Set<string>();
-
-  for (const entry of entries) {
-    timeSet.add(entry.stime);
+// Generate all time slots from 8am to 8pm
+function generateTimeSlots(): string[] {
+  const times: string[] = [];
+  for (let hour = 8; hour <= 20; hour++) {
+    const meridiem = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : hour;
+    times.push(`${displayHour}:00 ${meridiem}`);
   }
+  return times;
+}
 
-  return Array.from(timeSet).sort((a, b) => {
-    const toMinutes = (time: string) => {
-      // Example input: "1:00 AM" or "12:30 PM"
-      const [timePart, meridiem] = time.split(' ');
-      const [hourStr, minuteStr] = timePart.split(':');
-      let hour = parseInt(hourStr, 10);
-      const minute = parseInt(minuteStr, 10);
-
-      // Convert 12 AM to 0, 12 PM stays 12, other PM hours add 12
-      if (meridiem.toUpperCase() === 'AM') {
-        if (hour === 12) hour = 0;
-      } else { // PM
-        if (hour !== 12) hour += 12;
-      }
-
-      return hour * 60 + minute;
-    };
-
-    return toMinutes(a) - toMinutes(b);
-  });
+// Convert time strings to minutes since midnight
+function timeToMinutes(timeStr: string): number {
+  const [timePart, meridiem] = timeStr.split(' ');
+  const [hourStr, minuteStr] = timePart.split(':');
+  let hour = parseInt(hourStr);
+  const minute = parseInt(minuteStr || '0');
+  
+  if (meridiem === 'PM' && hour !== 12) hour += 12;
+  if (meridiem === 'AM' && hour === 12) hour = 0;
+  
+  return hour * 60 + minute;
 }
 
 type WeekScheduleProps = {
@@ -55,7 +50,7 @@ const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({
   onCourseClick,
   selectedCourses = new Set()
 }) => {
-  const times = getUniqueStartTimes(classSchedule);
+  const times = generateTimeSlots();
 
   // Convert ClassEntry to Course format
   const convertToCourse = (entry: ClassEntry): Course => ({
@@ -71,6 +66,29 @@ const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({
     variant: 'calendar'
   });
 
+  // Group classes by day and calculate their positions
+  const getClassesForDay = (day: string) => {
+    return classSchedule
+      .filter(c => c.day === day)
+      .map(course => {
+        const startMinutes = timeToMinutes(course.stime);
+        const endMinutes = timeToMinutes(course.etime);
+        const firstSlotIndex = times.findIndex(time => 
+          timeToMinutes(time) >= startMinutes
+        );
+        const lastSlotIndex = times.findIndex(time => 
+          timeToMinutes(time) >= endMinutes
+        ) - 1;
+        
+        return {
+          course,
+          startSlot: firstSlotIndex,
+          endSlot: lastSlotIndex === -1 ? times.length - 1 : lastSlotIndex,
+          height: (lastSlotIndex - firstSlotIndex + 1) * 35 // 35px is the height of each slot
+        };
+      });
+  };
+
   return (
     <div className="calendar-card">
       {/* <div className="calendar-header">
@@ -83,20 +101,36 @@ const WeekScheduleComponent: React.FC<WeekScheduleProps> = ({
             <div className="day-col" key={day}>{day}</div>
           ))}
         </div>
-        {times.map((stime) => (
-          <div className="time-row" key={stime}>
-            <div className="time-col">{stime}</div>
+        {times.map((time, timeIndex) => (
+          <div className="time-row" key={time}>
+            <div className="time-col">{time}</div>
             {days.map((day) => {
-              const course = classSchedule.find(c => c.day === day && c.stime === stime);
+              const classesForDay = getClassesForDay(day);
+              const classInThisSlot = classesForDay.find(c => 
+                c.startSlot === timeIndex
+              );
+              
               return (
-                <div className="day-cell" key={day + stime}>
-                  {course && (
-                    <CourseInterface 
-                      course={convertToCourse(course)}
-                      variant="calendar"
-                      onClick={onCourseClick}
-                      selectedCourses={selectedCourses}
-                    />
+                <div className="day-cell" key={day + time}>
+                  {classInThisSlot && (
+                    <div 
+                      className="class-box-wrapper"
+                      style={{ 
+                        height: `${classInThisSlot.height}px`,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1
+                      }}
+                    >
+                      <CourseInterface 
+                        course={convertToCourse(classInThisSlot.course)}
+                        variant="calendar"
+                        onClick={onCourseClick}
+                        selectedCourses={selectedCourses}
+                      />
+                    </div>
                   )}
                 </div>
               );
