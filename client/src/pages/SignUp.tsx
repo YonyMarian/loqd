@@ -87,7 +87,6 @@ const SignUp: React.FC = () => {
           })
           .select();
 
-        alert('✅ Account created successfully, now update calendar data');
       } else {
         console.log(result);
         alert('Something went wrong with account creation');
