@@ -13,9 +13,10 @@ interface ChatMessage {
 }
 
 export interface printedChatMessage {
-    content: string;
-    sender_name: string;
-    createdAt: string;
+  content: string;
+  createdAt: string;
+  sender_name: string;
+  isOwn: boolean;
 }
  
 export default function useRealtimeChat(
@@ -70,15 +71,15 @@ export default function useRealtimeChat(
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        const mapped = data.map((msg) => ({
-        //   room_name: msg.room_name,
+        const formattedMessages = data.map((msg) => ({
           content: msg.content,
-          sender_name: (msg.sender_id===own_id)?ownUsername:otherUsername,
           createdAt: msg.created_at,
+          sender_name: (msg.sender_id===own_id)?ownUsername:otherUsername,
+          isOwn: msg.sender_id === own_id
         }));
-        console.log("fetched messages:", mapped);
-        setChatMessages(mapped);
-        if (mapped.length === 0) {
+        console.log("fetched messages:", formattedMessages);
+        setChatMessages(formattedMessages);
+        if (formattedMessages.length === 0) {
             console.log("triggering insertion into rooms table");
             const createRoom = async () => {
                 if (!roomName){
@@ -166,6 +167,7 @@ export default function useRealtimeChat(
       content,
       sender_name: ownUsername,
       createdAt,
+      isOwn: true,
     };
 
     setChatMessages((prev) => [...prev, newMessage]);

@@ -2,7 +2,8 @@ import { FormEvent } from 'react';
 import ChatMessage from './ChatMessage';
 import useRealtimeChat, { printedChatMessage } from '../hooks/useRealtimeChat';
 import useChatScroll from '../hooks/useChatScroll';
-import '../styles/chat.css';
+// import '../styles/chat.css';
+import '../styles/ChatInstance.css';
 
 interface RealtimeChatProps {
   roomName: string;
@@ -16,7 +17,7 @@ interface RealtimeChatProps {
 
 // export default function RealtimeChat({ roomName, ownUserId, otherUserId, messages = []}: RealtimeChatProps) {
  
-const RealtimeChat:React.FC<RealtimeChatProps> = ({ roomName, ownUserId, otherUserId, messages = []}) => {
+const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomName, ownUserId, otherUserId, messages = [] }) => {
   // const { chatMessages, sendMessage } = useRealtimeChat(roomName, ownUserId, otherUserId, messages, onMessage);
   const { chatMessages, sendMessage } = useRealtimeChat(roomName, ownUserId, otherUserId, messages);
   const messagesEndRef = useChatScroll(chatMessages);
@@ -31,16 +32,21 @@ const RealtimeChat:React.FC<RealtimeChatProps> = ({ roomName, ownUserId, otherUs
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-messages">
+    <div className="chat-instance">
+      <div className="messages-container">
         {chatMessages.map((msg) => (
           <ChatMessage key={msg.createdAt} message={msg} />
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSend} className="chat-input">
-        <input name="message" type="text" placeholder="Say something..." />
-        <button type="submit">Send</button>
+      <form onSubmit={handleSend} className="message-input-container">
+        <input 
+          name="message" 
+          className="message-input" 
+          type="text" 
+          placeholder="Type a message..." 
+        />
+        <button type="submit" className="send-button">Send</button>
       </form>
     </div>
   );
