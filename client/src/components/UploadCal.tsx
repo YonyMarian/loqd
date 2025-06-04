@@ -56,7 +56,6 @@ const UploadCal: React.FC<UploadCalProps> = ({ userId, onUploadComplete }) => {
                 throw new Error(`Failed to update profile: ${update_res.statusText}`);
             }
 
-            alert('✅ Schedule uploaded successfully!');
             navigate('/dashboard');
 
             // After successful upload
