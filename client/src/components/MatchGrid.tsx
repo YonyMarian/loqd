@@ -123,51 +123,56 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
   }
 
   return (
-    <div className="match-grid-container">
-      <div className="match-grid">
-        {filteredProfiles.map(profile => (
-          <div 
-            key={profile.id} 
-            onClick={() => setSelectedProfile(profile)}
-            style={{ cursor: 'pointer' }}
-          >
-            <MatchProfile 
-              name={profile.full_name}
-              image={profile.avatar_url || '/default-avatar.svg'}
-              match_percentage={profile.match_percentage || 0}
-              major={profile.major || 'Undeclared'}
-            />
-          </div>
-        ))}
-        {filteredProfiles.length === 0 && searchTerm.trim() !== '' && (
-          <div className="no-matches">
-            No matches found. Try adjusting your search criteria.
-          </div>
-        )}
-      </div>
-      
-      {!searchTerm && !showAll && profiles.length >= DEFAULT_LIMIT && (
-        <button className="show-more-button" onClick={handleShowMore}>
-          Show More Users
-        </button>
-      )}
+  <div className="match-grid-container">
+    <div className="match-grid">
+      {filteredProfiles.map(profile => (
+        <div
+          key={profile.id}
+          onClick={() => setSelectedProfile(profile)}
+          style={{ cursor: 'pointer' }}
+        >
+          <MatchProfile
+            name={profile.full_name}
+            image={profile.avatar_url || '/default-avatar.svg'}
+            major={profile.major || 'Undeclared'}
+            /* extra metadata */
+            match_percentage={profile.match_percentage ?? 0}
+            userId={profile.id}
+          />
+        </div>
+      ))}
 
-      <ProfileModal
-        isOpen={selectedProfile !== null}
-        onClose={() => setSelectedProfile(null)}
-        profile={selectedProfile || {
+      {filteredProfiles.length === 0 && searchTerm.trim() !== '' && (
+        <div className="no-matches">
+          No matches found. Try adjusting your search criteria.
+        </div>
+      )}
+    </div>
+
+    {!searchTerm && !showAll && profiles.length >= DEFAULT_LIMIT && (
+      <button className="show-more-button" onClick={handleShowMore}>
+        Show More Users
+      </button>
+    )}
+
+    <ProfileModal
+      isOpen={selectedProfile !== null}
+      onClose={() => setSelectedProfile(null)}
+      profile={
+        selectedProfile ?? {
           full_name: '',
           avatar_url: '',
           major: '',
           email: '',
           graduation_year: 0,
           match_percentage: 0,
-          parsed_courses: []
-        }}
-        filterCourses={filterCourses}
-      />
-    </div>
-  );
-};
+          parsed_courses: [],
+        }
+      }
+      filterCourses={filterCourses}
+    />
+  </div>
+);
+
 
 export default MatchGrid;

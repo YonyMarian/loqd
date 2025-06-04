@@ -1,14 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/MatchProfile.css';
+import { getMatchWithUser, MatchResult } from '../services/matchingService';
+import { useAuth } from '../hooks/useAuth';
 
 interface MatchProfileProps {
   name: string;
   image?: string;
-  match_percentage: number;
+  match_percentage?: number;
   major: string;
+  userId: string;
 }
 
-const MatchProfile: React.FC<MatchProfileProps> = ({ name, image, match_percentage, major }) => {
+const MatchProfile: React.FC<MatchProfileProps> = ({ name, image, major, userId }) => {
+  const { user } = useAuth();
+  const [matchResult, setMatchResult] = useState<MatchResult>({ matchPercentage: 0, matchedClasses: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMatchPercentage = async () => {
+      if (user && userId) {
+        try {
+          const result = await getMatchWithUser(user.id, userId);
+          setMatchResult(result);
+        } catch (error) {
+          console.error('Error calculating match:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchMatchPercentage();
+  }, [user, userId]);
+
   return (
     <div className="match-profile-box">
       <div className="match-profile-image-container">
@@ -28,8 +52,24 @@ const MatchProfile: React.FC<MatchProfileProps> = ({ name, image, match_percenta
       <h3>{name}</h3>
       <p>{major}</p>
       <div className="match-profile-buttons">
-        <button className="match-profile-button">{match_percentage}%</button>
+        <button className="match-profile-button">
+          {loading ? 'Calculating...' : `${matchResult.matchPercentage}%`}
+        </button>
       </div>
+      {matchResult.matchedClasses.length > 0 && (
+        <div className="matched-classes">
+          <p className="matched-classes-title">Matched Classes:</p>
+          <ul>
+            {matchResult.matchedClasses.map((match, index) => (
+              <li key={index}>
+                {match.courseNumber}
+                {match.lecture && ` - ${match.lecture}`}
+                {match.discussion && ` - ${match.discussion}`}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
