@@ -18,12 +18,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   };
 
   return (
-    <div className={`message-block ${message.isOwn ? '' : 'other-message-block'}`}>
+    // <div className={`message-block ${message.isOwn ? '' : 'other-message-block'}`}>
       <div className={`message ${message.isOwn ? 'user-message' : 'other-message'}`}>
         <div className="message-content">
           <p>{message.content}</p>
         </div>
-      </div>
+      {/* </div> */}
       <span className="message-time">{formatTime(message.createdAt)}</span>
     </div>
   );
