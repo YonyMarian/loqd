@@ -255,4 +255,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 - Omar, Paul Richard Eggert, Jesus Christ
 - CS 35L Teaching Staff
-- Project Team Members
+- Viyan Dabke, Lian Elsa Linton, Yony Marian, Shiven Patel, Katelyn Yu
