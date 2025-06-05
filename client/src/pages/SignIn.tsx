@@ -64,8 +64,8 @@ const SignIn: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-[#202124] text-left">
-                  UCLA Email
-                </label>
+              UCLA Email
+            </label>
                 <input
                   id="email"
                   name="email"
@@ -80,8 +80,8 @@ const SignIn: React.FC = () => {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-[#202124] text-left">
-                  Password
-                </label>
+              Password
+            </label>
                 <input
                   id="password"
                   name="password"

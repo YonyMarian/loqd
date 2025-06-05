@@ -1,6 +1,8 @@
 # LOQD
 Study buddy matching app for UCLA students
 
+Reachable at https://www.getloqd.in
+
 ## Overview
 LOQD is a social platform that helps UCLA students connect with classmates based on their course schedules. The platform matches students with similar classes and provides an intuitive interface for managing schedules and finding study partners.
 
@@ -115,6 +117,22 @@ npm install
 
 3. Set up environment variables:
 
+**Note:** This project does not include `.env` files or Supabase credentials for security reasons.
+
+If you are setting up LOQD for the first time, you will need to create your own Supabase project and obtain the required environment variables:
+
+1. Go to [https://app.supabase.com/](https://app.supabase.com/) and sign in or create an account.
+2. Click "New Project" and follow the prompts to create your project.
+3. Once your project is created, navigate to **Project Settings > API**.
+4. Copy the following values:
+   - **Project URL** (use as `VITE_SUPABASE_URL`)
+   - **anon public** key (use as `VITE_SUPABASE_ANON_KEY`)
+   - **service_role** key (use as `VITE_SUPABASE_SVC_KEY`, if needed for backend)
+5. Add these values to your `.env` files in both the `client` and `server` directories as shown in the setup instructions above.
+6. Remember to add `.env` to your `.gitignore`!
+
+This will allow your local instance of LOQD to connect to your own Supabase backend.
+
 #### Windows (Git Bash)
 ```bash
 # In the server directory
@@ -180,23 +198,24 @@ sudo lsof -i :3000
 sudo kill -9 <PID>
 ```
 
-## Project Structure
+## General Project Structure
 ```
 loqd/
 ├── client/                 # Frontend React application
 │   ├── src/
 │   │   ├── components/    # React components
-│   │   ├── pages/        # Page components
-│   │   ├── styles/       # CSS modules
-│   │   ├── services/     # API services
-│   │   └── utils/        # Utility functions
-│   └── public/           # Static files
+|   |   ├── hooks/         # Custom hooks
+│   │   ├── pages/         # Page components
+|   |   ├── lib/           # Authentication and configuration
+│   │   ├── styles/        # CSS modules
+│   │   ├── services/      # API services
+│   │   └── utils/         # Utility functions
+│   └── public/            # Static files
 ├── server/                # Backend Node.js application
 │   ├── src/
-│   │   ├── api/         # API routes
-│   │   ├── utils/       # Utility functions
-│   │   └── middleware/  # Express middleware
-│   └── uploads/         # File uploads
+│   │   └── api/           # API routes
+│   ├── uploads/            # File uploads for calendar files
+|   └── server.ts           # Main backend entry point
 └── README.md
 ```
 
@@ -206,18 +225,22 @@ loqd/
 - Supports .ics file uploads
 - Parses course schedules
 - Displays weekly view
-- Color-coded classes
+- Multi-use for filtering matches
 
 ### Matching Algorithm
 - Calculates match percentage based on shared classes
 - Considers class times and locations
 - Updates in real-time
 
+### Direct Messaging
+- Real-time chat between users
+- Persistent message history
+- Connect instantly with new matches
+
 ### User Profiles
 - Major and graduation year
 - Course schedule
-- Match history
-- Connection system
+- Profile pictures
 
 ## Contributing
 1. Fork the repository

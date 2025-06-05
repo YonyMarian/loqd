@@ -168,7 +168,7 @@
   border-top: 1px solid #e9ecef;
   display: flex;
   gap: 0.5rem;
-  position: sticky;  /* <-- fix */
+  /* position: sticky;  <-- fix */
   bottom: 0;          /* <-- fix */
   z-index: 10;
 }
@@ -181,6 +181,7 @@
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
+  background: white;
 }
 
 .message-input:focus {
