@@ -23,6 +23,10 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-*.env*
+*.env
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5c7cb16e0ecc47d7a7fe14b5a5b1d39c2006abea
 node_modules

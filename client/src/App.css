@@ -81,6 +81,15 @@ html, body, #root {
   color: #888;
 }
 
+input {
+  background-color: #fff;
+  color: #222;
+}
+
+select {
+  background-color: #fff;
+}
+
 input[type="text"]:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -135,25 +144,6 @@ input[type="text"]:focus {
   }
 } */
 
-/* Force all backgrounds to white and text to dark */
-body, html, #root, input, textarea, select, button, .card, .chat-box, .chat-instance, .messages-container {
-  background: #fff !important;
-  color: #222 !important;
-}
-
-/* For input fields specifically */
-input, textarea, select {
-  background: #fff !important;
-  color: #222 !important;
-  border: 1px solid #ccc !important;
-}
-
-/* For buttons */
-button {
-  background: #fff !important;
-  color: #222 !important;
-  border: 1px solid #ccc !important;
-}
 
 /* For any card or container */
 .card, .chat-box, .chat-instance, .messages-container {
