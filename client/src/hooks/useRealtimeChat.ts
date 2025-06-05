@@ -74,7 +74,7 @@ export default function useRealtimeChat(
         const formattedMessages = data.map((msg) => ({
           content: msg.content,
           createdAt: msg.created_at,
-          sender_name: (msg.sender_id===own_id)?ownUsername:otherUsername,
+          sender_name: (msg.sender_id === own_id) ? ownUsername : otherUsername,
           isOwn: msg.sender_id === own_id
         }));
         console.log("fetched messages:", formattedMessages);
@@ -166,19 +166,33 @@ export default function useRealtimeChat(
 
   // Realtime updates
   useEffect(() => {
+    console.log('Registering broadcast handler');
     const channel = supabase.channel(`chat:${roomName}`).on(
       'broadcast',
       { event: 'message' },
       (payload) => {
-        const newMessage = payload.payload as printedChatMessage;
-        setChatMessages((prev) => [...prev, newMessage]);
+        const newMessage = payload.payload as any;
+        setChatMessages((prev) => {
+          if (prev.some(msg => msg.createdAt === newMessage.createdAt && msg.content === newMessage.content)) {
+            return prev;
+          }
+          return [
+            ...prev,
+            {
+              content: newMessage.content,
+              createdAt: newMessage.createdAt,
+              sender_name: (newMessage.sender_id === own_id) ? ownUsername : otherUsername,
+              isOwn: newMessage.sender_id === own_id,
+            }
+          ];
+        });
       }
     ).subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [roomName]);
+  }, [roomName, own_id]);
 
   const sendMessage = async (content: string) => {
     const createdAt = new Date().toISOString();
@@ -202,10 +216,19 @@ export default function useRealtimeChat(
       isOwn: true,
     };
 
+    // Log isOwn value when sending a message
+    console.log('[SEND] isOwn:', newMessage.isOwn, 'content:', content);
+
+    setChatMessages((prev) => [...prev, newMessage]);
+
     await supabase.channel(`chat:${roomName}`).send({
       type: 'broadcast',
       event: 'message',
-      payload: newMessage,
+      payload: {
+        content,
+        createdAt,
+        sender_id: own_id,
+      },
     });
   };
 
