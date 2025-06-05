@@ -148,10 +148,10 @@ const Chat: React.FC = () => {
                 <span className="timestamp">{formatTime(chat.created_at)}</span>
               </div>
               <div className="conversation-footer">
-                <p className="last-message">{chat.last_message}</p>
-                {/* {chat.unread > 0 && (
-                  <span className="unread-badge">{chat.unread}</span>
-                )} */}
+                <p className="last-message">{chat.last_message || "No messages yet"}</p>
+                {chat.last_message && (
+                  <span className="last-message-time">{formatTime(chat.created_at)}</span>
+                )}
               </div>
             </div>
           </div>
