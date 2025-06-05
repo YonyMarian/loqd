@@ -22,7 +22,7 @@ const ChatContainer:React.FC<ChatContainerProps> = ({ownUserId, otherUserId}) =>
 
     useEffect(() => {
         setSelectedChat(-1);
-        console.log("changed selectedChat");
+        // console.log("changed selectedChat");
     }, [otherUserId]);
 
 useEffect(() => {
@@ -35,7 +35,7 @@ useEffect(() => {
             .eq('member_id', ownUserId);
 
         if (error) {
-            console.log("error grabbing convo list in chatcontainer:", error);
+            // console.log("error grabbing convo list in chatcontainer:", error);
             return;
         }
 
@@ -56,7 +56,7 @@ useEffect(() => {
                 .neq('member_id', ownUserId)
                 .maybeSingle();
             if (error_id || !other_mem_id?.member_id) {
-                console.log("error finding other member id - chatcontainer:", error_id);
+                //console.log("error finding other member id - chatcontainer:", error_id);
                 continue;
             }
 

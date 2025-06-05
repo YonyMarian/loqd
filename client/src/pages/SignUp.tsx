@@ -235,12 +235,12 @@ const SignUp: React.FC = () => {
 
         setShowUploadModal(true);
       } else {
-        console.log(result);
+        // console.log(result);
         alert('Something went wrong with account creation');
       }
     } catch (error) {
-      console.error('Error during sign up:', error);
-      alert('❌ Error during sign up, please try again');
+      //onsole.error('Error during sign up:', error);
+      alert('Error during sign up, please try again');
     }
   };
 

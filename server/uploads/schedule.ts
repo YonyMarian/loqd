@@ -73,7 +73,7 @@ export default function getScheduleObject(cal: Array<WellFormedEvent>): Object {
                         finalDate: `${month}/${day}/${year}`
                     }
                 )
-                console.log(`Added ${finalExams[finalExams.length - 1].finalDescription} to finals array`)
+                // console.log(`Added ${finalExams[finalExams.length - 1].finalDescription} to finals array`)
             }
             // this branch handles "regular" class instances like lectures or discussions
             else {
