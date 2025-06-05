@@ -1,6 +1,8 @@
 # LOQD
 Study buddy matching app for UCLA students
 
+Reachable at https://www.getloqd.in
+
 ## Overview
 LOQD is a social platform that helps UCLA students connect with classmates based on their course schedules. The platform matches students with similar classes and provides an intuitive interface for managing schedules and finding study partners.
 
