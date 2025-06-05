@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { ChatMessage } from './useRealtimeChat';
+import { printedChatMessage } from './useRealtimeChat';
 
-export default function useChatScroll(dependencies: ChatMessage[]) {
+export default function useChatScroll(dependencies: printedChatMessage[]) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
