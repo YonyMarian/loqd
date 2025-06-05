@@ -52,7 +52,7 @@ const ChatInstance:React.FC<ChatInstanceProps> = ({ownUserId, otherUserId}) => {
           <h2>{otherUserName}</h2>
         </div>
       </div>
-      <RealtimeChat roomName={roomName}
+      <RealtimeChat key={roomName} roomName={roomName}
         ownUserId={ownUserId} 
         otherUserId={otherUserId} 
       />

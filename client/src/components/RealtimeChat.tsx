@@ -6,6 +6,7 @@ import useChatScroll from '../hooks/useChatScroll';
 import '../styles/ChatInstance.css';
 
 interface RealtimeChatProps {
+  key: string;
   roomName: string;
   // ownUsername: string;
   // otherUsername: string;
