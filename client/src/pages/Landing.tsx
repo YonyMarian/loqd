@@ -51,7 +51,7 @@ const Landing: React.FC = () => {
                             <div className="text-center p-6 bg-white rounded-lg shadow-sm">
                                 <h3 className="text-xl font-semibold mb-4 text-[#202124]">Get real-time updates</h3>
                                 <p className="text-[#5f6368]">
-                                    Chat with your study buddies one-on-one or in groups
+                                    Chat with your study buddies one-on-one. 
                                 </p>
                             </div>
                         </div>
