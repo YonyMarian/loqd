@@ -48,7 +48,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses, setOth
   const [showAll, setShowAll] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<MatchProfile | null>(null);
   const { user } = useAuth();
-  const DEFAULT_LIMIT = 8;
+  const DEFAULT_LIMIT = 64;
 
   useEffect(() => {
     const fetchProfiles = async () => {
