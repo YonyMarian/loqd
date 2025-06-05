@@ -13,7 +13,7 @@ const UploadCal: React.FC<UploadCalProps> = ({ userId, onUploadComplete }) => {
     const navigate = useNavigate();
     
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        console.log(`API path should be: ${import.meta.env.VITE_API_URL}`)
+        // console.log(`API path should be: ${import.meta.env.VITE_API_URL}`)
         event.preventDefault();
         if (!file) {
             alert("Please select a file before uploading.");
@@ -47,7 +47,7 @@ const UploadCal: React.FC<UploadCalProps> = ({ userId, onUploadComplete }) => {
             }
             
             let schedule = await upload_res.json();
-            console.log("Parsed calendar data:", schedule);
+            // console.log("Parsed calendar data:", schedule);
             
             // Update user's profile with calendar data
             let update_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/update_calendar`, {
