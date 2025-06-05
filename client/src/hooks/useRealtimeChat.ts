@@ -196,16 +196,11 @@ export default function useRealtimeChat(
     }
 
     const newMessage: printedChatMessage = {
-    //   id: Date.now().toString(),
-    //   room_name: roomName,
       content,
       sender_name: ownUsername,
       createdAt,
       isOwn: true,
     };
-
-    setChatMessages((prev) => [...prev, newMessage]);
-    // if (onMessage) onMessage([newMessage]);
 
     await supabase.channel(`chat:${roomName}`).send({
       type: 'broadcast',

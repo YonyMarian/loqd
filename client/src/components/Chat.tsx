@@ -55,8 +55,8 @@ const Chat: React.FC = () => {
 
           // Get last message
           const { data: lastMessage, error: messageError } = await supabase
-            .from('messages')
-            .select('content')
+            .from('messages_k')
+            .select('content, created_at')
             .eq('room_name', room.room_name)
             .order('created_at', { ascending: false })
             .limit(1)
@@ -66,8 +66,8 @@ const Chat: React.FC = () => {
             room_name: room.room_name,
             other_mem_id: otherMember.member_id,
             other_mem_name: profile.full_name,
-            created_at: room.created_at,
-            last_message: lastMessage?.content || 'No messages yet',
+            created_at: lastMessage?.created_at || room.created_at,
+            last_message: lastMessage?.content || '',
             avatar: profile.avatar_url || '/profile.png',
           });
         }
@@ -132,37 +132,30 @@ const Chat: React.FC = () => {
       </div>
       
       <div className="conversations-list">
-        {conversations.length === 0 ? (
-          <div className="no-conversations">
-            <p>No conversations yet</p>
-            <p className="subtitle">Start chatting with your classmates!</p>
-          </div>
-        ) : (
-          conversations.map((chat) => (
-            <div 
-              key={chat.room_name} 
-              className="conversation-preview"
-              onClick={() => handleConversationClick(chat.room_name)}
-            >
-              <div className="avatar-container">
-                <img src={chat.avatar} alt={chat.other_mem_name} className="avatar" />
-                {/* {chat.online && <span className="online-indicator"></span>} */}
+        {conversations.map((chat) => (
+          <div 
+            key={chat.room_name} 
+            className="conversation-preview"
+            onClick={() => handleConversationClick(chat.room_name)}
+          >
+            <div className="avatar-container">
+              <img src={chat.avatar} alt={chat.other_mem_name} className="avatar" />
+              {/* {chat.online && <span className="online-indicator"></span>} */}
+            </div>
+            <div className="conversation-info">
+              <div className="conversation-header">
+                <h3>{chat.other_mem_name}</h3>
+                <span className="timestamp">{formatTime(chat.created_at)}</span>
               </div>
-              <div className="conversation-info">
-                <div className="conversation-header">
-                  <h3>{chat.other_mem_name}</h3>
-                  <span className="timestamp">{formatTime(chat.created_at)}</span>
-                </div>
-                <div className="conversation-footer">
-                  <p className="last-message">{chat.last_message}</p>
-                  {/* {chat.unread > 0 && (
-                    <span className="unread-badge">{chat.unread}</span>
-                  )} */}
-                </div>
+              <div className="conversation-footer">
+                <p className="last-message">{chat.last_message}</p>
+                {/* {chat.unread > 0 && (
+                  <span className="unread-badge">{chat.unread}</span>
+                )} */}
               </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );
