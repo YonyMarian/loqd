@@ -26,9 +26,9 @@ const LandingNav: React.FC = () => {
                             Get Started
                         </Link>
                     </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
     );
 };
 

@@ -20,7 +20,7 @@ const Classes: React.FC<ClassesProps> = ({
   return (
     <div className="classes-card">
       <div className="classes-header">
-        <h3>Classes</h3>
+      <h3>Classes</h3>
       </div>
       <div className="class-grid">
         {classes.map((course) => (
