@@ -43,6 +43,8 @@ const Dashboard: React.FC = () => {
     color: string;
   }>>([]);
 
+  const [otherUserId, setOtherUserId] = useState<string>("");
+
   /* ---------- fetch profile on login ---------- */
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -147,7 +149,11 @@ const Dashboard: React.FC = () => {
 
   /* ---------- loading gates ---------- */
   if (loading || !profileData) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">
+      Loading... Make sure to be signed in/up!
+      <br/>
+      Click <a href="/">here</a> to redirect yourself.
+    </div>;
   }
 
   /* ---------- derived data ---------- */
@@ -229,6 +235,7 @@ const Dashboard: React.FC = () => {
         <MatchGrid 
           searchTerm={searchTerm} 
           filterCourses={filterCourses}
+          setOtherId={setOtherUserId}
         />
         <WeekScheduleComponent 
           classSchedule={courseListWithColors} 

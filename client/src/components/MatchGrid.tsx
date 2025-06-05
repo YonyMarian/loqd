@@ -5,6 +5,7 @@ import '../styles/MatchProfile.css';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { parseCourseSchedule } from '../utils/parseCourseSchedule';
+import { getMatchWithUser } from '../services/matchingService';
 
 interface MatchProfile {
   id: string;
@@ -15,6 +16,7 @@ interface MatchProfile {
   calendar_data: any;
   email: string;
   grad_year: number;
+  bio: string;
   parsed_courses?: Array<{
     num: string;
     title: string;
@@ -37,9 +39,10 @@ interface MatchGridProps {
     location?: string;
     color: string;
   }>;
+  setOtherId: (id: string) => void
 }
 
-const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
+const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses, setOtherId }) => {
   const [profiles, setProfiles] = useState<MatchProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
@@ -50,19 +53,12 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        // Reset showAll when search term changes
         setShowAll(false);
         
         let query = supabase
           .from('profiles')
-          .select('id, full_name, email, avatar_url, major, grad_year, calendar_data')
-          .neq('id', user?.id)
-          .order('full_name');
-
-        // Only apply limit if there's no search term
-        if (!searchTerm.trim() && !showAll) {
-          query = query.limit(DEFAULT_LIMIT);
-        }
+          .select('id, full_name, email, avatar_url, major, grad_year, bio, calendar_data')
+          .neq('id', user?.id);
 
         const { data, error } = await query;
 
@@ -71,14 +67,38 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
           return;
         }
 
-        // Parse calendar data for each profile and add match percentage
-        const profilesWithMatch = data.map(profile => ({
-          ...profile,
-          parsed_courses: parseCourseSchedule(profile.calendar_data || {}),
-          match_percentage: Math.floor(Math.random() * (95 - 60 + 1)) + 60
-        }));
+        // Calculate real match percentages for all profiles
+        const profilesWithMatchPromises = data.map(async (profile) => {
+          try {
+            const matchResult = await getMatchWithUser(user?.id || '', profile.id);
+            return {
+              ...profile,
+              parsed_courses: parseCourseSchedule(profile.calendar_data || {}),
+              match_percentage: matchResult.matchPercentage
+            };
+          } catch (error) {
+            console.error(`Error calculating match for profile ${profile.id}:`, error);
+            return {
+              ...profile,
+              parsed_courses: parseCourseSchedule(profile.calendar_data || {}),
+              match_percentage: 0
+            };
+          }
+        });
 
-        setProfiles(profilesWithMatch);
+        const profilesWithMatch = await Promise.all(profilesWithMatchPromises);
+        
+        // Sort profiles by match percentage in descending order
+        const sortedProfiles = profilesWithMatch.sort((a, b) => 
+          (b.match_percentage || 0) - (a.match_percentage || 0)
+        );
+
+        // Apply limit if needed
+        const limitedProfiles = !showAll && !searchTerm.trim() 
+          ? sortedProfiles.slice(0, DEFAULT_LIMIT) 
+          : sortedProfiles;
+
+        setProfiles(limitedProfiles);
       } catch (error) {
         console.error('Error in fetchProfiles:', error);
       } finally {
@@ -89,7 +109,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
     if (user) {
       fetchProfiles();
     }
-  }, [user, searchTerm, showAll]);
+  }, [user, showAll, searchTerm]);
 
   // Filter profiles based on search term and course matches
   const filteredProfiles = profiles.filter(profile => {
@@ -167,6 +187,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
           major: selectedProfile.major,
           email: selectedProfile.email,
           grad_year: selectedProfile.grad_year,
+          bio: selectedProfile.bio,
           parsed_courses: selectedProfile.parsed_courses ?? [],
         } : {
           id: '',
@@ -179,6 +200,7 @@ const MatchGrid: React.FC<MatchGridProps> = ({ searchTerm, filterCourses }) => {
         }
       }
       filterCourses={filterCourses}
+      setOtherId={setOtherId}
     />
   </div>
 );

@@ -116,7 +116,7 @@ const CourseInterface: React.FC<CourseInterfaceProps> = ({
       onClick={handleClick}
     >
       <h4>{course.title}</h4>
-      <p>{course.description}</p>
+      {/*<p>{course.description}</p>*/}
     </div>
   );
 };

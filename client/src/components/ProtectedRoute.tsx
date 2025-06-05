@@ -20,7 +20,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }, []);
 
     if (loading) {
-        return <div>Loading... Make sure to be signed in/up!</div>;
+        return <div>
+            Loading... Make sure to be signed in/up!
+            <br/>
+            Click <a href="/">here</a> to redirect yourself.
+        </div>;
     }
     if (!user) {
         return <Navigate to="/" replace />;
