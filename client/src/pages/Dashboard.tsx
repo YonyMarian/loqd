@@ -142,7 +142,7 @@ const Dashboard: React.FC = () => {
         }));
       
       setFilterCourses(calendarCourses);
-      console.log('Filter Courses:', calendarCourses);
+      // console.log('Filter Courses:', calendarCourses);
       return newSet;
     });
   };

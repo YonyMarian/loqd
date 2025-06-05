@@ -14,7 +14,7 @@ const SuggestionBox: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Submitted:', formData);
+        // console.log('Submitted:', formData);
         const sendSuggestion = async() => {
             const {error} = await supabase
                 .from('suggestions')
@@ -22,7 +22,7 @@ const SuggestionBox: React.FC = () => {
                         subject: formData.subject,
                         details: formData.details});
             if (error) {
-                console.log("Error sending suggestion.", error);
+                // console.log("Error sending suggestion.", error);
             }
         }
         sendSuggestion();

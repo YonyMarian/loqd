@@ -4,7 +4,7 @@ import { supabase } from './supabase';
 
 
 export async function signUp(email: string, password: string, displayName: string, major: string, grad_year: number) {
-    console.log("fn called");
+    // console.log("fn called");
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -26,8 +26,8 @@ export async function signUp(email: string, password: string, displayName: strin
         return null;
     }
 
-    console.log("Signup successful");
-    console.log("Returning signup data:", data);
+    // console.log("Signup successful");
+    // console.log("Returning signup data:", data);
     return data;
 }
 

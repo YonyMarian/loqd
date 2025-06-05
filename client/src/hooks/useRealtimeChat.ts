@@ -37,11 +37,11 @@ export default function useRealtimeChat(
         .eq('id', own_id)
         .single();
     if (error || !data) {
-        console.log("error retrieving own profile info:", error);
+        // console.log("error retrieving own profile info:", error);
         setOwnUsername("Own user not found");
         return;
     }
-    console.log("own data.full_name in userealtimechat:", data.full_name);
+    // console.log("own data.full_name in userealtimechat:", data.full_name);
     setOwnUsername(data?.full_name || "No other name found");
   };
   const fetchOtherUsername = async () => {
@@ -51,11 +51,11 @@ export default function useRealtimeChat(
         .eq('id', other_id)
         .single();
     if (error) {
-        console.log("error retrieving other profile info:", error);
+        // console.log("error retrieving other profile info:", error);
         setOtherUsername("Other user not found");
         return;
     }
-    console.log("other data.full_name in userealtimechat:", data?.full_name||"its null, userealtime hook");
+    // console.log("other data.full_name in userealtimechat:", data?.full_name||"its null, userealtime hook");
     setOtherUsername(data?.full_name || "No own name found");
   };
 
@@ -73,21 +73,21 @@ export default function useRealtimeChat(
       if (!error && data) {
         const formattedMessages = data.map((msg) => ({
           content: msg.content,
-          createdAt: msg.created_at,
+          createdAt: new Date(msg.created_at).toISOString(),
           sender_name: (msg.sender_id === own_id) ? ownUsername : otherUsername,
           isOwn: msg.sender_id === own_id
         }));
-        console.log("fetched messages:", formattedMessages);
+        // console.log("fetched messages:", formattedMessages);
         setChatMessages(formattedMessages);
         if (formattedMessages.length === 0) {
-            console.log("triggering insertion into rooms table");
+            // console.log("triggering insertion into rooms table");
             const createRoom = async () => {
                 if (!roomName){
-                    console.log("no room name, not inserting into 'rooms'");
+                    // console.log("no room name, not inserting into 'rooms'");
                     return;
                 }
                 if (!own_id) {
-                    console.log("no user id, not inserting into 'rooms'");
+                    // console.log("no user id, not inserting into 'rooms'");
                     return;
                 }
                 const flippedRoomName = roomName.slice(-12) + roomName.slice(0, -12);
@@ -97,13 +97,13 @@ export default function useRealtimeChat(
                   .in('room_name', [roomName, flippedRoomName]);
 
                 if (checkError) {
-                  console.log("Error checking for existing rooms:", checkError);
+                  // console.log("Error checking for existing rooms:", checkError);
                   return;
                 }
                 if (existingRooms && existingRooms.length > 0) {
                   const canonical = existingRooms[0].room_name;
                   if (canonical !== roomName) setRoomName(canonical);
-                  console.log("flipped logic!!");
+                  // console.log("flipped logic!!");
                   return;
                 }
                 //flipped room does NOT already exist, create the room
@@ -114,10 +114,10 @@ export default function useRealtimeChat(
                   .eq('member_id', own_id)
                   .single();
                 if (regError) {
-                  console.log("regError -  userealtime:", regError);
+                  // console.log("regError -  userealtime:", regError);
                 }
                 if (regRoom) {
-                  console.log("Reg room already exists!!");
+                  // console.log("Reg room already exists!!");
                   // setRoomName(regRoom);
                   return;
                 }
@@ -132,11 +132,11 @@ export default function useRealtimeChat(
                     ignoreDuplicates: true
                 });
                 if (error1) {
-                    console.log("error creating own row in rooms table:", error1);
+                    // console.log("error creating own row in rooms table:", error1);
                 }
 
                 if (!other_id) {
-                    console.log("no user id, not inserting into 'rooms'");
+                    // console.log("no user id, not inserting into 'rooms'");
                     return;
                 }
                 var {error: error2} = await supabase
@@ -150,7 +150,7 @@ export default function useRealtimeChat(
                     ignoreDuplicates: true
                 });
                 if (error2) {
-                    console.log("error creating others row in rooms table:", error2);
+                    // console.log("error creating others row in rooms table:", error2);
                 }
                 
             };
@@ -166,7 +166,7 @@ export default function useRealtimeChat(
 
   // Realtime updates
   useEffect(() => {
-    console.log('Registering broadcast handler');
+    // console.log('Registering broadcast handler');
     const channel = supabase.channel(`chat:${roomName}`).on(
       'broadcast',
       { event: 'message' },
@@ -180,7 +180,7 @@ export default function useRealtimeChat(
             ...prev,
             {
               content: newMessage.content,
-              createdAt: newMessage.createdAt,
+              createdAt: new Date(newMessage.createdAt).toISOString(),
               sender_name: (newMessage.sender_id === own_id) ? ownUsername : otherUsername,
               isOwn: newMessage.sender_id === own_id,
             }
@@ -206,18 +206,18 @@ export default function useRealtimeChat(
       },
     ]);
     if (error) {
-        console.log("erorr in useReatltimechat.ts:", error);
+        // console.log("erorr in useReatltimechat.ts:", error);
     }
 
     const newMessage: printedChatMessage = {
       content,
       sender_name: ownUsername,
-      createdAt,
+      createdAt: new Date(createdAt).toISOString(),
       isOwn: true,
     };
 
     // Log isOwn value when sending a message
-    console.log('[SEND] isOwn:', newMessage.isOwn, 'content:', content);
+    // console.log('[SEND] isOwn:', newMessage.isOwn, 'content:', content);
 
     setChatMessages((prev) => [...prev, newMessage]);
 
@@ -226,7 +226,7 @@ export default function useRealtimeChat(
       event: 'message',
       payload: {
         content,
-        createdAt,
+        createdAt: new Date(createdAt).toISOString(),
         sender_id: own_id,
       },
     });

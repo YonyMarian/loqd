@@ -42,7 +42,7 @@ const UserBio:React.FC<UserBioProps> = ({userid, currBio}) => {
         }
         else {
             alert("Error updating bio, userid is empty");
-            console.log("Error updating bio, userid is empty");
+            // console.log("Error updating bio, userid is empty");
         }
     };
 

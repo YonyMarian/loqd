@@ -52,7 +52,7 @@ router.post('/upload_cal', upload.single('calendarFile'), async (req: Request, r
             .filter((e): e is WellFormedEvent => e !== null);
         
         const realSchedule = getScheduleObject(processedEvents);
-        console.log(realSchedule);   
+        // console.log(realSchedule);   
 
         res.json(realSchedule);
     } catch (error) {

@@ -54,7 +54,7 @@ const UpdateClasses: React.FC<UpdateClassesProps> = ({ onUpdateClasses }) => {
             }
 
             let schedule = await upload_res.json();
-            console.log("Parsed calendar data:", schedule);
+            // console.log("Parsed calendar data:", schedule);
 
             // Update Supabase through the backend endpoint
             let update_res = await fetch(`${import.meta.env.VITE_API_URL}/api/calendar/update_calendar`, {
