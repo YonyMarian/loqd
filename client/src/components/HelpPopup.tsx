@@ -10,7 +10,7 @@ const HelpPopup: React.FC<HelpPopupProps> = ({ onClose }) => {
     <div className="popup-overlay" onClick={onClose}>
       <div className="popup-container" onClick={(e) => e.stopPropagation()}>
         <div className="popup-scrollable-content">
-            <h2 class="help-title">Loqd Help Guide</h2>
+            <h2 className="help-title">Loqd Help Guide</h2>
             <br />
             <p>The <strong>Loqd Logo</strong> will take you to your dashboard, allowing easy access from chat rooms and other pages.</p>
             <br />

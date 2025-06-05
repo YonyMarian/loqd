@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 
 // not used in this file, but imported from other files
 // stupid way to do this, but I don't want to move it and cause complications
-interface ChatMessage {
+export interface ChatMessage {
   room_name: string;
   content: string;
   sender_id: string;
